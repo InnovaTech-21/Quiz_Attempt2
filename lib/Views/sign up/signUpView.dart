@@ -124,7 +124,7 @@ class _Signup extends State<Signup> {
                             hintText: 'Enter Username',
                           ),
                           keyboardType: TextInputType.text,
-                       //   validator: validateUsername,
+                          validator: validateUsername,
                         ),
                       ),
                     ),
@@ -155,7 +155,7 @@ class _Signup extends State<Signup> {
                             hintText: 'Enter Name',
                           ),
                           keyboardType: TextInputType.text,
-                        //  validator: validateName,
+                          validator: validateName,
                         ),
                       ),
                     ),
@@ -184,7 +184,7 @@ class _Signup extends State<Signup> {
                             hintText: 'Enter Email',
                           ),
                           keyboardType: TextInputType.emailAddress,
-                      //    validator: validateEmail,
+                          validator: validateEmail,
                         ),
                       ),
                     ),
@@ -215,7 +215,7 @@ class _Signup extends State<Signup> {
                           ),
                           keyboardType: TextInputType.text,
                           obscureText: true,
-                      //    validator: validatePassword,
+                          validator: validatePassword,
                         ),
                       ),
                     ),
@@ -247,7 +247,7 @@ class _Signup extends State<Signup> {
                             ),
                             keyboardType: TextInputType.text,
                             obscureText: true,
-                           // validator: validateConfirm,
+                            validator: validateConfirm,
                           ),
                         ),
                       ),
@@ -351,18 +351,18 @@ class _Signup extends State<Signup> {
                             // Signup button callback
 
                             // Check that date is valid
-                            // if (_validateDay(_selectedDay) != null ||
-                            //     _validateMonth(_selectedMonth) != null ||
-                            //     _validateYear(_selectedYear) != null) {
-                            //   _showDialog("Enter valid date of birth");
-                            //
-                            //   setState(() {
-                            //     check = false;
-                            //     // Flag that works with rest of verification checks
-                            //   });
-                            // } else {
-                            //   check = true;
-                            // }
+                            if (_validateDay(_selectedDay) != null ||
+                                _validateMonth(_selectedMonth) != null ||
+                                _validateYear(_selectedYear) != null) {
+                              _showDialog("Enter valid date of birth");
+
+                              setState(() {
+                                check = false;
+                                // Flag that works with rest of verification checks
+                              });
+                            } else {
+                              check = true;
+                            }
 
                             _submit();
                           },
@@ -433,7 +433,87 @@ class _Signup extends State<Signup> {
   }
 
   ///verification checks
+  String? validateEmail(String? value) {
+    String pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = RegExp(pattern);
+    if (!regex.hasMatch(value!)) {
+      return 'Enter Valid Email';
+    } else {
+      return null;
+    }
+  }
 
+  String? validateUsername(String? value) {
+    if (value == null) {
+      return 'Enter username';
+    } else if (value.length < 4) {
+      return 'Username must be longer than 3 characters';
+    } else
+
+    ///check if username exists
+    {
+      return null;
+    }
+  }
+
+  String? validateName(String? value) {
+    if (value == null) {
+      return 'Enter name';
+    } else if (value.length < 2) {
+      return 'Username must be at least 2 characters';
+    } else {
+      return null;
+    }
+  }
+
+  String? validatePassword(String? value) {
+    RegExp passwordFormat = RegExp(
+      r'^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&*+=!])(?=\S+$).{4,}$',
+    );
+    if (value == null) {
+      return 'Enter password';
+    } else {
+      if (value.length < 6) {
+        return 'Must be longer than 5 characters';
+      } else if (!passwordFormat.hasMatch(value)) {
+        return 'Must contain mix of lowercase, uppercase, digits, symbols.';
+      }
+    }
+    return null;
+  }
+
+  String? validateConfirm(String? value) {
+    if (value == null) {
+      return 'Enter password';
+    } else {
+      if (value != getPassword()) {
+        return 'Passwords do not match';
+      }
+    }
+    return null;
+  }
+
+  String? _validateMonth(int? value) {
+    if (value == null) {
+      return 'Please select a month';
+    }
+    return null;
+  }
+
+  String? _validateDay(int? value) {
+    if (value == null) {
+      return 'Please select a day';
+    }
+    return null;
+  }
+
+  String? _validateYear(int? value) {
+    if (value == null) {
+      return 'Please select a year';
+    }
+    return null;
+  }
 
   State<StatefulWidget> createState() {
     // TODO: implement createState
