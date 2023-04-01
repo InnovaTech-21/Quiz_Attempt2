@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
@@ -32,7 +33,7 @@ class _Signup extends State<Signup> {
   late String username;
   late String email;
   late String password;
-  //date dateOfBirth;
+  late DateTime dateOfBirth;
 
   static Future<User?>CreateUserWithEmailAndPassword({required String email, required String password ,required BuildContext context  }) async{
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -59,6 +60,7 @@ class _Signup extends State<Signup> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  //final TextEditingController dateController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
@@ -67,7 +69,28 @@ class _Signup extends State<Signup> {
     if (_formKey.currentState!.validate() && check) {
       ///write to database
       User? user = await CreateUserWithEmailAndPassword(email: emailController.text, password: passwordController.text, context: context);
+      // Add data to Firestore collection
+      void addDataToFirestore() async {
+        // Create a reference to the Firestore database and the collection you want to add data to
+        CollectionReference users = FirebaseFirestore.instance.collection('Users');
 
+        // Create a Map object containing the data you want to add
+        Map<String, dynamic> userData = {
+          'username': usernameController.text,
+          'email': emailController.text,
+          'QuizesTaken': 0,
+          //'dateofbirth': dateController.text,
+          // Add other fields here
+        };
+
+        // Use the add() method to add the Map object to the collection
+        try {
+          await users.add(userData);
+          print('Data added successfully!');
+        } catch (error) {
+          print('Error adding data: $error');
+        }
+      }
       _showDialog("Account created");
       ///go to welcome page
       ///
