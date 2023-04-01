@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:quiz_website/Views/Home/homePage.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 
@@ -23,12 +26,50 @@ class _LoginPageState extends State<LoginPage> {
       print('All fields not entered');
     }
   }
+  //Intialialze FireBase App
+  Future<FirebaseApp> _intializeFireBase() async {
+    FirebaseApp firebaseApp = await Firebase.initializeApp();
+    return firebaseApp;
+  }
+  //Create the login Function
+  static Future<User?>loginUsingEmailPassword({required String email, required String password ,required BuildContext context  }) async{
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    User? user;
+    try{
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
+      user =userCredential.user;
+
+    }  on FirebaseAuthException catch(e){
+      if(e.code =="user-not-found"){
+        print("No user with that email");
+      }
+    }
+    return user;
+  }
+
+
+
+
 
   @override
-  Widget build(BuildContext context) {
+   // return Scaffold(   body: FutureBuilder(
+      //  future: _intializeFireBase(),
+     //   builder: (context,snapshot){
+         // if (snapshot.connectionState == ConnectionState.done){
+        //    return LoginPage();
+//
+        //  }
+       //   return const Center(
+       //     child: CircularProgressIndicator(),
+        //  );
+       // }
+   // ),
+    Widget build(BuildContext context) {
     return Material(
+
         color: ColourPallete.backgroundColor,
-        child: Center(
+         child: Center(
             child: SingleChildScrollView(
                 child: Form(
                     key: _formKey,
@@ -154,11 +195,17 @@ class _LoginPageState extends State<LoginPage> {
                                       borderRadius: BorderRadius.circular(7),
                                     ),
                                     child: ElevatedButton(
-                                      onPressed: () {
+                                      onPressed: ()async {
                                         validateAndSave();
 
                                         ///IF LOGIN DETAILS ARE SATISFACTORY WILL GO TO HOME PAGE
                                         ///Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()));
+                                        User? user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context);
+                                        print(user);
+                                        if (user!=null){
+                                          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
+
+                                        }
                                       },
                                       style: ElevatedButton.styleFrom(
                                         fixedSize: const Size(395, 55),
