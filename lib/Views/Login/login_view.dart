@@ -156,9 +156,19 @@ class _LoginPageState extends State<LoginPage> {
                                     child: ElevatedButton(
                                       onPressed: () {
                                         validateAndSave();
-
                                         ///IF LOGIN DETAILS ARE SATISFACTORY WILL GO TO HOME PAGE
                                         ///Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()));
+                                        ///IF LOGIN DETAILS ARE NOT SATISFACTORY MESSAGE WILL BE DISPLAYED
+                                        /// Container(
+                                            ///alignment: Alignment.center,
+                                            ///child: const Text(
+                                              ///'Unsuccessful?',
+                                              ///style: TextStyle(
+                                                ///color: Color.fromARGB(255, 183, 10, 10),
+                                                ///fontSize: 10,
+                                             ///),
+                                           ///),
+                                        ///),
                                       },
                                       style: ElevatedButton.styleFrom(
                                         fixedSize: const Size(395, 55),
@@ -176,8 +186,6 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 Row(
-                                  ///TEXT BUTTON TO GO TO REGISTRATION PAGE
-
                                   ///TEXT BUTTON TO GO TO REGISTRATION PAGE
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
@@ -197,17 +205,6 @@ class _LoginPageState extends State<LoginPage> {
                                       },
                                     )
                                   ],
-                                ),
-                                Container(
-                                  /// WILL GIVE BELOW MESSAGE IF LOGIN FAILED
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Unsuccessful?',
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 183, 10, 10),
-                                      fontSize: 10,
-                                    ),
-                                  ),
                                 ),
                               ],
                             ),
