@@ -41,14 +41,13 @@ class _Signup extends State<Signup> {
       ///
       ///
       _showDialog("Account created");
-      print(getDate());
-
       ///go to welcome page
       ///
       ///
-    } else {
-      print('Validation failed');
     }
+      // else {
+    //   print('Validation failed');
+    // }
   }
 
   ///code to get values from input boxes
@@ -103,6 +102,7 @@ class _Signup extends State<Signup> {
                         width: 400,
 
                         ///sets up text boxes
+                        ///Username box
                         child: TextFormField(
                           controller: usernameController,
                           decoration: InputDecoration(
@@ -133,7 +133,7 @@ class _Signup extends State<Signup> {
                       child: SizedBox(
                         width: 400,
 
-                        ///sets up text boxes
+                        ///Name box
                         child: TextFormField(
                           controller: nameController,
                           decoration: InputDecoration(
@@ -163,6 +163,7 @@ class _Signup extends State<Signup> {
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
                         width: 400,
+                        ///Email box
                         child: TextFormField(
                           controller: emailController,
                           decoration: InputDecoration(
@@ -193,6 +194,7 @@ class _Signup extends State<Signup> {
                       //elevation: 3,
                       child: SizedBox(
                         width: 400,
+                        ///Password box
                         child: TextFormField(
                           controller: passwordController,
                           decoration: InputDecoration(
@@ -225,6 +227,7 @@ class _Signup extends State<Signup> {
                         width: 400,
                         child: SizedBox(
                           width: 400,
+                          ///Confirm password box
                           child: TextFormField(
                             controller: confirmPasswordController,
                             decoration: InputDecoration(
@@ -253,7 +256,7 @@ class _Signup extends State<Signup> {
                       ),
                     ),
 
-                    ///date selector
+                    ///Date selector
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: Column(
@@ -331,7 +334,7 @@ class _Signup extends State<Signup> {
                       ),
                     ),
 
-                    ///creates sign up button
+                    ///Creates sign up button
 
                     Container(
                       child: DecoratedBox(
@@ -346,11 +349,12 @@ class _Signup extends State<Signup> {
                           ),
                           borderRadius: BorderRadius.circular(7),
                         ),
+                        ///Signup button
                         child: ElevatedButton(
                           onPressed: () {
                             // Signup button callback
 
-                            // Check that date is valid
+                            /// Check that date is valid
                             if (_validateDay(_selectedDay) != null ||
                                 _validateMonth(_selectedMonth) != null ||
                                 _validateYear(_selectedYear) != null) {
@@ -364,6 +368,8 @@ class _Signup extends State<Signup> {
                               check = true;
                             }
 
+                            ///Goes to _submit if date is  valid
+                            ///Rest of validation happens in submit
                             _submit();
                           },
                           style: ElevatedButton.styleFrom(
