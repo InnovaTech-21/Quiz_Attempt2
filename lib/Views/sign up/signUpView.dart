@@ -1,11 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
+
+
 class Signup extends StatefulWidget {
+
   const Signup({super.key});
 
   @override
   State<Signup> createState() => _Signup();
+
 }
 
 class _Signup extends State<Signup> {
@@ -22,6 +29,27 @@ class _Signup extends State<Signup> {
   int? _selectedYear;
   int? _selectedMonth;
   int? _selectedDay;
+  late String username;
+  late String email;
+  late String password;
+  //date dateOfBirth;
+
+  static Future<User?>CreateUserWithEmailAndPassword({required String email, required String password ,required BuildContext context  }) async{
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    User? user;
+    try{
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(email: email, password: password);
+      user =userCredential.user;
+
+    }  on FirebaseAuthException catch(e){
+      if(e.code =="user-not-found"){
+        print("No user with that email");
+      }
+    }
+    return user;
+  }
+
 
   ///flag for date validation
   bool check = true;
@@ -35,11 +63,11 @@ class _Signup extends State<Signup> {
       TextEditingController();
 
   ///runs when signup button pressed
-  void _submit() {
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate() && check) {
       ///write to database
-      ///
-      ///
+      User? user = await CreateUserWithEmailAndPassword(email: emailController.text, password: passwordController.text, context: context);
+
       _showDialog("Account created");
       ///go to welcome page
       ///
@@ -352,6 +380,8 @@ class _Signup extends State<Signup> {
                         ///Signup button
                         child: ElevatedButton(
                           onPressed: () {
+
+
                             // Signup button callback
 
                             /// Check that date is valid
