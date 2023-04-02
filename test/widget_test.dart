@@ -16,7 +16,7 @@ void main() {
     await tester.pumpWidget(const MyApp());
 
     // Verify that our counter starts at 0.
-    expect(find.text('Sign Up'), findsOneWidget);
+    expect(find.text('INNOVATECH QUIZ PLATFORM'), findsOneWidget);
     expect(find.text('1'), findsNothing);
 
 

@@ -12,7 +12,7 @@ class Welcome extends StatelessWidget {
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: const <Widget>[
             Text(
               'INNOVATECH QUIZ PLATFORM',
               style: TextStyle(
