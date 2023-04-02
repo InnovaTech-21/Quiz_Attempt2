@@ -1,9 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:quiz_website/Views/Home/homePage.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_core/firebase_core.dart';
+
+import '../Home/homePage.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -17,21 +20,35 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool passwordVisible = false;
-
+  User? user;
   void validateAndSave() {
     final FormState? form = _formKey.currentState;
     if (form!.validate()) {
-      print('All fields entered, please check corresponding details');
+      _showDialog('Login Successful');
+      //print('All fields entered, please check corresponding details');
     } else {
       print('All fields not entered');
     }
   }
-  //Intialialze FireBase App
-  Future<FirebaseApp> _intializeFireBase() async {
-    FirebaseApp firebaseApp = await Firebase.initializeApp();
-    return firebaseApp;
-  }
-  //Create the login Function
+
+  // int _success = 1;
+  // String _userEmail = "";
+
+  // void _singIn() async {
+  //   final User? user = (await _auth.signInWithEmailAndPassword(email: usernameController.text, password: passwordController.text)).user;
+  //
+  //   if(user != null) {
+  //     setState(() {
+  //       _success = 2;
+  //       //_userEmail = user.email;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       _success = 3;
+  //     });
+  //   }
+  // }
+
   static Future<User?>loginUsingEmailPassword({required String email, required String password ,required BuildContext context  }) async{
     FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -48,28 +65,11 @@ class _LoginPageState extends State<LoginPage> {
     return user;
   }
 
-
-
-
-
   @override
-   // return Scaffold(   body: FutureBuilder(
-      //  future: _intializeFireBase(),
-     //   builder: (context,snapshot){
-         // if (snapshot.connectionState == ConnectionState.done){
-        //    return LoginPage();
-//
-        //  }
-       //   return const Center(
-       //     child: CircularProgressIndicator(),
-        //  );
-       // }
-   // ),
-    Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Material(
-
         color: ColourPallete.backgroundColor,
-         child: Center(
+        child: Center(
             child: SingleChildScrollView(
                 child: Form(
                     key: _formKey,
@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               )),
                           Container(
-                            ///USERNAME TEXTFIELD
+                            ///EMAIL TEXTFIELD
                             padding: const EdgeInsets.all(10),
                             child: SizedBox(
                               width: 400,
@@ -111,13 +111,16 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  hintText: 'Enter Username',
+                                  hintText: 'Enter Email',
                                 ),
                                 keyboardType: TextInputType.text,
                                 onFieldSubmitted: (value) {},
                                 validator: (value) {
                                   if (value!.isEmpty) {
-                                    return 'Please enter your username';
+                                    return 'Please enter your email';
+                                  }
+                                  if (user == null){
+                                    return 'Email or password incorrect';
                                   }
                                   return null;
                                 },
@@ -130,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: SizedBox(
                               width: 400,
                               child: TextFormField(
-                                obscureText: passwordVisible,
+                                obscureText: true,
                                 controller: passwordController,
                                 decoration: InputDecoration(
                                   contentPadding: const EdgeInsets.all(27),
@@ -156,6 +159,9 @@ class _LoginPageState extends State<LoginPage> {
                                   if (value!.isEmpty) {
                                     return 'Please enter your password';
                                   }
+                                  if (user == null){
+                                    return 'Email or password incorrect';
+                                  }
                                   return null;
                                 },
                               ),
@@ -171,6 +177,8 @@ class _LoginPageState extends State<LoginPage> {
                                   style: TextStyle(fontSize: 15),
                                 ),
                                 onPressed: () {
+                                  ///shows message
+                                  _showDialog('Opens forgot password page');
                                   //GO TO FORGOT PASSWORD PAGE
                                 },
                               )
@@ -195,17 +203,18 @@ class _LoginPageState extends State<LoginPage> {
                                       borderRadius: BorderRadius.circular(7),
                                     ),
                                     child: ElevatedButton(
-                                      onPressed: ()async {
+                                      onPressed: () async {
+                                        user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context);
                                         validateAndSave();
+                                        // print(user);
+                                        // if (user!=null) {
+                                        //   //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
+                                        //
+                                        // }
+
 
                                         ///IF LOGIN DETAILS ARE SATISFACTORY WILL GO TO HOME PAGE
                                         ///Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()));
-                                        User? user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context);
-                                        print(user);
-                                        if (user!=null){
-                                          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
-
-                                        }
                                       },
                                       style: ElevatedButton.styleFrom(
                                         fixedSize: const Size(395, 55),
@@ -247,18 +256,38 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 Container(
                                   /// WILL GIVE BELOW MESSAGE IF LOGIN FAILED
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Unsuccessful?',
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 183, 10, 10),
-                                      fontSize: 10,
-                                    ),
-                                  ),
+                                  //alignment: Alignment.center,
+                                  // child: const Text(
+                                  //   'Unsuccessful?',
+                                  //   style: TextStyle(
+                                  //     color: Color.fromARGB(255, 183, 10, 10),
+                                  //     fontSize: 10,
+                                  //   ),
+                                  // ),
                                 ),
                               ],
                             ),
                           )
                         ])))));
   }
+  void _showDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Message'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }

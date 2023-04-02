@@ -1,11 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
+
+
 class Signup extends StatefulWidget {
+
   const Signup({super.key});
 
   @override
   State<Signup> createState() => _Signup();
+
 }
 
 class _Signup extends State<Signup> {
@@ -22,6 +30,27 @@ class _Signup extends State<Signup> {
   int? _selectedYear;
   int? _selectedMonth;
   int? _selectedDay;
+  late String username;
+  late String email;
+  late String password;
+  late DateTime dateOfBirth;
+
+  static Future<User?>CreateUserWithEmailAndPassword({required String email, required String password ,required BuildContext context  }) async{
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    User? user;
+    try{
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(email: email, password: password);
+      user =userCredential.user;
+
+    }  on FirebaseAuthException catch(e){
+      if(e.code =="user-not-found"){
+        print("No user with that email");
+      }
+    }
+    return user;
+  }
+
 
   ///flag for date validation
   bool check = true;
@@ -31,24 +60,45 @@ class _Signup extends State<Signup> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  //final TextEditingController dateController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
   ///runs when signup button pressed
-  void _submit() {
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate() && check) {
       ///write to database
-      ///
-      ///
-      _showDialog("Account created");
-      print(getDate());
+      User? user = await CreateUserWithEmailAndPassword(email: emailController.text, password: passwordController.text, context: context);
+      // Add data to Firestore collection
+      void addDataToFirestore() async {
+        // Create a reference to the Firestore database and the collection you want to add data to
+        CollectionReference users = FirebaseFirestore.instance.collection('Users');
 
+        // Create a Map object containing the data you want to add
+        Map<String, dynamic> userData = {
+          'username': usernameController.text,
+          'email': emailController.text,
+          'QuizesTaken': 0,
+          //'dateofbirth': dateController.text,
+          // Add other fields here
+        };
+
+        // Use the add() method to add the Map object to the collection
+        try {
+          await users.add(userData);
+          print('Data added successfully!');
+        } catch (error) {
+          print('Error adding data: $error');
+        }
+      }
+      _showDialog("Account created");
       ///go to welcome page
       ///
       ///
-    } else {
-      print('Validation failed');
     }
+      // else {
+    //   print('Validation failed');
+    // }
   }
 
   ///code to get values from input boxes
@@ -103,6 +153,7 @@ class _Signup extends State<Signup> {
                         width: 400,
 
                         ///sets up text boxes
+                        ///Username box
                         child: TextFormField(
                           controller: usernameController,
                           decoration: InputDecoration(
@@ -133,7 +184,7 @@ class _Signup extends State<Signup> {
                       child: SizedBox(
                         width: 400,
 
-                        ///sets up text boxes
+                        ///Name box
                         child: TextFormField(
                           controller: nameController,
                           decoration: InputDecoration(
@@ -163,6 +214,7 @@ class _Signup extends State<Signup> {
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
                         width: 400,
+                        ///Email box
                         child: TextFormField(
                           controller: emailController,
                           decoration: InputDecoration(
@@ -193,6 +245,7 @@ class _Signup extends State<Signup> {
                       //elevation: 3,
                       child: SizedBox(
                         width: 400,
+                        ///Password box
                         child: TextFormField(
                           controller: passwordController,
                           decoration: InputDecoration(
@@ -225,6 +278,7 @@ class _Signup extends State<Signup> {
                         width: 400,
                         child: SizedBox(
                           width: 400,
+                          ///Confirm password box
                           child: TextFormField(
                             controller: confirmPasswordController,
                             decoration: InputDecoration(
@@ -253,7 +307,7 @@ class _Signup extends State<Signup> {
                       ),
                     ),
 
-                    ///date selector
+                    ///Date selector
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: Column(
@@ -331,7 +385,7 @@ class _Signup extends State<Signup> {
                       ),
                     ),
 
-                    ///creates sign up button
+                    ///Creates sign up button
 
                     Container(
                       child: DecoratedBox(
@@ -346,11 +400,14 @@ class _Signup extends State<Signup> {
                           ),
                           borderRadius: BorderRadius.circular(7),
                         ),
+                        ///Signup button
                         child: ElevatedButton(
                           onPressed: () {
+
+
                             // Signup button callback
 
-                            // Check that date is valid
+                            /// Check that date is valid
                             if (_validateDay(_selectedDay) != null ||
                                 _validateMonth(_selectedMonth) != null ||
                                 _validateYear(_selectedYear) != null) {
@@ -364,6 +421,8 @@ class _Signup extends State<Signup> {
                               check = true;
                             }
 
+                            ///Goes to _submit if date is  valid
+                            ///Rest of validation happens in submit
                             _submit();
                           },
                           style: ElevatedButton.styleFrom(
