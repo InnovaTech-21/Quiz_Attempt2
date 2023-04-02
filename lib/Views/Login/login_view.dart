@@ -3,8 +3,7 @@ import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_core/firebase_core.dart';
-
-import '../Home/homePage.dart';
+//import '../Home/homePage.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
