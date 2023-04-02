@@ -4,7 +4,7 @@ import 'package:quiz_website/Views/sign%20up/signUpView.dart';
 import 'package:quiz_website/widgets/NavigationBar/navigation_bar.dart' as nb;
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/widgets/call-to-action/call_to_action.dart';
-import 'package:quiz_website/widgets/centeredView/centered.dart';
+import 'package:quiz_website/widgets/centeredView/centeredView.dart';
 import 'package:quiz_website/widgets/login.dart';
 import 'package:quiz_website/widgets/welcome/welcome.dart';
 
@@ -28,13 +28,15 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CenteredView(
-        child: Column(
+        child: ListView(
           children: <Widget>[
             nb.NavigationBar(),
             Expanded(
               child: Row(
                 children: <Widget>[
-                  Welcome(),
+                  Flexible(
+                    child: Welcome(),
+                  ),
                   Expanded(
                     child: Column(
                       children: <Widget>[

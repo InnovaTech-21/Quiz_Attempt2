@@ -3,8 +3,7 @@ import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_core/firebase_core.dart';
-
-import '../Home/homePage.dart';
+//import '../Home/homePage.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -67,7 +66,17 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return Scaffold(
+        appBar: AppBar(
+        backgroundColor: ColourPallete.backgroundColor,
+        leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+    onPressed: () {
+    Navigator.pop(context);
+    },
+    ),
+    ),
+    body: Material(
         color: ColourPallete.backgroundColor,
         child: Center(
             child: SingleChildScrollView(
@@ -268,7 +277,7 @@ class _LoginPageState extends State<LoginPage> {
                               ],
                             ),
                           )
-                        ])))));
+                        ]))))));
   }
   void _showDialog(String message) {
     showDialog(
@@ -288,6 +297,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       },
     );
+
   }
 
 }

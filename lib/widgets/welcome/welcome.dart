@@ -8,9 +8,9 @@ class Welcome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: ColourPallete.backgroundColor,
-      width: 600,
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
@@ -22,12 +22,17 @@ class Welcome extends StatelessWidget {
               height: 30,
             ),
             Text(
-                'Welcome to our Quiz Platform, to sign up click the buttons on the top right-hand corner of the screen',
-                style: TextStyle(
-                  fontSize: 21,
-                  height: 1.7,
-                ))
-          ]),
+              'Welcome to our Quiz Platform, to sign up click the buttons on the top right-hand corner of the screen',
+              style: TextStyle(
+                fontSize: 21,
+                height: 1.7,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+

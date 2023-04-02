@@ -130,7 +130,17 @@ class _Signup extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return Scaffold(
+        appBar: AppBar(
+        backgroundColor: ColourPallete.backgroundColor,
+        leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+    onPressed: () {
+    Navigator.pop(context);
+    },
+    ),
+    ),
+    body: Material(
         color: ColourPallete.backgroundColor,
         child: Center(
           child: SingleChildScrollView(
@@ -468,7 +478,7 @@ class _Signup extends State<Signup> {
               ),
             ),
           ),
-        ));
+        )));
   }
 
   void _showDialog(String message) {
