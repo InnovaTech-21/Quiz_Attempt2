@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
 }
 
 
-
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,111 +34,106 @@ class HomePage extends StatelessWidget {
           children: <Widget>[
             nb.NavigationBar(),
             CenteredView(
-              child: Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: Welcome(),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: ColoredBox(
-                        color: ColourPallete.backgroundColor,
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final buttonWidth =
-                            screenWidth > 600 ? 395.0 : constraints.maxWidth;
-                            final buttonHeight = 55.0;
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: Welcome(),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                      color: ColourPallete.backgroundColor,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final buttonWidth = screenWidth > 600 ? 395.0 : constraints.maxWidth;
+                          final buttonHeight = 55.0;
 
-                            return SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  const SizedBox(height: 90),
-                                  DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          ColourPallete.gradient1,
-                                          ColourPallete.gradient2,
-                                        ],
-                                        begin: Alignment.bottomLeft,
-                                        end: Alignment.topRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(7),
+                          return SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                const SizedBox(height: 90),
+                                DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        ColourPallete.gradient1,
+                                        ColourPallete.gradient2,
+                                      ],
+                                      begin: Alignment.bottomLeft,
+                                      end: Alignment.topRight,
                                     ),
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => Signup(),
-                                          ),
-                                        );
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        fixedSize:
-                                        Size(buttonWidth, buttonHeight),
-                                        primary: Colors.transparent,
-                                        shadowColor: Colors.transparent,
-                                      ),
-                                      child: const Text(
-                                        'Sign Up',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 17,
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Signup(),
                                         ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      fixedSize: Size(buttonWidth, buttonHeight),
+                                      primary: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                    ),
+                                    child: const Text(
+                                      'Sign Up',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 17,
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 20),
-                                  DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          ColourPallete.gradient1,
-                                          ColourPallete.gradient2,
-                                        ],
-                                        begin: Alignment.bottomLeft,
-                                        end: Alignment.topRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(7),
+                                ),
+                                const SizedBox(height: 20),
+                                DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        ColourPallete.gradient1,
+                                        ColourPallete.gradient2,
+                                      ],
+                                      begin: Alignment.bottomLeft,
+                                      end: Alignment.topRight,
                                     ),
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => LoginPage(),
-                                          ),
-                                        );
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        fixedSize:
-                                        Size(buttonWidth, buttonHeight),
-                                        backgroundColor: Colors.transparent,
-                                        shadowColor: Colors.transparent,
-                                      ),
-                                      child: const Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 17,
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => LoginPage(),
                                         ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      fixedSize: Size(buttonWidth, buttonHeight),
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                    ),
+                                    child: const Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 17,
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -148,4 +142,5 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+
 
