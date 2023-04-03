@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:firebase_core/firebase_core.dart';
-//import '../Home/homePage.dart';
+
+import '../../menu.dart';
+
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -24,9 +25,8 @@ class _LoginPageState extends State<LoginPage> {
     final FormState? form = _formKey.currentState;
     if (form!.validate()) {
       _showDialog('Login Successful');
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> menu()));
       //print('All fields entered, please check corresponding details');
-    } else {
-      print('All fields not entered');
     }
   }
 
@@ -193,89 +193,83 @@ class _LoginPageState extends State<LoginPage> {
                               )
                             ],
                           ),
-                          SizedBox(height: 20),
-                          Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          ColourPallete.gradient1,
-                                          ColourPallete.gradient2,
-                                        ],
-                                        begin: Alignment.bottomLeft,
-                                        end: Alignment.topRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(7),
+                          const SizedBox(height: 20),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        ColourPallete.gradient1,
+                                        ColourPallete.gradient2,
+                                      ],
+                                      begin: Alignment.bottomLeft,
+                                      end: Alignment.topRight,
                                     ),
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context);
-                                        validateAndSave();
-                                        // print(user);
-                                        // if (user!=null) {
-                                        //   //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
-                                        //
-                                        // }
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context);
+                                      validateAndSave();
+                                      // print(user);
+                                      // if (user!=null) {
+                                      //   //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
+                                      //
+                                      // }
 
-
-                                        ///IF LOGIN DETAILS ARE SATISFACTORY WILL GO TO HOME PAGE
-                                        ///Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()));
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        fixedSize: const Size(395, 55),
-                                        primary: Colors.transparent,
-                                        shadowColor: Colors.transparent,
-                                      ),
-                                      child: const Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 17,
-                                        ),
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      fixedSize: const Size(395, 55), backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                    ),
+                                    child: const Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 17,
                                       ),
                                     ),
                                   ),
                                 ),
-                                Row(
-                                  ///TEXT BUTTON TO GO TO REGISTRATION PAGE
+                              ),
+                              Row(
+                                ///TEXT BUTTON TO GO TO REGISTRATION PAGE
 
-                                  ///TEXT BUTTON TO GO TO REGISTRATION PAGE
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    const Text('Dont have account?'),
-                                    TextButton(
-                                      child: const Text(
-                                        'Sign up',
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          ///goes to sign in screen
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => Signup()),
-                                        );
-                                      },
-                                    )
-                                  ],
-                                ),
-                                Container(
-                                  /// WILL GIVE BELOW MESSAGE IF LOGIN FAILED
-                                  //alignment: Alignment.center,
-                                  // child: const Text(
-                                  //   'Unsuccessful?',
-                                  //   style: TextStyle(
-                                  //     color: Color.fromARGB(255, 183, 10, 10),
-                                  //     fontSize: 10,
-                                  //   ),
-                                  // ),
-                                ),
-                              ],
-                            ),
+                                ///TEXT BUTTON TO GO TO REGISTRATION PAGE
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const Text('Dont have account?'),
+                                  TextButton(
+                                    child: const Text(
+                                      'Sign up',
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        ///goes to sign in screen
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const Signup()),
+                                      );
+                                    },
+                                  )
+                                ],
+                              ),
+                              Container(
+                                /// WILL GIVE BELOW MESSAGE IF LOGIN FAILED
+                                //alignment: Alignment.center,
+                                // child: const Text(
+                                //   'Unsuccessful?',
+                                //   style: TextStyle(
+                                //     color: Color.fromARGB(255, 183, 10, 10),
+                                //     fontSize: 10,
+                                //   ),
+                                // ),
+                              ),
+                            ],
                           )
                         ]))))));
   }
