@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+
+
 class NavigationBar extends StatelessWidget {
   const NavigationBar({Key? key}) : super(key: key);
 
@@ -8,7 +10,6 @@ class NavigationBar extends StatelessWidget {
     return Container(
       height: 150,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           SizedBox(
             height: 150,
@@ -33,6 +34,7 @@ class NavigationBar extends StatelessWidget {
   }
 }
 
+
 class NavItem extends StatelessWidget {
   final String title;
   const NavItem({Key? key, required this.title}) : super(key: key);
@@ -45,3 +47,4 @@ class NavItem extends StatelessWidget {
     );
   }
 }
+
