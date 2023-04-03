@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_website/Views/sign%20up/signUpView.dart';
+
 import 'package:quiz_website/Views/Home/homePage.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,9 +15,8 @@ void main() async{
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,7 +24,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: ColourPallete.backgroundColor,
       ),
-      home: HomePage(),
+      home: LayoutBuilder(
+        builder: (context, constraints) => ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 1000, minHeight: 1000),
+          child: HomePage(),
+        ),
+      ),
     );
   }
 }

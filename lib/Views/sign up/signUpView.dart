@@ -3,6 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 
+
+import '../../menu.dart';
+import '../Login/login_view.dart';
+
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 
@@ -93,8 +97,7 @@ class _Signup extends State<Signup> {
       }
       _showDialog("Account created");
       ///go to welcome page
-      ///
-      ///
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> menu()));
     }
       // else {
     //   print('Validation failed');
@@ -466,7 +469,11 @@ class _Signup extends State<Signup> {
                                 fontSize: 17, color: ColourPallete.gradient2),
                           ),
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                builder: (context) => const LoginPage()),
+                            );
 
                             /// back to login screen
                           },
