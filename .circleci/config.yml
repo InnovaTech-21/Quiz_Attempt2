@@ -1,6 +1,11 @@
 version: 2.1
 orbs:
-  codecov: codecov/codecov@1.1.0
+  codecov: codecov/codecov@3.2.4
+workflows:
+  upload-to-codecov:
+    jobs:
+      - checkout
+      - codecov/upload
 
 jobs:
   build:
@@ -15,9 +20,7 @@ jobs:
       - run: flutter pub get
      
       - run: flutter build apk --release
-      - run:
-          name: Upload coverage report to Codecov
-          command: codecov/upload
+
       - store_artifacts:
             path: build/app/outputs/flutter-apk/app-release.apk
       - store_test_results:
