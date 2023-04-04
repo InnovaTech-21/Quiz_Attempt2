@@ -32,12 +32,12 @@ class HomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            nb.NavigationBar(),
+            const nb.NavigationBar(),
             CenteredView(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Expanded(
+                  const Expanded(
                     flex: 1,
                     child: Welcome(),
                   ),
@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
                       child: LayoutBuilder(
                         builder: (context, constraints) {
                           final buttonWidth = screenWidth > 600 ? 395.0 : constraints.maxWidth;
-                          final buttonHeight = 55.0;
+                          const buttonHeight = 55.0;
 
                           return SingleChildScrollView(
                             child: Column(
@@ -72,13 +72,12 @@ class HomePage extends StatelessWidget {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => Signup(),
+                                          builder: (context) => const Signup(),
                                         ),
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      fixedSize: Size(buttonWidth, buttonHeight),
-                                      primary: Colors.transparent,
+                                      fixedSize: Size(buttonWidth, buttonHeight), backgroundColor: Colors.transparent,
                                       shadowColor: Colors.transparent,
                                     ),
                                     child: const Text(
@@ -108,7 +107,7 @@ class HomePage extends StatelessWidget {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => LoginPage(),
+                                          builder: (context) => const LoginPage(),
                                         ),
                                       );
                                     },

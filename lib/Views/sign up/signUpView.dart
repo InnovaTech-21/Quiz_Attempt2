@@ -27,13 +27,15 @@ class _Signup extends State<Signup> {
   ///values to populate date dropdown
   final List<int> _years =
       List<int>.generate(100, (int index) => DateTime.now().year - index);
-  final List<int> _months = List<int>.generate(12, (int index) => index + 1);
-  final List<int> _days = List<int>.generate(31, (int index) => index + 1);
+  final List<String> _months = List<String>.generate(12, (int index) => (index + 1).toString().padLeft(2, '0'));
+
+  final List<String> _days = List<String>.generate(31, (int index) => (index + 1).toString().padLeft(2, '0'));
+
 
   ///vars that save date selection
   int? _selectedYear;
-  int? _selectedMonth;
-  int? _selectedDay;
+  String? _selectedMonth;
+  String? _selectedDay;
   late String username;
   late String email;
   late String password;
@@ -64,7 +66,7 @@ class _Signup extends State<Signup> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  //final TextEditingController dateController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
@@ -80,10 +82,10 @@ class _Signup extends State<Signup> {
 
         // Create a Map object containing the data you want to add
         Map<String, dynamic> userData = {
-          'username': usernameController.text,
-          'email': emailController.text,
+          'username': getUsername(),
+          'email': getEmail(),
           'QuizesTaken': 0,
-          //'dateofbirth': dateController.text,
+          'dateofbirth': getDate(),
           // Add other fields here
         };
 
@@ -125,9 +127,9 @@ class _Signup extends State<Signup> {
     return confirmPasswordController.text;
   }
 
-  String getDate() {
-    String date;
-    date = "${_selectedDay!}/${_selectedMonth!}/${_selectedYear!}";
+  DateTime getDate() {
+    String sdate = "${_selectedYear!}-${_selectedMonth!}-${_selectedDay!}";
+    DateTime date =DateTime.parse(sdate);
     return date;
   }
 
@@ -137,7 +139,7 @@ class _Signup extends State<Signup> {
         appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
         leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back),
     onPressed: () {
     Navigator.pop(context);
     },
@@ -336,38 +338,38 @@ class _Signup extends State<Signup> {
                               children: <Widget>[
                                 const SizedBox(width: 16.0),
                                 Expanded(
-                                  child: DropdownButton<int>(
+                                  child: DropdownButton<String>(
                                     value: _selectedDay,
-                                    onChanged: (int? day) {
+                                    onChanged: (String? day) {
                                       setState(() {
                                         _selectedDay = day;
                                       });
                                     },
                                     hint: const Text('Day'),
                                     items: _days
-                                        .map<DropdownMenuItem<int>>((int day) {
-                                      return DropdownMenuItem<int>(
+                                        .map<DropdownMenuItem<String>>((String day) {
+                                      return DropdownMenuItem<String>(
                                         value: day,
-                                        child: Text(day.toString()),
+                                        child: Text(day),
                                       );
                                     }).toList(),
                                   ),
                                 ),
                                 const SizedBox(width: 16.0),
                                 Expanded(
-                                  child: DropdownButton<int>(
+                                  child: DropdownButton<String>(
                                     value: _selectedMonth,
-                                    onChanged: (int? month) {
+                                    onChanged: (String? month) {
                                       setState(() {
                                         _selectedMonth = month;
                                       });
                                     },
                                     hint: const Text('Month'),
-                                    items: _months.map<DropdownMenuItem<int>>(
-                                        (int month) {
-                                      return DropdownMenuItem<int>(
+                                    items: _months.map<DropdownMenuItem<String>>(
+                                        (String month) {
+                                      return DropdownMenuItem<String>(
                                         value: month,
-                                        child: Text(month.toString()),
+                                        child: Text(month),
                                       );
                                     }).toList(),
                                   ),
@@ -400,55 +402,53 @@ class _Signup extends State<Signup> {
 
                     ///Creates sign up button
 
-                    Container(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              ColourPallete.gradient1,
-                              ColourPallete.gradient2,
-                            ],
-                            begin: Alignment.bottomLeft,
-                            end: Alignment.topRight,
-                          ),
-                          borderRadius: BorderRadius.circular(7),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            ColourPallete.gradient1,
+                            ColourPallete.gradient2,
+                          ],
+                          begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
                         ),
-                        ///Signup button
-                        child: ElevatedButton(
-                          onPressed: () {
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      ///Signup button
+                      child: ElevatedButton(
+                        onPressed: () {
 
 
-                            // Signup button callback
+                          // Signup button callback
 
-                            /// Check that date is valid
-                            if (_validateDay(_selectedDay) != null ||
-                                _validateMonth(_selectedMonth) != null ||
-                                _validateYear(_selectedYear) != null) {
-                              _showDialog("Enter valid date of birth");
+                          /// Check that date is valid
+                          if (_validateDay(_selectedDay) != null ||
+                              _validateMonth(_selectedMonth) != null ||
+                              _validateYear(_selectedYear) != null) {
+                            _showDialog("Enter valid date of birth");
 
-                              setState(() {
-                                check = false;
-                                // Flag that works with rest of verification checks
-                              });
-                            } else {
-                              check = true;
-                            }
+                            setState(() {
+                              check = false;
+                              // Flag that works with rest of verification checks
+                            });
+                          } else {
+                            check = true;
+                          }
 
-                            ///Goes to _submit if date is  valid
-                            ///Rest of validation happens in submit
-                            _submit();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            fixedSize: const Size(395, 55),
-                            primary: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                          ),
-                          child: const Text(
-                            'Signup',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 17,
-                            ),
+                          ///Goes to _submit if date is  valid
+                          ///Rest of validation happens in submit
+                          print(getDate());
+                          _submit();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(395, 55), backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                        ),
+                        child: const Text(
+                          'Signup',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17,
                           ),
                         ),
                       ),
@@ -570,14 +570,14 @@ class _Signup extends State<Signup> {
     return null;
   }
 
-  String? _validateMonth(int? value) {
+  String? _validateMonth(String? value) {
     if (value == null) {
       return 'Please select a month';
     }
     return null;
   }
 
-  String? _validateDay(int? value) {
+  String? _validateDay(String? value) {
     if (value == null) {
       return 'Please select a day';
     }

@@ -197,40 +197,38 @@ class _LoginPageState extends State<LoginPage> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              Container(
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        ColourPallete.gradient1,
-                                        ColourPallete.gradient2,
-                                      ],
-                                      begin: Alignment.bottomLeft,
-                                      end: Alignment.topRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(7),
+                              DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      ColourPallete.gradient1,
+                                      ColourPallete.gradient2,
+                                    ],
+                                    begin: Alignment.bottomLeft,
+                                    end: Alignment.topRight,
                                   ),
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context);
-                                      validateAndSave();
-                                      // print(user);
-                                      // if (user!=null) {
-                                      //   //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
-                                      //
-                                      // }
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context);
+                                    validateAndSave();
+                                    // print(user);
+                                    // if (user!=null) {
+                                    //   //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
+                                    //
+                                    // }
 
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      fixedSize: const Size(395, 55), backgroundColor: Colors.transparent,
-                                      shadowColor: Colors.transparent,
-                                    ),
-                                    child: const Text(
-                                      'Login',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 17,
-                                      ),
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    fixedSize: const Size(395, 55), backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                  ),
+                                  child: const Text(
+                                    'Login',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 17,
                                     ),
                                   ),
                                 ),
