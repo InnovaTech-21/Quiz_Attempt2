@@ -11,6 +11,8 @@ jobs:
     steps:
       - checkout
       - run: flutter doctor
+      - run: flutter test
+      - run: flutter pub get
       - run: flutter test 
       - run: flutter build apk --release
       - store_artifacts:
