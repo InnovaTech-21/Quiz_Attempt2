@@ -17,6 +17,4 @@ jobs:
             path: build/app/outputs/flutter-apk/app-release.apk
       - store_test_results:
             path: test-results
-      - run:
-            name: Upload coverage reports to Codecov
-            command:  bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}
+
