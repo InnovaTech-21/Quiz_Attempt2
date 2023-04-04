@@ -7,9 +7,7 @@ import 'package:quiz_website/ColourPallete.dart';
 import '../../menu.dart';
 import '../Login/login_view.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-
-
+//final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class Signup extends StatefulWidget {
 
@@ -31,32 +29,10 @@ class _Signup extends State<Signup> {
 
   final List<String> _days = List<String>.generate(31, (int index) => (index + 1).toString().padLeft(2, '0'));
 
-
   ///vars that save date selection
   int? _selectedYear;
   String? _selectedMonth;
   String? _selectedDay;
-  late String username;
-  late String email;
-  late String password;
-  late DateTime dateOfBirth;
-
-  static Future<User?>CreateUserWithEmailAndPassword({required String email, required String password ,required BuildContext context  }) async{
-    FirebaseAuth auth = FirebaseAuth.instance;
-
-    User? user;
-    try{
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(email: email, password: password);
-      user =userCredential.user;
-
-    }  on FirebaseAuthException catch(e){
-      if(e.code =="user-not-found"){
-        print("No user with that email");
-      }
-    }
-    return user;
-  }
-
 
   ///flag for date validation
   bool check = true;
@@ -67,37 +43,42 @@ class _Signup extends State<Signup> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  ///adds users to database
+  void addDataToFirestore() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+      ///create a user with email and password
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      ///user created successfully, now add data to Firestore
+      CollectionReference users = FirebaseFirestore.instance.collection('Users');
+
+      Map<String, dynamic> userData = {
+        'date_of_birth': getDate(),
+        'levels': 0,
+        'total_score': 0,
+        'user_email': emailController.text,
+        'user_name': nameController.text,
+        'user_password': passwordController.text,
+        'user_username': usernameController.text,
+      };
+
+      await users.doc(userCredential.user!.uid).set(userData);
+  }
 
   ///runs when signup button pressed
   Future<void> _submit() async {
     if (_formKey.currentState!.validate() && check) {
       ///write to database
-      User? user = await CreateUserWithEmailAndPassword(email: emailController.text, password: passwordController.text, context: context);
-      // Add data to Firestore collection
-      void addDataToFirestore() async {
-        // Create a reference to the Firestore database and the collection you want to add data to
-        CollectionReference users = FirebaseFirestore.instance.collection('Users');
+      addDataToFirestore();
 
-        // Create a Map object containing the data you want to add
-        Map<String, dynamic> userData = {
-          'username': getUsername(),
-          'email': getEmail(),
-          'QuizesTaken': 0,
-          'dateofbirth': getDate(),
-          // Add other fields here
-        };
-
-        // Use the add() method to add the Map object to the collection
-        try {
-          await users.add(userData);
-          print('Data added successfully!');
-        } catch (error) {
-          print('Error adding data: $error');
-        }
-      }
       _showDialog("Account created");
+
       ///go to welcome page
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> menu()));
     }
