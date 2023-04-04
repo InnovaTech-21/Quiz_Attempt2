@@ -4,6 +4,8 @@ orbs:
 
 jobs:
   build:
+    environment:
+      CODECOV_TOKEN: ad91dc9f-f0c6-464c-bd8c-09369006c858 
     docker:
       - image: cirrusci/flutter
     steps:
