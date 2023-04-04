@@ -1,11 +1,6 @@
 version: 2.1
 orbs:
   codecov: codecov/codecov@3.2.4
-workflows:
-  upload-to-codecov:
-    jobs:
-      - checkout
-      - codecov/upload
 
 jobs:
   build:
@@ -14,13 +9,14 @@ jobs:
     docker:
       - image: cirrusci/flutter
     steps:
+
       - checkout
       - run: flutter doctor
       - run: flutter test
       - run: flutter pub get
      
       - run: flutter build apk --release
-
+      - run: codecov.upload
       - store_artifacts:
             path: build/app/outputs/flutter-apk/app-release.apk
       - store_test_results:
