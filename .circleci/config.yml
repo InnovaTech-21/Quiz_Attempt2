@@ -16,7 +16,6 @@ jobs:
       - run: flutter pub get
       - run: flutter build web
       - run: flutter build apk --release
-      - run: codecov/upload
       - store_artifacts:
             path: build/app/outputs/flutter-apk/app-release.apk
       - store_test_results:
