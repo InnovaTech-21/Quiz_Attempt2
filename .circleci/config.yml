@@ -15,7 +15,7 @@ jobs:
       - run: flutter test
       - run: flutter pub get
       - run: flutter build web
-      - run: quiz_website
+      - run: "quiz_website"
       - run: flutter build apk --release
       - run: codecov/upload
       - store_artifacts:
