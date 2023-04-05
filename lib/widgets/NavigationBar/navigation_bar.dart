@@ -18,14 +18,14 @@ class NavigationBar extends StatelessWidget {
               'assets/images/InnovaTechLogo.png',
             ),
           ),
-          Spacer(),
-          NavItem(
+          const Spacer(),
+          const NavItem(
             title: 'Home',
           ),
-          SizedBox(
+          const SizedBox(
             width: 60,
           ),
-          NavItem(
+          const NavItem(
             title: 'Make a Quiz',
           ),
         ],

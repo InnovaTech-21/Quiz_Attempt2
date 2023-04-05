@@ -1,15 +1,24 @@
 version: 2.1
+orbs:
+  codecov: codecov/codecov@3.2.4
+
 jobs:
   build:
+    environment:
+      CODECOV_TOKEN: ad91dc9f-f0c6-464c-bd8c-09369006c858 
     docker:
       - image: cirrusci/flutter
     steps:
+
       - checkout
       - run: flutter doctor
-      - run: flutter test 
+      - run: flutter test
+      - run: flutter pub get
+     
       - run: flutter build apk --release
+      - run: codecov.upload
       - store_artifacts:
             path: build/app/outputs/flutter-apk/app-release.apk
       - store_test_results:
             path: test-results
-            
+

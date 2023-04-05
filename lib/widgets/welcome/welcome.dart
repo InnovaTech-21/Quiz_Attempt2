@@ -13,7 +13,7 @@ class Welcome extends StatelessWidget {
           children: <Widget>[
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.3,
-              child: Center(
+              child: const Center(
                 child: Text(
                   'INNOVATECH QUIZ PLATFORM',
                   style: TextStyle(
@@ -26,8 +26,8 @@ class Welcome extends StatelessWidget {
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.2,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 50.0),
                 child: Text(
                   'Welcome to our Quiz Platform, to sign up click the buttons on the top right-hand corner of the screen',
                   style: TextStyle(
