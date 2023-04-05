@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -187,7 +188,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 onPressed: () {
                                   ///shows message
-                                  _showDialog('Opens forgot password page');
+                                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> ForgotPasswordPage()));
+                                  //_showDialog('Opens forgot password page');
                                   //GO TO FORGOT PASSWORD PAGE
                                 },
                               )

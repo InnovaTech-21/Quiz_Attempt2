@@ -7,7 +7,9 @@ import 'package:quiz_website/ColourPallete.dart';
 import '../../menu.dart';
 import '../Login/login_view.dart';
 
-//final FirebaseAuth _auth = FirebaseAuth.instance;
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
+
 
 class Signup extends StatefulWidget {
 
@@ -25,14 +27,34 @@ class _Signup extends State<Signup> {
   ///values to populate date dropdown
   final List<int> _years =
       List<int>.generate(100, (int index) => DateTime.now().year - index);
-  final List<String> _months = List<String>.generate(12, (int index) => (index + 1).toString().padLeft(2, '0'));
-
-  final List<String> _days = List<String>.generate(31, (int index) => (index + 1).toString().padLeft(2, '0'));
+  final List<int> _months = List<int>.generate(12, (int index) => index + 1);
+  final List<int> _days = List<int>.generate(31, (int index) => index + 1);
 
   ///vars that save date selection
   int? _selectedYear;
-  String? _selectedMonth;
-  String? _selectedDay;
+  int? _selectedMonth;
+  int? _selectedDay;
+  late String username;
+  late String email;
+  late String password;
+  late DateTime dateOfBirth;
+
+  static Future<User?>CreateUserWithEmailAndPassword({required String email, required String password ,required BuildContext context  }) async{
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    User? user;
+    try{
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(email: email, password: password);
+      user =userCredential.user;
+
+    }  on FirebaseAuthException catch(e){
+      if(e.code =="user-not-found"){
+        print("No user with that email");
+      }
+    }
+    return user;
+  }
+
 
   ///flag for date validation
   bool check = true;
@@ -42,43 +64,38 @@ class _Signup extends State<Signup> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
-
-  ///adds users to database
-  void addDataToFirestore() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-
-      ///create a user with email and password
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-
-      ///user created successfully, now add data to Firestore
-      CollectionReference users = FirebaseFirestore.instance.collection('Users');
-
-      Map<String, dynamic> userData = {
-        'date_of_birth': getDate(),
-        'levels': 0,
-        'total_score': 0,
-        'user_email': emailController.text,
-        'user_name': nameController.text,
-        'user_password': passwordController.text,
-        'user_username': usernameController.text,
-      };
-
-      await users.doc(userCredential.user!.uid).set(userData);
-  }
+  //final TextEditingController dateController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   ///runs when signup button pressed
   Future<void> _submit() async {
     if (_formKey.currentState!.validate() && check) {
       ///write to database
-      addDataToFirestore();
+      User? user = await CreateUserWithEmailAndPassword(email: emailController.text, password: passwordController.text, context: context);
+      // Add data to Firestore collection
+      void addDataToFirestore() async {
+        // Create a reference to the Firestore database and the collection you want to add data to
+        CollectionReference users = FirebaseFirestore.instance.collection('Users');
 
+        // Create a Map object containing the data you want to add
+        Map<String, dynamic> userData = {
+          'username': usernameController.text,
+          'email': emailController.text,
+          'QuizesTaken': 0,
+          //'dateofbirth': dateController.text,
+          // Add other fields here
+        };
+
+        // Use the add() method to add the Map object to the collection
+        try {
+          await users.add(userData);
+          print('Data added successfully!');
+        } catch (error) {
+          print('Error adding data: $error');
+        }
+      }
       _showDialog("Account created");
-
       ///go to welcome page
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> menu()));
     }
@@ -108,9 +125,9 @@ class _Signup extends State<Signup> {
     return confirmPasswordController.text;
   }
 
-  DateTime getDate() {
-    String sdate = "${_selectedYear!}-${_selectedMonth!}-${_selectedDay!}";
-    DateTime date =DateTime.parse(sdate);
+  String getDate() {
+    String date;
+    date = "${_selectedDay!}/${_selectedMonth!}/${_selectedYear!}";
     return date;
   }
 
@@ -120,7 +137,7 @@ class _Signup extends State<Signup> {
         appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
         leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: Icon(Icons.arrow_back),
     onPressed: () {
     Navigator.pop(context);
     },
@@ -319,38 +336,38 @@ class _Signup extends State<Signup> {
                               children: <Widget>[
                                 const SizedBox(width: 16.0),
                                 Expanded(
-                                  child: DropdownButton<String>(
+                                  child: DropdownButton<int>(
                                     value: _selectedDay,
-                                    onChanged: (String? day) {
+                                    onChanged: (int? day) {
                                       setState(() {
                                         _selectedDay = day;
                                       });
                                     },
                                     hint: const Text('Day'),
                                     items: _days
-                                        .map<DropdownMenuItem<String>>((String day) {
-                                      return DropdownMenuItem<String>(
+                                        .map<DropdownMenuItem<int>>((int day) {
+                                      return DropdownMenuItem<int>(
                                         value: day,
-                                        child: Text(day),
+                                        child: Text(day.toString()),
                                       );
                                     }).toList(),
                                   ),
                                 ),
                                 const SizedBox(width: 16.0),
                                 Expanded(
-                                  child: DropdownButton<String>(
+                                  child: DropdownButton<int>(
                                     value: _selectedMonth,
-                                    onChanged: (String? month) {
+                                    onChanged: (int? month) {
                                       setState(() {
                                         _selectedMonth = month;
                                       });
                                     },
                                     hint: const Text('Month'),
-                                    items: _months.map<DropdownMenuItem<String>>(
-                                        (String month) {
-                                      return DropdownMenuItem<String>(
+                                    items: _months.map<DropdownMenuItem<int>>(
+                                        (int month) {
+                                      return DropdownMenuItem<int>(
                                         value: month,
-                                        child: Text(month),
+                                        child: Text(month.toString()),
                                       );
                                     }).toList(),
                                   ),
@@ -383,53 +400,55 @@ class _Signup extends State<Signup> {
 
                     ///Creates sign up button
 
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            ColourPallete.gradient1,
-                            ColourPallete.gradient2,
-                          ],
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
+                    Container(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              ColourPallete.gradient1,
+                              ColourPallete.gradient2,
+                            ],
+                            begin: Alignment.bottomLeft,
+                            end: Alignment.topRight,
+                          ),
+                          borderRadius: BorderRadius.circular(7),
                         ),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      ///Signup button
-                      child: ElevatedButton(
-                        onPressed: () {
+                        ///Signup button
+                        child: ElevatedButton(
+                          onPressed: () {
 
 
-                          // Signup button callback
+                            // Signup button callback
 
-                          /// Check that date is valid
-                          if (_validateDay(_selectedDay) != null ||
-                              _validateMonth(_selectedMonth) != null ||
-                              _validateYear(_selectedYear) != null) {
-                            _showDialog("Enter valid date of birth");
+                            /// Check that date is valid
+                            if (_validateDay(_selectedDay) != null ||
+                                _validateMonth(_selectedMonth) != null ||
+                                _validateYear(_selectedYear) != null) {
+                              _showDialog("Enter valid date of birth");
 
-                            setState(() {
-                              check = false;
-                              // Flag that works with rest of verification checks
-                            });
-                          } else {
-                            check = true;
-                          }
+                              setState(() {
+                                check = false;
+                                // Flag that works with rest of verification checks
+                              });
+                            } else {
+                              check = true;
+                            }
 
-                          ///Goes to _submit if date is  valid
-                          ///Rest of validation happens in submit
-                          print(getDate());
-                          _submit();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(395, 55), backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                        ),
-                        child: const Text(
-                          'Signup',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 17,
+                            ///Goes to _submit if date is  valid
+                            ///Rest of validation happens in submit
+                            _submit();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: const Size(395, 55),
+                            primary: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                          ),
+                          child: const Text(
+                            'Signup',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 17,
+                            ),
                           ),
                         ),
                       ),
@@ -551,14 +570,14 @@ class _Signup extends State<Signup> {
     return null;
   }
 
-  String? _validateMonth(String? value) {
+  String? _validateMonth(int? value) {
     if (value == null) {
       return 'Please select a month';
     }
     return null;
   }
 
-  String? _validateDay(String? value) {
+  String? _validateDay(int? value) {
     if (value == null) {
       return 'Please select a day';
     }
