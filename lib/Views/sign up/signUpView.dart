@@ -7,9 +7,7 @@ import 'package:quiz_website/ColourPallete.dart';
 import '../../menu.dart';
 import '../Login/login_view.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-
-
+//final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class Signup extends StatefulWidget {
 
@@ -26,35 +24,15 @@ class _Signup extends State<Signup> {
 
   ///values to populate date dropdown
   final List<int> _years =
-      List<int>.generate(100, (int index) => DateTime.now().year - index);
-  final List<int> _months = List<int>.generate(12, (int index) => index + 1);
-  final List<int> _days = List<int>.generate(31, (int index) => index + 1);
+  List<int>.generate(100, (int index) => DateTime.now().year - index);
+  final List<String> _months = List<String>.generate(12, (int index) => (index + 1).toString().padLeft(2, '0'));
+
+  final List<String> _days = List<String>.generate(31, (int index) => (index + 1).toString().padLeft(2, '0'));
 
   ///vars that save date selection
   int? _selectedYear;
-  int? _selectedMonth;
-  int? _selectedDay;
-  late String username;
-  late String email;
-  late String password;
-  late DateTime dateOfBirth;
-
-  static Future<User?>CreateUserWithEmailAndPassword({required String email, required String password ,required BuildContext context  }) async{
-    FirebaseAuth auth = FirebaseAuth.instance;
-
-    User? user;
-    try{
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(email: email, password: password);
-      user =userCredential.user;
-
-    }  on FirebaseAuthException catch(e){
-      if(e.code =="user-not-found"){
-        print("No user with that email");
-      }
-    }
-    return user;
-  }
-
+  String? _selectedMonth;
+  String? _selectedDay;
 
   ///flag for date validation
   bool check = true;
@@ -64,42 +42,47 @@ class _Signup extends State<Signup> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  //final TextEditingController dateController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  ///adds users to database
+  void addDataToFirestore() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    ///create a user with email and password
+    UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+
+    ///user created successfully, now add data to Firestore
+    CollectionReference users = FirebaseFirestore.instance.collection('Users');
+
+    Map<String, dynamic> userData = {
+      'date_of_birth': getDate(),
+      'levels': 0,
+      'total_score': 0,
+      'user_email': emailController.text,
+      'user_name': nameController.text,
+      'user_password': passwordController.text,
+      'user_username': usernameController.text,
+    };
+
+    await users.doc(userCredential.user!.uid).set(userData);
+  }
 
   ///runs when signup button pressed
   Future<void> _submit() async {
     if (_formKey.currentState!.validate() && check) {
       ///write to database
-      User? user = await CreateUserWithEmailAndPassword(email: emailController.text, password: passwordController.text, context: context);
-      // Add data to Firestore collection
-      void addDataToFirestore() async {
-        // Create a reference to the Firestore database and the collection you want to add data to
-        CollectionReference users = FirebaseFirestore.instance.collection('Users');
+      addDataToFirestore();
 
-        // Create a Map object containing the data you want to add
-        Map<String, dynamic> userData = {
-          'username': usernameController.text,
-          'email': emailController.text,
-          'QuizesTaken': 0,
-          //'dateofbirth': dateController.text,
-          // Add other fields here
-        };
-
-        // Use the add() method to add the Map object to the collection
-        try {
-          await users.add(userData);
-          print('Data added successfully!');
-        } catch (error) {
-          print('Error adding data: $error');
-        }
-      }
       _showDialog("Account created");
+
       ///go to welcome page
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> menu()));
     }
-      // else {
+    // else {
     //   print('Validation failed');
     // }
   }
@@ -125,9 +108,9 @@ class _Signup extends State<Signup> {
     return confirmPasswordController.text;
   }
 
-  String getDate() {
-    String date;
-    date = "${_selectedDay!}/${_selectedMonth!}/${_selectedYear!}";
+  DateTime getDate() {
+    String sdate = "${_selectedYear!}-${_selectedMonth!}-${_selectedDay!}";
+    DateTime date =DateTime.parse(sdate);
     return date;
   }
 
@@ -135,357 +118,354 @@ class _Signup extends State<Signup> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-        backgroundColor: ColourPallete.backgroundColor,
-        leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-    onPressed: () {
-    Navigator.pop(context);
-    },
-    ),
-    ),
-    body: Material(
-        color: ColourPallete.backgroundColor,
-        child: Center(
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(width: 150),
-                    const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 50,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: SizedBox(
-                        width: 400,
-
-                        ///sets up text boxes
-                        ///Username box
-                        child: TextFormField(
-                          controller: usernameController,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.all(27),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: ColourPallete.borderColor,
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: ColourPallete.gradient2,
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            hintText: 'Enter Username',
-                          ),
-                          keyboardType: TextInputType.text,
-                          validator: validateUsername,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: SizedBox(
-                        width: 400,
-
-                        ///Name box
-                        child: TextFormField(
-                          controller: nameController,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.all(27),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: ColourPallete.borderColor,
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: ColourPallete.gradient2,
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            hintText: 'Enter Name',
-                          ),
-                          keyboardType: TextInputType.text,
-                          validator: validateName,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: SizedBox(
-                        width: 400,
-                        ///Email box
-                        child: TextFormField(
-                          controller: emailController,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.all(27),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: ColourPallete.borderColor,
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: ColourPallete.gradient2,
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            hintText: 'Enter Email',
-                          ),
-                          keyboardType: TextInputType.emailAddress,
-                          validator: validateEmail,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      //elevation: 3,
-                      child: SizedBox(
-                        width: 400,
-                        ///Password box
-                        child: TextFormField(
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.all(27),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: ColourPallete.borderColor,
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: ColourPallete.gradient2,
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            hintText: 'Enter Password',
-                          ),
-                          keyboardType: TextInputType.text,
-                          obscureText: true,
-                          validator: validatePassword,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: SizedBox(
-                        width: 400,
-                        child: SizedBox(
-                          width: 400,
-                          ///Confirm password box
-                          child: TextFormField(
-                            controller: confirmPasswordController,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.all(27),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.borderColor,
-                                  width: 3,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.gradient2,
-                                  width: 3,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              hintText: 'Confirm Password',
-                            ),
-                            keyboardType: TextInputType.text,
-                            obscureText: true,
-                            validator: validateConfirm,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    ///Date selector
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Enter your date of birth',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                          SizedBox(
-                            width: 400,
-                            child: Row(
-                              children: <Widget>[
-                                const SizedBox(width: 16.0),
-                                Expanded(
-                                  child: DropdownButton<int>(
-                                    value: _selectedDay,
-                                    onChanged: (int? day) {
-                                      setState(() {
-                                        _selectedDay = day;
-                                      });
-                                    },
-                                    hint: const Text('Day'),
-                                    items: _days
-                                        .map<DropdownMenuItem<int>>((int day) {
-                                      return DropdownMenuItem<int>(
-                                        value: day,
-                                        child: Text(day.toString()),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                                const SizedBox(width: 16.0),
-                                Expanded(
-                                  child: DropdownButton<int>(
-                                    value: _selectedMonth,
-                                    onChanged: (int? month) {
-                                      setState(() {
-                                        _selectedMonth = month;
-                                      });
-                                    },
-                                    hint: const Text('Month'),
-                                    items: _months.map<DropdownMenuItem<int>>(
-                                        (int month) {
-                                      return DropdownMenuItem<int>(
-                                        value: month,
-                                        child: Text(month.toString()),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                                const SizedBox(width: 16.0),
-                                Expanded(
-                                  child: DropdownButton<int>(
-                                    value: _selectedYear,
-                                    onChanged: (int? year) {
-                                      setState(() {
-                                        _selectedYear = year;
-                                      });
-                                    },
-                                    hint: const Text('Year'),
-                                    items: _years
-                                        .map<DropdownMenuItem<int>>((int year) {
-                                      return DropdownMenuItem<int>(
-                                        value: year,
-                                        child: Text(year.toString()),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    ///Creates sign up button
-
-                    Container(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              ColourPallete.gradient1,
-                              ColourPallete.gradient2,
-                            ],
-                            begin: Alignment.bottomLeft,
-                            end: Alignment.topRight,
-                          ),
-                          borderRadius: BorderRadius.circular(7),
-                        ),
-                        ///Signup button
-                        child: ElevatedButton(
-                          onPressed: () {
-
-
-                            // Signup button callback
-
-                            /// Check that date is valid
-                            if (_validateDay(_selectedDay) != null ||
-                                _validateMonth(_selectedMonth) != null ||
-                                _validateYear(_selectedYear) != null) {
-                              _showDialog("Enter valid date of birth");
-
-                              setState(() {
-                                check = false;
-                                // Flag that works with rest of verification checks
-                              });
-                            } else {
-                              check = true;
-                            }
-
-                            ///Goes to _submit if date is  valid
-                            ///Rest of validation happens in submit
-                            _submit();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            fixedSize: const Size(395, 55),
-                            primary: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                          ),
-                          child: const Text(
-                            'Signup',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    ///text under button and button back to login screen
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+          backgroundColor: ColourPallete.backgroundColor,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: Material(
+            color: ColourPallete.backgroundColor,
+            child: Center(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Center(
+                    child: Column(
                       children: <Widget>[
-                        const Text('Already have an account?'),
-                        TextButton(
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(
-                                fontSize: 17, color: ColourPallete.gradient2),
+                        const SizedBox(width: 150),
+                        const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 50,
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                builder: (context) => const LoginPage()),
-                            );
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: SizedBox(
+                            width: 400,
 
-                            /// back to login screen
-                          },
+                            ///sets up text boxes
+                            ///Username box
+                            child: TextFormField(
+                              controller: usernameController,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(27),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: ColourPallete.borderColor,
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: ColourPallete.gradient2,
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                hintText: 'Enter Username',
+                              ),
+                              keyboardType: TextInputType.text,
+                              validator: validateUsername,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: SizedBox(
+                            width: 400,
+
+                            ///Name box
+                            child: TextFormField(
+                              controller: nameController,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(27),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: ColourPallete.borderColor,
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: ColourPallete.gradient2,
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                hintText: 'Enter Name',
+                              ),
+                              keyboardType: TextInputType.text,
+                              validator: validateName,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: SizedBox(
+                            width: 400,
+                            ///Email box
+                            child: TextFormField(
+                              controller: emailController,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(27),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: ColourPallete.borderColor,
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: ColourPallete.gradient2,
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                hintText: 'Enter Email',
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                              validator: validateEmail,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          //elevation: 3,
+                          child: SizedBox(
+                            width: 400,
+                            ///Password box
+                            child: TextFormField(
+                              controller: passwordController,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(27),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: ColourPallete.borderColor,
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: ColourPallete.gradient2,
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                hintText: 'Enter Password',
+                              ),
+                              keyboardType: TextInputType.text,
+                              obscureText: true,
+                              validator: validatePassword,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: SizedBox(
+                            width: 400,
+                            child: SizedBox(
+                              width: 400,
+                              ///Confirm password box
+                              child: TextFormField(
+                                controller: confirmPasswordController,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.all(27),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.borderColor,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.gradient2,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  hintText: 'Confirm Password',
+                                ),
+                                keyboardType: TextInputType.text,
+                                obscureText: true,
+                                validator: validateConfirm,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        ///Date selector
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Enter your date of birth',
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                              SizedBox(
+                                width: 400,
+                                child: Row(
+                                  children: <Widget>[
+                                    const SizedBox(width: 16.0),
+                                    Expanded(
+                                      child: DropdownButton<String>(
+                                        value: _selectedDay,
+                                        onChanged: (String? day) {
+                                          setState(() {
+                                            _selectedDay = day;
+                                          });
+                                        },
+                                        hint: const Text('Day'),
+                                        items: _days
+                                            .map<DropdownMenuItem<String>>((String day) {
+                                          return DropdownMenuItem<String>(
+                                            value: day,
+                                            child: Text(day),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16.0),
+                                    Expanded(
+                                      child: DropdownButton<String>(
+                                        value: _selectedMonth,
+                                        onChanged: (String? month) {
+                                          setState(() {
+                                            _selectedMonth = month;
+                                          });
+                                        },
+                                        hint: const Text('Month'),
+                                        items: _months.map<DropdownMenuItem<String>>(
+                                                (String month) {
+                                              return DropdownMenuItem<String>(
+                                                value: month,
+                                                child: Text(month),
+                                              );
+                                            }).toList(),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16.0),
+                                    Expanded(
+                                      child: DropdownButton<int>(
+                                        value: _selectedYear,
+                                        onChanged: (int? year) {
+                                          setState(() {
+                                            _selectedYear = year;
+                                          });
+                                        },
+                                        hint: const Text('Year'),
+                                        items: _years
+                                            .map<DropdownMenuItem<int>>((int year) {
+                                          return DropdownMenuItem<int>(
+                                            value: year,
+                                            child: Text(year.toString()),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        ///Creates sign up button
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                ColourPallete.gradient1,
+                                ColourPallete.gradient2,
+                              ],
+                              begin: Alignment.bottomLeft,
+                              end: Alignment.topRight,
+                            ),
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          ///Signup button
+                          child: ElevatedButton(
+                            onPressed: () {
+
+
+                              // Signup button callback
+
+                              /// Check that date is valid
+                              if (_validateDay(_selectedDay) != null ||
+                                  _validateMonth(_selectedMonth) != null ||
+                                  _validateYear(_selectedYear) != null) {
+                                _showDialog("Enter valid date of birth");
+
+                                setState(() {
+                                  check = false;
+                                  // Flag that works with rest of verification checks
+                                });
+                              } else {
+                                check = true;
+                              }
+
+                              ///Goes to _submit if date is  valid
+                              ///Rest of validation happens in submit
+                              print(getDate());
+                              _submit();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(395, 55), backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                            ),
+                            child: const Text(
+                              'Signup',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        ///text under button and button back to login screen
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            const Text('Already have an account?'),
+                            TextButton(
+                              child: const Text(
+                                'Login',
+                                style: TextStyle(
+                                    fontSize: 17, color: ColourPallete.gradient2),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginPage()),
+                                );
+
+                                /// back to login screen
+                              },
+                            )
+                          ],
                         )
                       ],
-                    )
-                  ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        )));
+            )));
   }
 
   void _showDialog(String message) {
@@ -527,7 +507,7 @@ class _Signup extends State<Signup> {
       return 'Username must be longer than 3 characters';
     } else
 
-    ///check if username exists
+      ///check if username exists
     {
       return null;
     }
@@ -570,14 +550,14 @@ class _Signup extends State<Signup> {
     return null;
   }
 
-  String? _validateMonth(int? value) {
+  String? _validateMonth(String? value) {
     if (value == null) {
       return 'Please select a month';
     }
     return null;
   }
 
-  String? _validateDay(int? value) {
+  String? _validateDay(String? value) {
     if (value == null) {
       return 'Please select a day';
     }
