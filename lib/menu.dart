@@ -19,9 +19,11 @@ class menu extends StatelessWidget {
       ),
       backgroundColor: ColourPallete.backgroundColor,
      body: Material(
+       color: ColourPallete.backgroundColor,
       child: Center(
         child: Column(
         children: const <Widget>[
+          SizedBox(height: 50),
           SizedBox(width: 150),
           Text(
           'Dashboard',
