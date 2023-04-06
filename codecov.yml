@@ -1,16 +1,13 @@
 codecov:
-  CODECOV_TOKEN: ad91dc9f-f0c6-464c-bd8c-09369006c858 
-  require_ci_to_pass: yes
-  - name: Upload coverage reports to Codecov
-  uses: codecov/codecov-action@v3
-  with:
-    token: ${{ secrets.CODECOV_TOKEN }}
- coverage:
+  CODECOV_TOKEN: ad91dc9f-f0c6-464c-bd8c-09369006c858
+
+require_ci_to_pass: yes
+
+coverage:
   status:
     project:
       default:
         informational: true
     patch:
-       default:
+      default:
         informational: true
-    
