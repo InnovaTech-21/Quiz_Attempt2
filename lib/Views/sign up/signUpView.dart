@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
+import 'package:quiz_website/Views/home/homePage.dart';
 
 
 import '../../menu.dart';
@@ -140,7 +141,7 @@ class _Signup extends State<Signup> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
             },
           ),
         ),

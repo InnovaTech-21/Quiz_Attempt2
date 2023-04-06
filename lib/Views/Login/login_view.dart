@@ -3,6 +3,7 @@ import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:quiz_website/Views/home/homePage.dart';
 
 import '../../menu.dart';
 
@@ -79,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
         leading: IconButton(
         icon: Icon(Icons.arrow_back),
     onPressed: () {
-    Navigator.pop(context);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
     },
     ),
     ),
