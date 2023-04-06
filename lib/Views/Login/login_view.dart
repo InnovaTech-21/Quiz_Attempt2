@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
         ///goes to sign in screen
         context,
         MaterialPageRoute(
-            builder: (context) =>  HomePage()),
+            builder: (context) =>  menu()),
       );
     },
     ),
