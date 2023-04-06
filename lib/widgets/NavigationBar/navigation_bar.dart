@@ -11,6 +11,9 @@ class NavigationBar extends StatelessWidget {
       height: 150,
       child: Row(
         children: <Widget>[
+          const SizedBox(
+            width: 60,
+          ),
           SizedBox(
             height: 150,
             width: 150,
@@ -27,6 +30,9 @@ class NavigationBar extends StatelessWidget {
           ),
           const NavItem(
             title: 'Make a Quiz',
+          ),
+          const SizedBox(
+            width: 60,
           ),
         ],
       ),
