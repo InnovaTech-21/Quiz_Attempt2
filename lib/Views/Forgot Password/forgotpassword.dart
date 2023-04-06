@@ -36,7 +36,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             icon: Icon(Icons.arrow_back),
 
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+
+                    builder: (context) => const LoginPage()),
+              );
             },
           ),
         ),

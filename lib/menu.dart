@@ -24,7 +24,7 @@ class menu extends StatelessWidget {
         children: const <Widget>[
           SizedBox(width: 150),
           Text(
-          'Dashboard',
+          'Welcome User',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 50,

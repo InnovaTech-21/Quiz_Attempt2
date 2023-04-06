@@ -22,10 +22,16 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   bool passwordVisible = false;
   User? user;
+
+  void clearInputs(){
+    usernameController.clear();
+    passwordController.clear();
+  }
   void validateAndSave() {
     final FormState? form = _formKey.currentState;
     if (form!.validate()) {
       _showDialog('Login Successful');
+      clearInputs();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> menu()));
       //print('All fields entered, please check corresponding details');
     }
@@ -188,6 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 onPressed: () {
                                   ///shows message
+                                  clearInputs();
                                   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> ForgotPasswordPage()));
                                   //_showDialog('Opens forgot password page');
                                   //GO TO FORGOT PASSWORD PAGE
@@ -248,6 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                                       style: TextStyle(fontSize: 15),
                                     ),
                                     onPressed: () {
+                                      clearInputs();
                                       Navigator.push(
                                         ///goes to sign in screen
                                         context,
