@@ -3,9 +3,7 @@ import 'package:quiz_website/Views/Login/login_view.dart';
 import 'package:quiz_website/Views/sign%20up/signUpView.dart';
 import 'package:quiz_website/widgets/NavigationBar/navigation_bar.dart' as nb;
 import 'package:quiz_website/ColourPallete.dart';
-
 import 'package:quiz_website/widgets/centeredView/centeredView.dart';
-
 import 'package:quiz_website/widgets/welcome/welcome.dart';
 
 

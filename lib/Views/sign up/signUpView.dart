@@ -141,7 +141,12 @@ class _Signup extends State<Signup> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
+              Navigator.push(
+                ///goes to sign in screen
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>  HomePage()),
+              );
             },
           ),
         ),

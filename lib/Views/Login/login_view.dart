@@ -80,7 +80,12 @@ class _LoginPageState extends State<LoginPage> {
         leading: IconButton(
         icon: Icon(Icons.arrow_back),
     onPressed: () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
+      Navigator.push(
+        ///goes to sign in screen
+        context,
+        MaterialPageRoute(
+            builder: (context) =>  HomePage()),
+      );
     },
     ),
     ),
@@ -256,7 +261,7 @@ class _LoginPageState extends State<LoginPage> {
                                       style: TextStyle(fontSize: 15),
                                     ),
                                     onPressed: () {
-                                      clearInputs();
+                                      //clearInputs();
                                       Navigator.push(
                                         ///goes to sign in screen
                                         context,
