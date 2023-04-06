@@ -9,8 +9,6 @@ import '../../main.dart';
 import '../../menu.dart';
 
 
-
-
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class LoginPage extends StatefulWidget {
