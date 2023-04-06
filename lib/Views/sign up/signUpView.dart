@@ -145,7 +145,7 @@ class _Signup extends State<Signup> {
                 ///goes to sign in screen
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>  HomePage()),
+                    builder: (context) =>  menu()),
               );
             },
           ),
