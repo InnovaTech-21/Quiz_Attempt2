@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import 'package:quiz_website/Views/home/homePage.dart';
 
 
+
+import '../../main.dart';
 import '../../menu.dart';
 import '../Login/login_view.dart';
 
@@ -145,7 +146,7 @@ class _Signup extends State<Signup> {
                 ///goes to sign in screen
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>  HomePage()),
+                    builder: (context) =>  MyApp()),
               );
             },
           ),

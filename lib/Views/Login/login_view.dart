@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
+
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:quiz_website/Views/home/homePage.dart';
+import '../../main.dart';
 
 import '../../menu.dart';
+
+
 
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -79,14 +82,14 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: ColourPallete.backgroundColor,
         leading: IconButton(
         icon: Icon(Icons.arrow_back),
-    onPressed: () {
-      Navigator.push(
-        ///goes to sign in screen
-        context,
-        MaterialPageRoute(
-            builder: (context) =>  HomePage()),
-      );
-    },
+          onPressed: () {
+            Navigator.push(
+              ///goes to sign in screen
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>  MyApp()),
+            );
+          },
     ),
     ),
     body: Material(
