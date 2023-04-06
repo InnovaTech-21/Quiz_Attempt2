@@ -436,7 +436,7 @@ class _Signup extends State<Signup> {
 
                               ///Goes to _submit if date is  valid
                               ///Rest of validation happens in submit
-                              print(getDate());
+
                               _submit();
                             },
                             style: ElevatedButton.styleFrom(
