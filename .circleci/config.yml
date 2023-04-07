@@ -15,6 +15,8 @@ jobs:
       - run: flutter pub get
       - run: flutter build web
       - run: flutter build apk --release
+         [![<ORG_NAME>](https://circleci.com/<VCS>/<ORG_NAME>/<PROJECT_NAME>.svg?style=svg)](<LINK>)
+
       - store_artifacts:
             path: build/app/outputs/flutter-apk/app-release.apk
       - store_test_results:
