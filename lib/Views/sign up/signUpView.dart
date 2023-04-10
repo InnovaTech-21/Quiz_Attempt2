@@ -71,7 +71,7 @@ class _Signup extends State<Signup> {
     };
 
     await users.doc(userCredential.user!.uid).set(userData);
-
+    clearInputs();
 
   }
 
@@ -98,7 +98,6 @@ class _Signup extends State<Signup> {
 
       ///go to welcome page
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> menu()));
-      clearInputs();
 
     }
     // else {
