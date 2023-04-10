@@ -54,8 +54,8 @@ class _Signup extends State<Signup> {
 
     ///create a user with email and password
     UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-      email: emailController.text,
-      password: passwordController.text,
+      email: getEmail(),
+      password:getPassword(),
     );
 
     ///user created successfully, now add data to Firestore
@@ -65,9 +65,9 @@ class _Signup extends State<Signup> {
       'date_of_birth': getDate(),
       'levels': 0,
       'total_score': 0,
-      'user_email': emailController.text,
-      'user_name': nameController.text,
-      'user_username': usernameController.text,
+      'user_email': getEmail(),
+      'user_name': getUsername(),
+      'user_username': getName(),
     };
 
     await users.doc(userCredential.user!.uid).set(userData);
