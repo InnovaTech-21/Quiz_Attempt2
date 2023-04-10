@@ -58,7 +58,6 @@ class _Signup extends State<Signup> {
       password: passwordController.text,
     );
 
-
     ///user created successfully, now add data to Firestore
     CollectionReference users = FirebaseFirestore.instance.collection('Users');
 
@@ -68,11 +67,11 @@ class _Signup extends State<Signup> {
       'total_score': 0,
       'user_email': emailController.text,
       'user_name': nameController.text,
-      'user_password': passwordController.text,
       'user_username': usernameController.text,
     };
 
     await users.doc(userCredential.user!.uid).set(userData);
+    clearInputs();
   }
 
   void clearInputs(){
@@ -98,7 +97,7 @@ class _Signup extends State<Signup> {
 
       ///go to welcome page
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> menu()));
-      clearInputs();
+
 
 
     }
@@ -130,6 +129,7 @@ class _Signup extends State<Signup> {
 
   DateTime getDate() {
     String sdate = "${_selectedYear!}-${_selectedMonth!}-${_selectedDay!}";
+    //String sdate = "${_selectedDay!}-${_selectedMonth!}-${_selectedYear!}";
     DateTime date =DateTime.parse(sdate);
     return date;
   }
