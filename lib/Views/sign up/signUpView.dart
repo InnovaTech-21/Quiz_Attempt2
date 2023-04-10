@@ -59,7 +59,7 @@ class _Signup extends State<Signup> {
     CollectionReference users = FirebaseFirestore.instance.collection('Users');
 
     Map<String, dynamic> userData = {
-      'date_of_birth': getDate(),
+     'date_of_birth': getDate().toString(),
       'levels': 0,
       'total_score': 0,
       'user_email': emailController.text,
