@@ -38,7 +38,6 @@ class _LoginPageState extends State<LoginPage> {
       //print('All fields entered, please check corresponding details');
     }
   }
-
   // int _success = 1;
   // String _userEmail = "";
 
@@ -68,6 +67,9 @@ class _LoginPageState extends State<LoginPage> {
     }  on FirebaseAuthException catch(e){
       if(e.code =="user-not-found"){
         print("No user with that email");
+      }
+      else{
+
       }
     }
     return user;

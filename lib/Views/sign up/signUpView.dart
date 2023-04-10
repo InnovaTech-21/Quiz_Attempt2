@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 
 
-
-import '../../main.dart';
 import '../../menu.dart';
 import '../Login/login_view.dart';
 
@@ -47,7 +45,6 @@ class _Signup extends State<Signup> {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
-
   ///adds users to database
   void addDataToFirestore() async {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -57,7 +54,6 @@ class _Signup extends State<Signup> {
       email: emailController.text,
       password: passwordController.text,
     );
-
 
     ///user created successfully, now add data to Firestore
     CollectionReference users = FirebaseFirestore.instance.collection('Users');
@@ -75,19 +71,6 @@ class _Signup extends State<Signup> {
     await users.doc(userCredential.user!.uid).set(userData);
   }
 
-  void clearInputs(){
-    usernameController.clear();
-    nameController.clear();
-    emailController.clear();
-    passwordController.clear();
-    confirmPasswordController.clear();
-    setState(() {
-      _selectedDay=null;
-      _selectedMonth=null;
-      _selectedYear=null;
-    });
-
-  }
   ///runs when signup button pressed
   Future<void> _submit() async {
     if (_formKey.currentState!.validate() && check) {
@@ -97,10 +80,7 @@ class _Signup extends State<Signup> {
       _showDialog("Account created");
 
       ///go to welcome page
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> menu()));
-      clearInputs();
-
-
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> const menu()));
     }
     // else {
     //   print('Validation failed');
@@ -142,12 +122,7 @@ class _Signup extends State<Signup> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.push(
-                ///goes to sign in screen
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>  MyApp()),
-              );
+              Navigator.pop(context);
             },
           ),
         ),
@@ -474,11 +449,9 @@ class _Signup extends State<Signup> {
                                     fontSize: 17, color: ColourPallete.gradient2),
                               ),
                               onPressed: () {
-                                clearInputs();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-
                                       builder: (context) => const LoginPage()),
                                 );
 
