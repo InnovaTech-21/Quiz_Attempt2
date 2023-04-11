@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import 'package:quiz_website/create_Quiz.dart';
+import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 
 class Menu extends StatelessWidget {
   const Menu({Key? key});
@@ -90,7 +90,7 @@ class Menu extends StatelessWidget {
                           context,
                           MaterialPageRoute(
 
-                              builder: (context) => const CreateQuiz()),
+                              builder: (context) => const CreateQuizPage()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
