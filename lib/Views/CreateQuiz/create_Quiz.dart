@@ -24,14 +24,15 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
   void addDataToFirestore() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = FirebaseAuth.instance.currentUser;
-    String nameuser ='';
+
     if(user != null){
       String uID = user.uid;
       DocumentReference userRef = FirebaseFirestore.instance.collection("Users").doc(uID);
-     // userRef.get().then((doc) => null)
       userRef.get().then((doc) {
         if (doc.exists) {
-     //     String y = doc.data()!['username'] as String ;
+          String username = "username";
+          Object? y = doc.data();
+     //     nameuser = y["username"]?.toString();
         }
         else {
           print('User Not Found');
@@ -43,7 +44,13 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       print("User Does not exsist");
     }
     ///create a user with email and password
+    String? nameuser = await getUser();
+    print (nameuser);
+    String? str;
 
+    getUser().then((result){
+      str = result;
+    });
     ///Create quizzes created successfully, now add data to Firestore
     CollectionReference users = FirebaseFirestore.instance.collection('Quizzes');
     DocumentReference docRef = users.doc();
@@ -62,6 +69,26 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     clearInputs();
 
   }
+  Future<String?> getUser() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = FirebaseAuth.instance.currentUser;
+    String? nameuser = '';
+    if (user != null) {
+      String uID = user.uid;
+      try {
+        CollectionReference users =
+        FirebaseFirestore.instance.collection('Users');
+        final snapshot = await users.doc(uID).get();
+        final data = snapshot.data() as Map<String, dynamic>;
+       // print (data['user_name']);
+        return data['user_name'];
+
+      } catch (e) {
+        return 'Error fetching user';
+      }
+    }
+  }
+
   void clearInputs() {
     quiznamecontroller.clear();
     quizcategorycontroller.clear();
@@ -79,8 +106,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     quizDescription =QuizDescr;
   }
 
-  String? getUsername() {
-    return username;
+  Future<String?> getUsername() async {
+    return await getUser();
   }
   String getQuizName() {
     return quiznamecontroller.text;
@@ -137,7 +164,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                     SizedBox(width: 150),
 
                     Text(
-                      'Create a Quiz',
+
+                      'Create a Quiz' ,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 50,

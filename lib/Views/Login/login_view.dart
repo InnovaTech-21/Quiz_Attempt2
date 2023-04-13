@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
     if (form!.validate()) {
       _showDialog('Login Successful');
       clearInputs();
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> Menu()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage()));
       //print('All fields entered, please check corresponding details');
     }
   }
