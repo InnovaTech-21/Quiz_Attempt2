@@ -80,13 +80,13 @@ class _ImageBasedState extends State<ImageBased> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          'Enter question here',
+                          'Enter quiz question here:',
                           style: const TextStyle(
                             //fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
-                        const SizedBox(height: 50),
+                        const SizedBox(height: 30),
                         TextFormField(
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(27),
@@ -104,7 +104,7 @@ class _ImageBasedState extends State<ImageBased> {
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            hintText: 'E.g. Select correct image',
+                            hintText: 'E.g. Select the Fairytale related image',
                           ),
                           keyboardType: TextInputType.text,
                           onFieldSubmitted: (value) {},
@@ -118,7 +118,7 @@ class _ImageBasedState extends State<ImageBased> {
                         
                         const SizedBox(height: 50),
                         Text(
-                          'Upload multiple choice images\n(1st image being the correct image)',
+                          'Upload images for question below\n(1st image being the correct image)',
                           style: const TextStyle(
                             //fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -138,7 +138,7 @@ class _ImageBasedState extends State<ImageBased> {
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_a_photo),
+                                        child: const Icon(Icons.add_photo_alternate),
                                       ),
                                     ),
                                     if (_imageFile1 != null)
@@ -166,7 +166,7 @@ class _ImageBasedState extends State<ImageBased> {
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_a_photo),
+                                        child: const Icon(Icons.add_photo_alternate),
                                       ),
                                     ),
                                     if (_imageFile2 != null)
@@ -194,7 +194,7 @@ class _ImageBasedState extends State<ImageBased> {
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_a_photo),
+                                        child: const Icon(Icons.add_photo_alternate),
                                       ),
                                     ),
                                     if (_imageFile3 != null)
@@ -227,7 +227,7 @@ class _ImageBasedState extends State<ImageBased> {
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_a_photo),
+                                        child: const Icon(Icons.add_photo_alternate),
                                       ),
                                     ),
                                     if (_imageFile4 != null)
@@ -255,7 +255,7 @@ class _ImageBasedState extends State<ImageBased> {
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_a_photo),
+                                        child: const Icon(Icons.add_photo_alternate),
                                       ),
                                     ),
                                     if (_imageFile5 != null)
@@ -283,7 +283,7 @@ class _ImageBasedState extends State<ImageBased> {
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_a_photo),
+                                        child: const Icon(Icons.add_photo_alternate),
                                       ),
                                     ),
                                     if (_imageFile6 != null)
@@ -303,7 +303,7 @@ class _ImageBasedState extends State<ImageBased> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 50),
                         SizedBox(
                           height: 65,
                           width: 450,
@@ -343,7 +343,9 @@ class _ImageBasedState extends State<ImageBased> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 50),
                       ],
+                      
                     ),
                   ],
                 )),

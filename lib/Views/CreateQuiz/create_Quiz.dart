@@ -154,7 +154,13 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           context,
           MaterialPageRoute(
               builder: (context) => const ShortAnswerQuestionPage()),
-        );
+        ); 
+      }else if(getQuizType()=='Image-Based'){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const ImageBased()),
+        ); 
       }else{
         _showDialog("Goes to "+getQuizType()! +" page");
       }
