@@ -1,9 +1,45 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 
-class Menu extends StatelessWidget {
-  const Menu({Key? key});
+class MenuPage extends StatefulWidget {
+  const MenuPage({Key? key}) : super(key: key);
+
+  @override
+  State<MenuPage> createState() => _MenuPageState();
+
+
+
+}
+
+
+class _MenuPageState extends State<MenuPage> {
+  String? username;
+  Future<String?> getUser() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = FirebaseAuth.instance.currentUser;
+    String? nameuser = '';
+    if (user != null) {
+      String uID = user.uid;
+      try {
+        CollectionReference users =
+        FirebaseFirestore.instance.collection('Users');
+        final snapshot = await users.doc(uID).get();
+        final data = snapshot.data() as Map<String, dynamic>;
+        // print (data['user_name']);
+        return data['user_name'];
+      } catch (e) {
+        return 'Error fetching user';
+      }
+    }
+  }
+  Future<String> getUsername() async {
+     username =  await getUser();
+    return "Welcome ";
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +63,8 @@ class Menu extends StatelessWidget {
               SizedBox(height: 50),
               SizedBox(width: 150),
               Text(
-                'Welcome User',
-                style: TextStyle(
+              "Welcome" ,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 50,
                 ),

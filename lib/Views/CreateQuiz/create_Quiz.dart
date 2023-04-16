@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import '../../ImageBased.dart';
+import 'package:quiz_website/CreateShortAns.dart';
 class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({Key? key}) : super(key: key);
 
@@ -12,27 +13,29 @@ class CreateQuizPage extends StatefulWidget {
 }
 
 class _CreateQuizPageState extends State<CreateQuizPage> {
-  final TextEditingController quiznamecontroller = TextEditingController();
-  final TextEditingController quizcategorycontroller = TextEditingController();
-  final TextEditingController quizdescriptioncontroller = TextEditingController();
-  final TextEditingController quizquestiontypecontroller= TextEditingController();
-  final TextEditingController numquestionscontroller = TextEditingController();
-  final TextEditingController usernamecontroller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  ///set text controllers
+  final TextEditingController quizNameController = TextEditingController();
+  final TextEditingController quizDescriptionController = TextEditingController();
+  final TextEditingController numQuestionsController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   String? username;
-  String? quiztype;
-  String? quizDescription;
+  String? quizType;
+  String? quizCategory;
 
+  ///add data to database
   void addDataToFirestore() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = FirebaseAuth.instance.currentUser;
-    String nameuser ='';
+
     if(user != null){
       String uID = user.uid;
       DocumentReference userRef = FirebaseFirestore.instance.collection("Users").doc(uID);
-     // userRef.get().then((doc) => null)
       userRef.get().then((doc) {
         if (doc.exists) {
-     //     String y = doc.data()!['username'] as String ;
+          String username = "username";
+          Object? y = doc.data();
+     //     nameuser = y["username"]?.toString();
         }
         else {
           print('User Not Found');
@@ -44,7 +47,13 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       print("User Does not exsist");
     }
     ///create a user with email and password
+    String? nameuser = await getUser();
+    print (nameuser);
+    String? str;
 
+    getUser().then((result){
+      str = result;
+    });
     ///Create quizzes created successfully, now add data to Firestore
     CollectionReference users = FirebaseFirestore.instance.collection('Quizzes');
     DocumentReference docRef = users.doc();
@@ -63,59 +72,96 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     clearInputs();
 
   }
-  void clearInputs() {
-    quiznamecontroller.clear();
-    quizcategorycontroller.clear();
-    quizdescriptioncontroller.clear();
-    numquestionscontroller.clear();
-    quizquestiontypecontroller.clear();
+  Future<String?> getUser() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = FirebaseAuth.instance.currentUser;
+    String? nameuser = '';
+    if (user != null) {
+      String uID = user.uid;
+      try {
+        CollectionReference users =
+        FirebaseFirestore.instance.collection('Users');
+        final snapshot = await users.doc(uID).get();
+        final data = snapshot.data() as Map<String, dynamic>;
+       // print (data['user_name']);
+        return data['user_name'];
+
+      } catch (e) {
+        return 'Error fetching user';
+      }
+    }
   }
+
+  ///clears inputs when page is left
+  void clearInputs() {
+    quizNameController.clear();
+    quizDescriptionController.clear();
+    numQuestionsController.clear();
+    setState(() {
+      quizType = null;
+      quizCategory=null;
+    });
+
+  }
+
+
+  ///gets values from text boxes
+  Future<String?> getUsername() async {
+      return await getUser();
+    }
+
   void setUsername(String username1) {
    username = username1;
   }
-  void setQuizType(String QuizType){
-    quiztype =QuizType;
-  }
-  void setQuizDes(String QuizDescr){
-    quizDescription =QuizDescr;
-  }
 
-  String? getUsername() {
-    return username;
-  }
-  String getQuizName() {
-    return quiznamecontroller.text;
-  }
 
   String? getQuizType() {
-    return quiztype;
+    return quizType;
   }
 
-  String getQuizDescription() {
-    return quizdescriptioncontroller.text;
-  }
 
   String? getQuizCategory() {
-    return quizDescription ;
+    return quizCategory ;
 
+  }
+
+  String getQuizName() {
+    return quizNameController.text;
+  }
+
+
+  String getQuizDescription() {
+    return quizDescriptionController.text;
   }
 
   int getNumberofQuestions() {
-     return int.parse(numquestionscontroller.text);
+     return int.parse(numQuestionsController.text);
   }
   Future<void> _submit() async {
-   // if (_formKey.currentState!.validate() && check) { KImmentha u need to add validation
+    if (_formKey.currentState!.validate()) {
       ///write to database
       addDataToFirestore();
 
-      _showDialog("Account created");
+
 
       ///go to welcome page
       // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> Menu())); chnage page once next page is created
       //Navigator.of(context).pushReplacement(MaterialPageRoute(
         //builder: (context) =>
             //ImageBased())); //chnage page once next page is created
+      if(getQuizType()=='Short-Answer'){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const ShortAnswerQuestionPage()),
+        );
+      }else{
+        _showDialog("Goes to "+getQuizType()! +" page");
+      }
+
+
     }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +179,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         body: Material(
           color: ColourPallete.backgroundColor,
           child: SingleChildScrollView(
+            child: Form(
+            key: _formKey,
             child: Center(
               child: Column(
                   children: <Widget>[
@@ -140,7 +188,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                     SizedBox(width: 150),
 
                     Text(
-                      'Create a Quiz',
+
+                      'Create a Quiz' ,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 50,
@@ -153,9 +202,9 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                         width: 600,
 
                         ///sets up text boxes
-                        ///Username box
+                        ///quiz name box
                         child: TextFormField(
-                          controller: quiznamecontroller,
+                          controller: quizNameController,
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(27),
                             enabledBorder: OutlineInputBorder(
@@ -174,6 +223,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                             ),
                             hintText: 'Enter Quiz Name',
                           ),
+                          validator: validateName,
                         ),
                       ),
                     ),
@@ -182,11 +232,9 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
                         width: 600,
-
-                        ///sets up text boxes
-                        ///Username box
+                        ///quiz description box
                         child: TextFormField(
-                          controller: quizdescriptioncontroller,
+                          controller: quizDescriptionController,
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(27),
                             enabledBorder: OutlineInputBorder(
@@ -205,6 +253,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                             ),
                             hintText: 'Enter Quiz Description',
                           ),
+                          validator: validateDescription,
                         ),
                       ),
                     ),
@@ -213,7 +262,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
                         width: 600,
-                        // sets up combo box
+                        /// sets up dropdown box for quiz category
                         child: DropdownButtonFormField<String>(
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(27),
@@ -233,6 +282,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                             ),
                             hintText: 'Select Quiz Category', // updated hint text for combo box
                           ),
+                          value: quizCategory,
                           items:<String>['Kdrama', 'Anime', 'Kpop']
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
@@ -244,10 +294,16 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                             );
                           }).toList(), // replace with items for the combo box
                           onChanged: (value) {
-                            // handle onChanged event for combo box
-                            setQuizType(value.toString());
+                            setState(() {
+                              quizCategory=value;
+                            });;
                           },
-                          value: null, // replace with default value for the combo box
+                          validator: (value) {
+                            if (value == null) {
+                              return "Select Quiz Category";
+                            }
+                            return null;
+                          },
                         ),
                       ),
                     ),
@@ -255,7 +311,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
                         width: 600,
-                        // sets up combo box
+                        /// sets up dropdown box for quiz type
                         child: DropdownButtonFormField<String>(
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(27),
@@ -275,21 +331,30 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                             ),
                             hintText: 'Select Quiz Type', // updated hint text for combo box
                           ),
+                          ///choices
+                          value: quizType,
                           items: <String>['Multiple Choice', 'Image-Based', 'Short-Answer']
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(
                                 value,
-                                style: TextStyle(fontSize: 17),
+                                style: const TextStyle(fontSize: 17),
                               ),
+
                             );
                           }).toList(), // replace with items for the combo box
-                          onChanged: (value) {
-                            // handle onChanged event for combo box
-                          setQuizDes(value.toString());
+                          onChanged: (value) {// handle onChanged event for combo box
+                          setState(() {
+                            quizType=value;
+                          });;
                           },
-                          value: null, // replace with default value for the combo box
+                          validator: (value) {
+                            if (value == null) {
+                              return "Select Quiz Type";
+                            }
+                            return null;
+                          },// replace with default value for the combo box
                         ),
                       ),
                     ),
@@ -298,10 +363,9 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       child: SizedBox(
                         width: 600,
 
-                        ///sets up text boxes
-                        ///Username box
+                        ///text box for number of questions
                         child: TextFormField(
-                          controller: numquestionscontroller,
+                          controller: numQuestionsController,
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(27),
                             enabledBorder: OutlineInputBorder(
@@ -320,6 +384,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                             ),
                             hintText: 'Enter Number of Questions',
                           ),
+                          validator: validateNumber,
                         ),
                       ),
                     ),
@@ -342,12 +407,6 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       ),
                       child: ElevatedButton(
                         onPressed: ()  {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //
-                          //       builder: (context) => const CreateQuiz()),
-                          // );
                           _submit();
                         },
                         style: ElevatedButton.styleFrom(
@@ -364,19 +423,45 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                         ),
                       ),
                     ),
-
-
-
-
-
-
-
-
                   ]),
             ]),
           ),
-        )));
+        )
+          )
+        )
+    );
   }
+
+  ///validators for input
+  String? validateName(String? value){
+    if(value==null || value==""){
+      return "Enter quiz name";
+    }
+    return null;
+  }
+  String? validateDescription(String? value){
+    if(value==null || value==""){
+      return "Enter quiz description";
+    }
+    return null;
+  }
+  String? validateNumber(String? value){
+    if(value==null || value.isEmpty){
+      return "Enter number of questions";
+    }else{
+      if(double.tryParse(value)==null){
+        return "Number must be a digit";
+      }else {
+        int numValue = int.parse(value);
+        if (numValue < 2 || numValue > 20) {
+          return "Number of questions should be between 2 and 20";
+        }
+      }
+    }
+    return null;
+  }
+
+
   void _showDialog(String message) {
     showDialog(
       context: context,
