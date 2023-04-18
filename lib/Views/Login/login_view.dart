@@ -230,6 +230,7 @@ class _LoginPageState extends State<LoginPage> {
                                 child: ElevatedButton(
                                   onPressed: () async {
                                     user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context);
+
                                     validateAndSave();
                                     // print(user);
                                     // if (user!=null) {
