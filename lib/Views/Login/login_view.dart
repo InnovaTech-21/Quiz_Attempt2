@@ -15,10 +15,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginPage> createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -56,9 +56,7 @@ class _LoginPageState extends State<LoginPage> {
   //   }
   // }
 
-  static Future<User?>loginUsingEmailPassword({required String email, required String password ,required BuildContext context  }) async{
-    FirebaseAuth auth = FirebaseAuth.instance;
-
+  static Future<User?>loginUsingEmailPassword({required String email, required String password ,required BuildContext context, required FirebaseAuth auth  }) async{
     User? user;
     try{
       UserCredential userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
@@ -84,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
         icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
-              ///goes to sign in screen
+              ///goes to welcome page
               context,
               MaterialPageRoute(
                   builder: (context) =>  MyApp()),
@@ -229,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context);
+                                    user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context, auth: FirebaseAuth.instance);
 
                                     validateAndSave();
                                     // print(user);

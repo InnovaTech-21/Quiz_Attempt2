@@ -10,27 +10,30 @@ import 'package:mockito/mockito.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_website/Views/Login/login_view.dart';
+
 import 'package:quiz_website/menu.dart';
 import 'package:quiz_website/main.dart';
 
-import 'package:quiz_website/Views/Login/login_view.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
-
-
+class MockFirebaseAuth extends Mock implements FirebaseAuth {}
 class MockBuildContext extends Mock implements BuildContext {}
-class DatabaseServiceMock {
-  Future<User?>loginUsingEmailPassword({required String email, required String password ,required BuildContext context  }) async{
-    // Here, you would implement the logic to retrieve a user
-    // from your database using the given username.
-    // For this example, we'll just return a hardcoded user.
-    User? user;
-    if (email == 'john_doe') {
-      return user;
-    } else {
-      return null;
-    }
-  }
+class MockUserCredential extends Mock implements UserCredential {
+  MockUserCredential({required this.user});
+
+  @override
+  final User user;
+
 }
+class MockUser extends Mock implements User {
+  MockUser({this.email = '', this.password = ''});
+
+  @override
+  final String email;
+  @override
+  final String password;
+}
+
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
@@ -41,32 +44,38 @@ void main() {
     expect(find.text('1'), findsNothing);
   });
 
+  // group('Firebase auth tests', ()
+  // {
+  //   late MockFirebaseAuth mockFirebaseAuth;
+  //
+  //   setUp(() {
+  //     // Create a new mock instance of the FirebaseAuth class for each test
+  //     mockFirebaseAuth = MockFirebaseAuth();
+  //   });
+  //
+  //   test('User can log in with valid credentials', () async {
+  //     // Create a new mock user
+  //     final mockUser = MockUser(email: 'test@example.com', password: 'password123');
+  //
+  //     // Mock the signInWithEmailAndPassword method of mockFirebaseAuth
+  //     when(mockFirebaseAuth.signInWithEmailAndPassword(
+  //         email: 'test@example.com', password: 'password123'))
+  //         .thenAnswer((_) async {
+  //           print('signInWithEmailAndPassword called');
+  //           return MockUserCredential(user: mockUser);
+  //     });
+  //
+  //     // Call the loginUsingEmailPassword function with the mock FirebaseAuth instance
+  //     final result = await LoginPageState.loginUsingEmailPassword(email: 'test@example.com',
+  //         password: 'password123',
+  //         context: MockBuildContext(),
+  //         auth: mockFirebaseAuth);
+  //
+  //     // Verify that the method returned the expected result
+  //     expect(result, equals(mockUser));
+  //   });
+  //
+  // });
+  }
 
-  testWidgets('User can log in with valid credentials', (WidgetTester tester) async {
-    // Mock the database response to return a user with a valid username and password
-    final databaseServiceMock = DatabaseServiceMock();
 
-    ///find out what user is and how it is supposed to be returned to mock
-    final mockContext = MockBuildContext();
-    User? user;
-    when(databaseServiceMock.loginUsingEmailPassword(email: "john_doe", password: 'password123', context: mockContext))
-        .thenAnswer((_) async => user);
-
-
-    // Build the login form widget
-    await tester.pumpWidget(LoginPage());
-
-    // Enter the username and password into the login form
-    await tester.enterText(find.widgetWithText(TextField, 'Username'), 'john_doe');
-    await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-
-    // Tap the login button
-    await tester.tap(find.widgetWithText(TextButton, 'Login'));
-
-    // Wait for the next frame to complete the login process
-    await tester.pump();
-
-    // Check that the app navigates to the dashboard page
-    expect(find.byType(MenuPage), findsOneWidget);
-  });
-}

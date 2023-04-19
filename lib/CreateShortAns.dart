@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-
+import '../../menu.dart';
 
 class ShortAnswerQuestionPage extends StatefulWidget {
   const ShortAnswerQuestionPage({Key? key}) : super(key: key);
@@ -27,14 +27,12 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
   List<TextEditingController> questionControllers = [];
   List<TextEditingController> answerControllers = [];
 
-
-
-
-
+  ///code to load the question details if already inputed by the user
   void loadExisting(int index) {
     if (index >= 0) {
       questionControllers[index].text = questions[index].question;
       answerControllers[index].text = questions[index].answer;
+      ///listeners to see if user changes details
       questionControllers[index].addListener(() {
         questions[index].question = questionControllers[index].text;
       });
@@ -112,8 +110,17 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
     docRef.update({
       'Status': 'Finished',
     })
-        .then((value) => print('Document updated successfully'))
-        .catchError((error) => print('Failed to update document: $error'));
+        .then((value) async {
+      try {
+        await _showDialog("Quiz Created");
+      } finally {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const MenuPage()),
+        );
+      }
+        })
+        .catchError((error) { _showDialog("Error creating quiz");});
   }
 
   void addDataToFirestore(int index) async {
@@ -131,19 +138,14 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
     };
 
     await users.doc(docRef.id).set(userData);
-    clearInputs();
+
 
 
   }
-void clearInputs() {
-
-
-
-}
 
 
 ///checks if validations passed then continues
-  void _submit() async  {
+  void _nextQuestion() async  {
     if (_formKey.currentState!.validate()) {
       ///if more question still are still to come
       print(await (_getNumberOfQuestions()) );
@@ -167,7 +169,7 @@ void clearInputs() {
             question: questionControllers[currentQuestionIndex].text,
             answer: answerControllers[currentQuestionIndex].text,
           ));
-
+          ///clears details for next question to be entered
           questionControllers[currentQuestionIndex].clear();
           answerControllers[currentQuestionIndex].clear();
 
@@ -257,6 +259,7 @@ void clearInputs() {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    ///previous question button only appears when not on first question
                     if (currentQuestionIndex > 0)
                       ElevatedButton(
                         onPressed: () {
@@ -270,8 +273,8 @@ void clearInputs() {
                       ),
                     ElevatedButton(
                       onPressed: () {
-
-                        _submit();
+                        ///runs the code to go to the next question
+                        _nextQuestion();
 
                       },
                       child: FutureBuilder<int>(
@@ -284,6 +287,7 @@ void clearInputs() {
                           } else {
                             int numberOfQuestions = snapshot.data!;
                             return Text(
+                              ///changes from next question to publish on last question
                                 currentQuestionIndex + 1 == numberOfQuestions ? 'Publish' : 'Next Question'
                             );
                           }
@@ -317,8 +321,29 @@ void clearInputs() {
       return null;
     }
   }
+  Future<void> _showDialog(String message) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Message'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
 
+///question class
 class Question {
   String question;
   String answer;
