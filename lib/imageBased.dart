@@ -134,6 +134,7 @@ class _imageBasedState extends State<imageBased> {
                                 child: Stack(
                                   children: [
                                     Center(
+
                                       child: FloatingActionButton(
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
@@ -280,6 +281,7 @@ class _imageBasedState extends State<imageBased> {
                                 child: Stack(
                                   children: [
                                     Center(
+
                                       child: FloatingActionButton(
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);

@@ -42,7 +42,10 @@ void main() {
     // Verify that our counter starts at 0.
     expect(find.text('INNOVATECH QUIZ PLATFORM'), findsOneWidget);
     expect(find.text('1'), findsNothing);
-  });
+
+  }
+
+  );
 
   // group('Firebase auth tests', ()
   // {
@@ -77,5 +80,6 @@ void main() {
   //
   // });
   }
+
 
 

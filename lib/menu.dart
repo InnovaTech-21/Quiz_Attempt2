@@ -95,11 +95,11 @@ class _MenuPageState extends State<MenuPage> {
                 child: ElevatedButton(
                   onPressed: ()  {
                     ///testing if shortquizAns works
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => const ShortQuizAnswer()),
-                    // );
+                    Navigator.push(
+                       context,
+                       MaterialPageRoute(
+                           builder: (context) => const ShortQuizAnswer()),
+                     );
 
                   },
                   style: ElevatedButton.styleFrom(

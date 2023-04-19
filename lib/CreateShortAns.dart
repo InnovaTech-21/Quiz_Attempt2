@@ -85,7 +85,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
   Future<String> _getQuizID() async {
     // get number of questions from databse
     String quizID = "";
-    final CollectionReference quizzesCollection = FirebaseFirestore.instance.collection('Quizzes');
+    final CollectionReference quizzesCollection =  FirebaseFirestore.instance.collection('Quizzes');
 
     String? username = await getUser();
     if (username != null) {
@@ -133,7 +133,8 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
       'Question':  questions[index].question.toString() ,
       'Answers': questions[index].answer.toString(),
       'QuizID': await _getQuizID(),
-      'Question_type': "Short Answer"
+      'Question_type': "Short Answer",
+      'QuestionNo': index,
 
     };
 
