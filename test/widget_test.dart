@@ -19,7 +19,5 @@ void main() {
     expect(find.text('INNOVATECH QUIZ PLATFORM'), findsOneWidget);
     expect(find.text('1'), findsNothing);
 
-
-
   });
 }
