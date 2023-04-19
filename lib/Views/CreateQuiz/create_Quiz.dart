@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import '../../ImageBased.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:quiz_website/CreateShortAns.dart';
+
+import '../../ImageBased.dart';
 class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({Key? key}) : super(key: key);
 
@@ -66,6 +68,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     'Quiz_Category': getQuizCategory(),
     'Number_of_questions':getNumberofQuestions(), 
       'Username': nameuser,
+      "Date_Created":  Timestamp.fromDate(DateTime.now()),
+      "Quiz_ID":docRef.id.toString(),
     };
 
     await users.doc(docRef.id).set(userData);
@@ -159,7 +163,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => const ImageBased()),
+              builder: (context) => const imageBased()),
         ); 
       }else{
         _showDialog("Goes to "+getQuizType()! +" page");
