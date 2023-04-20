@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
-import 'package:quiz_website/Views/CreateQuiz/createMCQ.dart';
+import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
 
 class CreateQuizPage extends StatefulWidget {
