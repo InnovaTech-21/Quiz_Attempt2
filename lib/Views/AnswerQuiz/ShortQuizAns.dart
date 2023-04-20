@@ -5,38 +5,41 @@ class ShortQuizAnswer extends StatefulWidget {
   const ShortQuizAnswer({Key? key}) : super(key: key);
 
   @override
-  _ShortQuizAnswerState createState() => _ShortQuizAnswerState();
+  ShortQuizAnswerState createState() => ShortQuizAnswerState();
 }
 
-class _ShortQuizAnswerState extends State<ShortQuizAnswer> {
+class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   int _currentIndex = 0;
-  final _ansController = TextEditingController();
-  int numofQuestions = 7;
 
+  List<TextEditingController> answerControllers = [];
+  bool isSubmited=false;
 
   ///list of questions from database
   final List<String> _questions = []; // load in the questions
 
   ///List of correct answers
-  List <String> _correctAns=[]; // load in the answers
+  final List <String> _correctAns=[]; // load in the answers
   ///list of user answers
-  List<String> _userAnswers = ['', '', '', '', '']; //shaks job
+  List<String> _userAnswers = [];
 
-  @override
-  void initState() {
-    super.initState();
-    getQuestionsAnswers();
-
+  ///gets the users score at when they submit
+  String getScore(){
+    int count=0;
+    for(int i=0;i<_questions.length;i++){
+      if(_userAnswers[i].toLowerCase()==_correctAns[i].toLowerCase()){
+        count++;
+      }
+    }
+    String score='$count/${_questions.length}';
+    return score;
   }
 
   ///saves the users answers to a list as they answer the questions
   void _submitAnswer() {
     setState(() {
-      _userAnswers[_currentIndex] = _ansController.text;
-      if (_currentIndex < _questions.length - 1) {
-        _currentIndex++;
-        _ansController.clear();
-      }
+      _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
+        _showDialog("Your Score: ${getScore()}");
+        isSubmited=true;
     });
   }
 
@@ -46,47 +49,55 @@ class _ShortQuizAnswerState extends State<ShortQuizAnswer> {
     setState(() {
       if (_currentIndex > 0) {
         _currentIndex--;
-        _ansController.text = _userAnswers[_currentIndex];
+        answerControllers[_currentIndex].text = _userAnswers[_currentIndex];
       }
+    });
+
+    answerControllers[_currentIndex].addListener(() {
+      _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
     });
   }
 
   ///loads in the next question and clears previous answer
   void _goToNextQuestion() {
     setState(() {
-      _userAnswers[_currentIndex] = _ansController.text;
+      _userAnswers[_currentIndex] =answerControllers[_currentIndex].text;
       _currentIndex++;
-      _ansController.text = _userAnswers[_currentIndex];
+      answerControllers[_currentIndex].text = _userAnswers[_currentIndex];
     });
   }
 
   Future<void> getQuestionsAnswers() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    CollectionReference users = FirebaseFirestore.instance.collection('Questions');
-    String x = "9rQT7Qkl7DkHw4wDd0HE";
-    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-    QuerySnapshot questionsSnapshot = await users
-        .where('QuizID', isEqualTo: x)
-        .orderBy( 'Question_type', descending: true)
-        .get();
+    if (_questions.isEmpty) {
+
+      CollectionReference users = FirebaseFirestore.instance.collection(
+          'Questions');
+      String x = "9rQT7Qkl7DkHw4wDd0HE";
+      //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
+      QuerySnapshot questionsSnapshot = await users
+          .where('QuizID', isEqualTo: x)
+          .orderBy('Question_type', descending: true)
+          .get();
 
 
-    List<Map<String, dynamic>> questionsAnswersList = [];
+      List<Map<String, dynamic>> questionsAnswersList = [];
 
-    if (questionsSnapshot.docs.isNotEmpty) {
-      for (int i = 0; i < questionsSnapshot.docs.length; i++) {
-        DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
-        Map<String, dynamic> questionAnswerMap = {
-          "Question": quizDoc["Question"],
-          "Answers": quizDoc["Answers"],
-        };
-        questionsAnswersList.add(questionAnswerMap);
+      if (questionsSnapshot.docs.isNotEmpty) {
+        for (int i = 0; i < questionsSnapshot.docs.length; i++) {
+          DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
+          Map<String, dynamic> questionAnswerMap = {
+            "Question": quizDoc["Question"],
+            "Answers": quizDoc["Answers"],
+          };
+          questionsAnswersList.add(questionAnswerMap);
+        }
       }
-    }
 
-    for (var i = 0; i < questionsAnswersList.length; i++) {
-      _questions.add(questionsAnswersList[i]["Question"]);
-      _correctAns.add(questionsAnswersList[i]["Answers"]);
+      for (var i = 0; i < questionsAnswersList.length; i++) {
+        _questions.add(questionsAnswersList[i]["Question"]);
+        _correctAns.add(questionsAnswersList[i]["Answers"]);
+      }
+      _userAnswers=List.filled(questionsAnswersList.length, '');
     }
   }
 
@@ -106,6 +117,9 @@ class _ShortQuizAnswerState extends State<ShortQuizAnswer> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             }
+            for (int i = 0; i < _questions.length; i++) {
+              answerControllers.add(TextEditingController());
+            }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -123,12 +137,19 @@ class _ShortQuizAnswerState extends State<ShortQuizAnswer> {
                 SizedBox(height: 20),
                 ///text box for user answer
                 TextFormField(
-                  controller: _ansController,
+                  controller: answerControllers[_currentIndex],
+                  enabled: !isSubmited,
                   decoration: InputDecoration(
                     hintText: 'Type your answer here',
                     border: OutlineInputBorder(),
                   ),
+
                 ),
+                if (isSubmited )
+                  Text(
+                    'Correct answer: ${_correctAns[_currentIndex]}',
+                    style: TextStyle(color: Colors.green),
+                  ),
                 SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,11 +162,11 @@ class _ShortQuizAnswerState extends State<ShortQuizAnswer> {
                       ),
                     ///button for next question. changes to submit on last question
                     ElevatedButton(
-                      onPressed: _currentIndex == _questions.length - 1
+                      onPressed: isSubmited ? () => Navigator.of(context).pop() : _currentIndex == _questions.length - 1
                           ? _submitAnswer
                           : _goToNextQuestion,
                       child: Text(
-                        _currentIndex == _questions.length - 1 ? 'Submit' : 'Next',
+                        isSubmited ? 'Close' :_currentIndex == _questions.length - 1 ? 'Submit' : 'Next',
                       ),
                     ),
                   ],
@@ -158,5 +179,25 @@ class _ShortQuizAnswerState extends State<ShortQuizAnswer> {
     );
   }
 
+
+  Future<void> _showDialog(String message) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Message'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 }

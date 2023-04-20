@@ -136,6 +136,7 @@ class _imageBasedState extends State<imageBased> {
                                     Center(
 
                                       child: FloatingActionButton(
+                                        heroTag: "image1",
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
@@ -165,6 +166,7 @@ class _imageBasedState extends State<imageBased> {
                                     Center(
 
                                       child: FloatingActionButton(
+                                        heroTag: "image2",
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
@@ -193,6 +195,7 @@ class _imageBasedState extends State<imageBased> {
                                   children: [
                                     Center(
                                       child: FloatingActionButton(
+                                        heroTag: "image3",
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
@@ -226,6 +229,7 @@ class _imageBasedState extends State<imageBased> {
                                   children: [
                                     Center(
                                       child: FloatingActionButton(
+                                        heroTag: "image4",
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
@@ -254,6 +258,7 @@ class _imageBasedState extends State<imageBased> {
                                   children: [
                                     Center(
                                       child: FloatingActionButton(
+                                        heroTag: "image5",
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
@@ -283,6 +288,7 @@ class _imageBasedState extends State<imageBased> {
                                     Center(
 
                                       child: FloatingActionButton(
+                                        heroTag: "image6",
                                         onPressed: () {
                                           _pickImage(ImageSource.camera);
                                         },
