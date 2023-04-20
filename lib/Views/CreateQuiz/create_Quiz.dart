@@ -6,7 +6,7 @@ import 'package:quiz_website/ColourPallete.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quiz_website/CreateShortAns.dart';
 
-import '../../ImageBased.dart';
+import '../../imageBased.dart';
 class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({Key? key}) : super(key: key);
 
