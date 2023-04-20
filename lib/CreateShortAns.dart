@@ -139,9 +139,6 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
     };
 
     await users.doc(docRef.id).set(userData);
-
-
-
   }
 
 
