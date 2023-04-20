@@ -13,7 +13,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
 
   List<TextEditingController> answerControllers = [];
   bool isSubmited=false;
-
+  bool isCorrect=false;
   ///list of questions from database
   final List<String> _questions = []; // load in the questions
 
@@ -67,12 +67,16 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
     });
   }
 
-  Future<void> getQuestionsAnswers() async {
+  ///will be the quiz id from quiz selected in previous page
+  String quizSelected="9rQT7Qkl7DkHw4wDd0HE";
+
+  ///loads the quiz questions and answers for use throughout page
+  Future<void> getQuestionsAnswers(String x) async {
     if (_questions.isEmpty) {
 
       CollectionReference users = FirebaseFirestore.instance.collection(
           'Questions');
-      String x = "9rQT7Qkl7DkHw4wDd0HE";
+
       //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
       QuerySnapshot questionsSnapshot = await users
           .where('QuizID', isEqualTo: x)
@@ -112,7 +116,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: FutureBuilder(
-          future: getQuestionsAnswers(),
+          future: getQuestionsAnswers(quizSelected),
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
@@ -145,10 +149,15 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
                   ),
 
                 ),
+                ///shows correct answers after quiz submitted
                 if (isSubmited )
-                  Text(
-                    'Correct answer: ${_correctAns[_currentIndex]}',
-                    style: TextStyle(color: Colors.green),
+                Text(
+                'Correct answer: ${_correctAns[_currentIndex]}',
+                 style: TextStyle(
+                  color: _userAnswers[_currentIndex].toLowerCase() == _correctAns[_currentIndex].toLowerCase()
+                  ? Colors.green
+                  : Colors.red,
+                   ),
                   ),
                 SizedBox(height: 20),
                 Row(
@@ -162,11 +171,11 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
                       ),
                     ///button for next question. changes to submit on last question
                     ElevatedButton(
-                      onPressed: isSubmited ? () => Navigator.of(context).pop() : _currentIndex == _questions.length - 1
+                      onPressed: isSubmited && _currentIndex == _questions.length - 1 ? () => Navigator.of(context).pop() : _currentIndex == _questions.length - 1
                           ? _submitAnswer
                           : _goToNextQuestion,
                       child: Text(
-                        isSubmited ? 'Close' :_currentIndex == _questions.length - 1 ? 'Submit' : 'Next',
+                        isSubmited && _currentIndex == _questions.length - 1 ? 'Close' :_currentIndex == _questions.length - 1 ? 'Submit' : 'Next',
                       ),
                     ),
                   ],
