@@ -4,14 +4,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 
-class ImageBased extends StatefulWidget {
-  const ImageBased({Key? key});
+class imageBased extends StatefulWidget {
+  const imageBased({Key? key});
 
   @override
-  _ImageBasedState createState() => _ImageBasedState();
+  _imageBasedState createState() => _imageBasedState();
 }
 
-class _ImageBasedState extends State<ImageBased> {
+class _imageBasedState extends State<imageBased> {
   File? _imageFile1;
   File? _imageFile2;
   File? _imageFile3;
@@ -134,6 +134,7 @@ class _ImageBasedState extends State<ImageBased> {
                                 child: Stack(
                                   children: [
                                     Center(
+
                                       child: FloatingActionButton(
                                         heroTag: "image1",
                                         onPressed: () {
@@ -163,6 +164,7 @@ class _ImageBasedState extends State<ImageBased> {
                                 child: Stack(
                                   children: [
                                     Center(
+
                                       child: FloatingActionButton(
                                         heroTag: "image2",
                                         onPressed: () {
@@ -284,6 +286,7 @@ class _ImageBasedState extends State<ImageBased> {
                                 child: Stack(
                                   children: [
                                     Center(
+
                                       child: FloatingActionButton(
                                         heroTag: "image6",
                                         onPressed: () {

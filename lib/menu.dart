@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
+import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
+import '../../main.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -46,10 +48,15 @@ class _MenuPageState extends State<MenuPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
+        leading: TextButton(
+          child: Text('Sign out'),
+          onPressed: ()  {
+            Navigator.push(
+              ///goes to welcome page
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MyApp()),
+            );
           },
         ),
       ),
@@ -87,6 +94,12 @@ class _MenuPageState extends State<MenuPage> {
                 ),
                 child: ElevatedButton(
                   onPressed: ()  {
+                    ///testing if shortquizAns works
+                    Navigator.push(
+                       context,
+                       MaterialPageRoute(
+                           builder: (context) => const ShortQuizAnswer()),
+                     );
 
                   },
                   style: ElevatedButton.styleFrom(
