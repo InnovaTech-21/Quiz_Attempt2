@@ -27,9 +27,9 @@ class _MCQ_Question_Page extends State<MCQ_Question_Page> {
     if (index >= 0) {
       questionControllers[index].text = questions[index].question;
       correctanswerControllers[index].text = questions[index].answer;
-      randomAnswerControllers1[index].text = questions[index].question;
-      randomAnswerControllers2[index].text = questions[index].answer;
-      randomAnswerControllers3[index].text = questions[index].answer;
+      randomAnswerControllers1[index].text = questions[index].randoption1;
+      randomAnswerControllers2[index].text = questions[index].randoption2;
+      randomAnswerControllers3[index].text = questions[index].randoption3;
 
       //LISTENERS TO SEE IF USER CHANGES DETAILS
       questionControllers[index].addListener(() {
