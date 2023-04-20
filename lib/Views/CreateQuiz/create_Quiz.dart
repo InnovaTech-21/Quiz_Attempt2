@@ -162,7 +162,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const MCQ_Question_Page()),
+          MaterialPageRoute(builder: (context) => const mCQ_Question_Page),
         );
       } else {
         _showDialog("Goes to " + getQuizType()! + " page");
