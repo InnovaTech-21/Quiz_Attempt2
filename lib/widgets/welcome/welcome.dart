@@ -14,12 +14,15 @@ class Welcome extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.3,
               child: const Center(
-                child: Text(
-                  'INNOVATECH QUIZ PLATFORM',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    height: 0.9,
-                    fontSize: 80,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'INNOVATECH\nQUIZ PLATFORM',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      height: 0.9,
+                      fontSize: 70,
+                    ),
                   ),
                 ),
               ),

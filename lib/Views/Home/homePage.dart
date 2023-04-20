@@ -38,9 +38,12 @@ class HomePage extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Expanded(
+                  Expanded(
                     flex: 1,
-                    child: Welcome(),
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 500.0), // Add padding to the bottom
+                      child: const Welcome(),
+                    ),
                   ),
                   Flexible(
                     flex: 1,
@@ -49,8 +52,7 @@ class HomePage extends StatelessWidget {
                       child: LayoutBuilder(
                         builder: (context, constraints) {
                           final buttonWidth = screenWidth > 600 ? 395.0 : constraints.maxWidth;
-                          const buttonHeight = 55.0;
-
+                          const buttonHeight = 65.0;
                           return SingleChildScrollView(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
