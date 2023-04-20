@@ -18,9 +18,16 @@ class _ShortQuizAnswerState extends State<ShortQuizAnswer> {
   final List<String> _questions = []; // load in the questions
 
   ///List of correct answers
-  List <String> _correnctAns=[]; // load in the answers
+  List <String> _correctAns=[]; // load in the answers
   ///list of user answers
   List<String> _userAnswers = ['', '', '', '', '']; //shaks job
+
+  @override
+  void initState() {
+    super.initState();
+    getQuestionsAnswers();
+
+  }
 
   ///saves the users answers to a list as they answer the questions
   void _submitAnswer() {
@@ -53,32 +60,36 @@ class _ShortQuizAnswerState extends State<ShortQuizAnswer> {
     });
   }
 
-  
+  Future<void> getQuestionsAnswers() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = FirebaseFirestore.instance.collection('Questions');
+    String x = "9rQT7Qkl7DkHw4wDd0HE";
+    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
+    QuerySnapshot questionsSnapshot = await users
+        .where('QuizID', isEqualTo: x)
+        .orderBy( 'Question_type', descending: true)
+        .get();
 
-Future<List<Map<String, dynamic>>> getQuestionsAnswers() async {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  CollectionReference users = FirebaseFirestore.instance.collection('Questions');
-  String x = "9rQT7Qkl7DkHw4wDd0HE";
-  QuerySnapshot questionsSnapshot = await users
-    .where('QuizID', isEqualTo: x)
-    .orderBy('Question_type', descending: true)
-    .get();
 
-  List<Map<String, dynamic>> questionsAnswersList = [];
+    List<Map<String, dynamic>> questionsAnswersList = [];
 
-  if (questionsSnapshot.docs.isNotEmpty) {
-    for (int i = 0; i < questionsSnapshot.docs.length; i++) {
-      DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
-      Map<String, dynamic> questionAnswerMap = {
-        "question": quizDoc["Question"],
-        "answer": quizDoc["Answer"],
-      };
-      questionsAnswersList.add(questionAnswerMap);
+    if (questionsSnapshot.docs.isNotEmpty) {
+      for (int i = 0; i < questionsSnapshot.docs.length; i++) {
+        DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
+        Map<String, dynamic> questionAnswerMap = {
+          "Question": quizDoc["Question"],
+          "Answers": quizDoc["Answers"],
+        };
+        questionsAnswersList.add(questionAnswerMap);
+      }
+    }
+
+    for (var i = 0; i < questionsAnswersList.length; i++) {
+      _questions.add(questionsAnswersList[i]["Question"]);
+      _correctAns.add(questionsAnswersList[i]["Answers"]);
     }
   }
 
-  return questionsAnswersList;
-}
 
 
   @override
@@ -89,51 +100,59 @@ Future<List<Map<String, dynamic>>> getQuestionsAnswers() async {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ///question count at top of page
-            Text(
-              'Question ${_currentIndex + 1} of ${_questions.length}',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            ///loads in current question
-            Text(
-              _questions[_currentIndex],
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            ///text box for user answer
-            TextFormField(
-              controller: _ansController,
-              decoration: InputDecoration(
-                hintText: 'Type your answer here',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: FutureBuilder(
+          future: getQuestionsAnswers(),
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ///button for previous question only when not first question
-                if (_currentIndex > 0)
-                  ElevatedButton(
-                    onPressed: _goToPreviousQuestion,
-                    child: Text('Previous'),
-                  ),
-                ///button for next question. changes to submit on last question
-                ElevatedButton(
-                  onPressed: _currentIndex == _questions.length - 1
-                      ? _submitAnswer
-                      : _goToNextQuestion,
-                  child: Text(
-                    _currentIndex == _questions.length - 1 ? 'Submit' : 'Next',
+                ///question count at top of page
+                Text(
+                  'Question ${_currentIndex + 1} of ${_questions.length}',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 20),
+                ///loads in current question
+                Text(
+                  _questions[_currentIndex],
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 20),
+                ///text box for user answer
+                TextFormField(
+                  controller: _ansController,
+                  decoration: InputDecoration(
+                    hintText: 'Type your answer here',
+                    border: OutlineInputBorder(),
                   ),
                 ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ///button for previous question only when not first question
+                    if (_currentIndex > 0)
+                      ElevatedButton(
+                        onPressed: _goToPreviousQuestion,
+                        child: Text('Previous'),
+                      ),
+                    ///button for next question. changes to submit on last question
+                    ElevatedButton(
+                      onPressed: _currentIndex == _questions.length - 1
+                          ? _submitAnswer
+                          : _goToNextQuestion,
+                      child: Text(
+                        _currentIndex == _questions.length - 1 ? 'Submit' : 'Next',
+                      ),
+                    ),
+                  ],
+                ),
               ],
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
