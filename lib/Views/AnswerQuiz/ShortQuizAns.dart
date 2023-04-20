@@ -53,36 +53,32 @@ class _ShortQuizAnswerState extends State<ShortQuizAnswer> {
     });
   }
 
-  void getQuestionsAnswers() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    CollectionReference users = FirebaseFirestore.instance.collection('Questions');
-    String x = "9rQT7Qkl7DkHw4wDd0HE";
-    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-    QuerySnapshot questionsSnapshot = await users
-        .where('QuizID', isEqualTo: x)
-        .orderBy( 'Question_type', descending: true)
-        .get();
+  
 
+Future<List<Map<String, dynamic>>> getQuestionsAnswers() async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  CollectionReference users = FirebaseFirestore.instance.collection('Questions');
+  String x = "9rQT7Qkl7DkHw4wDd0HE";
+  QuerySnapshot questionsSnapshot = await users
+    .where('QuizID', isEqualTo: x)
+    .orderBy('Question_type', descending: true)
+    .get();
 
-    List<Map<String, dynamic>> questionsAnswersList = [];
+  List<Map<String, dynamic>> questionsAnswersList = [];
 
-    if (questionsSnapshot.docs.isNotEmpty) {
-      for (int i = 0; i < questionsSnapshot.docs.length; i++) {
-        DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
-        Map<String, dynamic> questionAnswerMap = {
-          "question": quizDoc["Question"],
-          "answer": quizDoc["Answer"],
-        };
-        questionsAnswersList.add(questionAnswerMap);
-      }
-    }
-
-    for (var i = 0; i < questionsAnswersList.length; i++) {
-      _questions.add(questionsAnswersList[i]["question"]);
-      _correnctAns.add(questionsAnswersList[i]["Answer"]);
+  if (questionsSnapshot.docs.isNotEmpty) {
+    for (int i = 0; i < questionsSnapshot.docs.length; i++) {
+      DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
+      Map<String, dynamic> questionAnswerMap = {
+        "question": quizDoc["Question"],
+        "answer": quizDoc["Answer"],
+      };
+      questionsAnswersList.add(questionAnswerMap);
     }
   }
 
+  return questionsAnswersList;
+}
 
 
   @override
