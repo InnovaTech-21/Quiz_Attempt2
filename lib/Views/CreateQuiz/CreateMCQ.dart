@@ -4,14 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:quiz_website/menu.dart';
 
-class MCQ_Question_Page extends StatefulWidget {
-  const MCQ_Question_Page({Key? key}) : super(key: key);
+class mCQ_Question_Page extends StatefulWidget {
+  const mCQ_Question_Page({Key? key}) : super(key: key);
 
   @override
   _MCQ_Question_Page createState() => _MCQ_Question_Page();
 }
 
-class _MCQ_Question_Page extends State<MCQ_Question_Page> {
+class _MCQ_Question_Page extends State<mCQ_Question_Page> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   int numberOfQuestions = 5;
   int currentQuestionIndex = 0;
