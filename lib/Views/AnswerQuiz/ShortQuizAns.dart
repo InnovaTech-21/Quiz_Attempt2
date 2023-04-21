@@ -79,7 +79,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
 
       //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
       QuerySnapshot questionsSnapshot = await users
-          .where('QuizID', isEqualTo: x)
+          .where('Quiz_Category', isEqualTo: x)
           .orderBy('Question_type', descending: true)
           .get();
 
