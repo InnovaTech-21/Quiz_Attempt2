@@ -5,7 +5,6 @@ import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
 import '../../main.dart';
-import 'package:quiz_website/selectAQuiz.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -95,12 +94,13 @@ class _MenuPageState extends State<MenuPage> {
                 ),
                 child: ElevatedButton(
                   onPressed: ()  {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
+                    ///testing if shortquizAns works
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //       builder: (context) => const ShortQuizAnswer()),
+                    // );
 
-                          builder: (context) => const SelectPage()),
-                    );
                   },
                   style: ElevatedButton.styleFrom(
                     fixedSize: const Size(450, 65), backgroundColor: Colors.transparent,

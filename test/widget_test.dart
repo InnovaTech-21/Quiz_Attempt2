@@ -4,6 +4,7 @@
 // utility in the flutter_test package. For example, you can send tap and scroll
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
+import 'package:quiz_website/Views/Login/login_view.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mockito/mockito.dart';
@@ -42,7 +43,29 @@ void main() {
     // Verify that our counter starts at 0.
     expect(find.text('INNOVATECH QUIZ PLATFORM'), findsOneWidget);
     expect(find.text('1'), findsNothing);
-  });
+
+  }
+
+
+  );
+ // testWidgets('_showDialog displays message', (WidgetTester tester) async {
+    // Build the widget tree
+ //   await tester.pumpWidget(MaterialApp(
+  //    home: Builder(builder: (BuildContext context) {
+ //       return ElevatedButton(
+     //     onPressed: () => const LoginPage()._showDialog('Hello, world!', context),
+    //      child: const Text('Show Dialog'),
+     //   );
+    //  }),
+   // ));
+
+    // Tap the button to show the dialog
+  //  await tester.tap(find.text('Show Dialog'));
+  //  await tester.pumpAndSettle();
+
+    // Verify that the dialog is displayed with the correct message
+  //  expect(find.text('Hello, world!'), findsOneWidget);
+ // });
 
   // group('Firebase auth tests', ()
   // {
@@ -77,5 +100,6 @@ void main() {
   //
   // });
   }
+
 
 
