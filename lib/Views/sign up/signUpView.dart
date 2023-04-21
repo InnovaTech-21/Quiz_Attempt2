@@ -16,11 +16,11 @@ class Signup extends StatefulWidget {
   const Signup({super.key});
 
   @override
-  State<Signup> createState() => _Signup();
+  State<Signup> createState() => SignupState();
 
 }
 
-class _Signup extends State<Signup> {
+class SignupState extends State<Signup> {
   ///sets up form state watcher
   final _formKey = GlobalKey<FormState>();
 
@@ -421,9 +421,6 @@ class _Signup extends State<Signup> {
                           ///Signup button
                           child: ElevatedButton(
                             onPressed: () {
-
-
-                              // Signup button callback
 
                               /// Check that date is valid
                               if (_validateDay(_selectedDay) != null ||

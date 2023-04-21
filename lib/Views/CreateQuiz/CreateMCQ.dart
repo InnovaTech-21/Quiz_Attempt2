@@ -54,7 +54,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
   Future<String?> getUser() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = FirebaseAuth.instance.currentUser;
-    String? nameuser = '';
+
     if (user != null) {
       String uID = user.uid;
       try {
@@ -142,7 +142,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
     CollectionReference users =
         FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
-    String docID = docRef.id;
+
     Map<String, dynamic> userData = {
       'Question': questions[index].question.toString(),
       'Answers': questions[index].answer.toString(),
@@ -161,7 +161,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
   void _nextQuestion() async {
     if (_formKey.currentState!.validate()) {
       //IF MORE QUESTIONS ARE STILL TO COME
-      print(await (_getNumberOfQuestions()));
+
       if (currentQuestionIndex < (await (_getNumberOfQuestions()) - 1)) {
         //IF ON A QUESTION ALREADY ADDED TO THE LIST (BACKTRACKED)
         if (currentQuestionIndex < questions.length) {
