@@ -21,7 +21,7 @@ class Welcome extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       height: 0.9,
-                      fontSize: 70,
+                      fontSize: 65,
                     ),
                   ),
                 ),

@@ -22,18 +22,6 @@ class NavigationBar extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          const NavItem(
-            title: 'Home',
-          ),
-          const SizedBox(
-            width: 60,
-          ),
-          const NavItem(
-            title: 'Make a Quiz',
-          ),
-          const SizedBox(
-            width: 60,
-          ),
         ],
       ),
     );

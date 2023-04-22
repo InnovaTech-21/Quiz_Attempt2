@@ -21,11 +21,11 @@ class _SelectPageState extends State<SelectPage> {
   final List<String> _QuizDesc = []; // load in the questions
 
   ///List of correct answers
-  final List <String> _NomberofQuestions=[];
+  final List <String> _NumberofQuestions=[];
   final List<String> _QuizCategory = []; // load in the questions
 
   String _selectedFilter = 'All'; // Variable to store selected filter, set initial value to 'All'
-  Future<void> getQuizINformation(String x) async {
+  Future<void> getQuizInformation(String x) async {
 
       CollectionReference users = FirebaseFirestore.instance.collection(
           'Quizzes');
@@ -59,7 +59,7 @@ class _SelectPageState extends State<SelectPage> {
         _QuizDesc.add(questionsAnswersList[i]["Quiz_Description"]);
         _QuizCategory.add(questionsAnswersList[i]["Quiz_Category"]);
         _QuizType.add(questionsAnswersList[i]["Quiz_Type"]);
-        _NomberofQuestions.add(questionsAnswersList[i]["Number_of_questions"]);
+        _NumberofQuestions.add(questionsAnswersList[i]["Number_of_questions"]);
 
       }
      // _userAnswers=List.filled(questionsAnswersList.length, '');
@@ -87,7 +87,7 @@ class _SelectPageState extends State<SelectPage> {
       backgroundColor: ColourPallete.backgroundColor,
       body: Material(
           child: FutureBuilder(
-              future: getQuizINformation("Anime"),
+              future: getQuizInformation("Anime"),
               builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -95,94 +95,118 @@ class _SelectPageState extends State<SelectPage> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
+
+                // Filter quiz data based on selected category
+                List<String> filteredQuizName = [];
+                List<String> filteredQuizDesc = [];
+                List<String> filteredQuizCategory = [];
+                List<String> filteredQuizType = [];
+                List<String> filteredNumberofQuestions = [];
+
+                if (_selectedFilter == 'All') {
+                  // Show all quizzes
+                  filteredQuizName = List.from(_QuizName);
+                  filteredQuizDesc = List.from(_QuizDesc);
+                  filteredQuizCategory = List.from(_QuizCategory);
+                  filteredQuizType = List.from(_QuizType);
+                  filteredNumberofQuestions = List.from(_NumberofQuestions);
+                } else {
+                  // Show quizzes with selected category
+                  for (int i = 0; i < _QuizCategory.length; i++) {
+                    if (_QuizCategory[i] == _selectedFilter) {
+                      filteredQuizName.add(_QuizName[i]);
+                      filteredQuizDesc.add(_QuizDesc[i]);
+                      filteredQuizCategory.add(_QuizCategory[i]);
+                      filteredQuizType.add(_QuizType[i]);
+                      filteredNumberofQuestions.add(_NumberofQuestions[i]);
+                    }
+                  }
+                }
+
                 return SingleChildScrollView(
-                    child: Center(
-                        child: Column(
-                            children: <Widget>[
-                              SizedBox(height: 50),
-                              Text(
-                                "Select a Quiz",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 50,
+                  child: Center(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 50),
+                        Text(
+                          "Select a Quiz",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 50,
+                          ),
+                        ),
+                        const SizedBox(height: 60),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            // ComboBox filter
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                // ComboBox filter
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  child: SizedBox(
+                                    width: 400,
+                                    child: DropdownButton<String>(
+                                      value: _selectedFilter,
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _selectedFilter = value!;
+                                        });
+                                      },
+                                      items: <String>[
+                                        'All',
+                                        'Anime',
+                                        'Kpop',
+                                        'Kdrama'
+                                      ] // Add 'All' as an option
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            );
+                                          }).toList(),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 60),
-                              Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    // ComboBox filter
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        // ComboBox filter
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          child: SizedBox(
-                                            width: 200,
-                                            child: DropdownButton<String>(
-                                              value: _selectedFilter,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _selectedFilter = value!;
-                                                  getQuizINformation(value.toString());
-                                                });
-                                              },
-                                              items: <String>[
-                                                'All',
-                                                'Anime',
-                                                'Kpop',
-                                                'Kdrama'
-                                              ] // Add 'All' as an option
-                                                  .map<DropdownMenuItem<String>>(
-                                                      (String value) {
-                                                    return DropdownMenuItem<String>(
-                                                      value: value,
-                                                      child: Text(value),
-                                                    );
-                                                  }).toList(),
+                                SizedBox(height: 30), // Add some spacing
+                                for (int i = 0; i < filteredQuizName.length; i++) // Use filteredQuizName.length
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    child: SizedBox(
+                                      width: 400,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          // Add your onPressed logic here
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.all(27),
+                                          primary: ColourPallete.borderColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            side: BorderSide(
+                                              color: ColourPallete.gradient2,
+                                              width: 2,
                                             ),
                                           ),
                                         ),
-                                        SizedBox(height: 30), // Add some spacing
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          child: SizedBox(
-                                            width: 400,
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                // Add your onPressed logic here
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                padding: const EdgeInsets.all(27),
-                                                primary: ColourPallete.borderColor,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  side: BorderSide(
-                                                    color: ColourPallete.gradient2,
-                                                    width: 2,
-                                                  ),
-                                                ),
-                                              ),
-                                              child: Text(
-                                'Quiz Name: ${_QuizName[0]}\nQuiz Category: ${_QuizCategory[0]}\nQuiz Type: ${_QuizType[0]}\nNumber of Questions: ${_NomberofQuestions[0]}'
+                                        child: Text(
+                                            'Quiz Name: ${_QuizName[i]}\nQuiz Category: ${_QuizCategory[i]}\nQuiz Type: ${_QuizType[i]}\nNumber of Questions: ${_NumberofQuestions[i]}'),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 30),
+                                ],
                               ),
-
-                              ),
-                            ),
+                            ],
                           ),
-
                       ],
-                ),
+                    ),
+                  ),
+                );
 
-
-    ]
-    )
-          ]
-
-      )
-    )
-    );
   }
   )
       )
