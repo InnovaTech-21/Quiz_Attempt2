@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
-import 'package:quiz_website/selectAQuiz.dart';
 import '../../main.dart';
 
 class MenuPage extends StatefulWidget {
@@ -96,11 +95,11 @@ class _MenuPageState extends State<MenuPage> {
                 child: ElevatedButton(
                   onPressed: ()  {
                     ///testing if shortquizAns works
-                     Navigator.push(
-                       context,
-                       MaterialPageRoute(
-                          builder: (context) => const SelectPage()),
-                     );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ShortQuizAnswer(quiz: "9rQT7Qkl7DkHw4wDd0HE")),
+                    );
 
                   },
                   style: ElevatedButton.styleFrom(
@@ -108,7 +107,7 @@ class _MenuPageState extends State<MenuPage> {
                     shadowColor: Colors.transparent,
                   ),
                   child: const Text(
-                    'Select a Quiz',
+                    'Review a Quiz',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 19,

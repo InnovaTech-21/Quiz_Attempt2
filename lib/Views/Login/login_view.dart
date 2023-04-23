@@ -7,9 +7,11 @@ import '../../main.dart';
 import '../../menu.dart';
 
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
+
 
 class LoginPage extends StatefulWidget {
+
+
   const LoginPage({Key? key}) : super(key: key);
 
   @override
@@ -73,6 +75,7 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
@@ -226,14 +229,7 @@ class LoginPageState extends State<LoginPage> {
                                 child: ElevatedButton(
                                   onPressed: () async {
                                     user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context, auth: FirebaseAuth.instance);
-
                                     validateAndSave();
-                                    // print(user);
-                                    // if (user!=null) {
-                                    //   //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
-                                    //
-                                    // }
-
                                   },
                                   style: ElevatedButton.styleFrom(
                                     fixedSize: const Size(395, 55), backgroundColor: Colors.transparent,

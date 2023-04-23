@@ -5,34 +5,62 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:quiz_website/Views/Login/login_view.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
-
 import 'package:quiz_website/menu.dart';
 import 'package:quiz_website/main.dart';
-
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
-
-
-
+import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
+import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
+class MockCollectionReference extends Mock implements CollectionReference<Map<String, dynamic>> {}
 
-// Mock User class
-class MockUser extends Mock implements User {}
+class MockFirebase extends Mock implements Firebase {}
 
-// Mock FirebaseFirestore class
-class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}
+class MockFirebaseUser extends Mock implements User {
+  @override
+  String get uid => '1234';
+}
+
+class MockQuerySnapshot extends Mock implements QuerySnapshot<Map<String, dynamic>> {
+  @override
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> get docs => [
+    MockQueryDocumentSnapshot(),
+  ];
+}
+
+class MockQueryDocumentSnapshot extends Mock implements QueryDocumentSnapshot<Map<String, dynamic>> {
+  @override
+  Map<String, dynamic> data() => {
+    'email': 'test@test.com',
+    'password': 'password',
+  };
+}
+
+class MockFirebaseAuthFunctions {
+  static Future<User?> signInWithEmailAndPassword({required String email, required String password, required FirebaseAuth auth}) async {
+    // Check if email and password are valid
+    if (email.isNotEmpty && password.isNotEmpty) {
+      // Create a mock FirebaseUser
+      final user = MockFirebaseUser();
+
+      // Return the mock FirebaseUser
+      return user;
+    } else {
+      // Throw an exception if email or password are empty
+      throw FirebaseAuthException(code: 'invalid-email-and-password');
+    }
+  }
+}
 
 
 void main() {
@@ -136,7 +164,7 @@ void main() {
     expect(find.byType(MyApp), findsOneWidget);
   });
 
-  testWidgets('Test create quiz button', (WidgetTester tester) async {
+  testWidgets('Goes to create a quiz page', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: MenuPage(),
@@ -151,6 +179,175 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(CreateQuizPage), findsOneWidget);
   });
+
+  testWidgets('Forgot password button on login page navigates to forgot password page', (WidgetTester tester) async {
+    // Build the widget tree
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: LoginPage(),
+      ),
+    );
+    // Find the sign up button
+    final forgotButton = find.widgetWithText(TextButton, 'Forgot Password?');
+
+    // Tap the sign up button
+    await tester.tap(forgotButton);
+
+    // Rebuild the widget tree with the new page
+    await tester.pumpAndSettle();
+
+    // Check that the login page is loaded
+    expect(find.byType(ForgotPasswordPage), findsOneWidget);
+  });
+
+  testWidgets('cant proceed from create a quiz with no input', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: CreateQuizPage(),
+      ),
+    );
+
+    await tester.dragUntilVisible(
+      find.byType(ElevatedButton),
+      find.widgetWithText(ElevatedButton, 'Next'),
+      const Offset(0, -100),
+    );
+    final nextButton = find.text('Next');
+    expect(nextButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Enter quiz description"), findsOneWidget);
+  });
+
+  testWidgets('number of questions input must be number', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: CreateQuizPage(),
+      ),
+    );
+
+    final numQuestionsField = find.widgetWithText(TextFormField, 'Enter Number of Questions');
+    expect(numQuestionsField, findsOneWidget);
+
+    await tester.enterText(numQuestionsField, 's');
+    await tester.dragUntilVisible(
+      find.byType(ElevatedButton),
+      find.widgetWithText(ElevatedButton, 'Next'),
+      const Offset(0, -100),
+    );
+    final nextButton = find.text('Next');
+    expect(nextButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Number must be a digit"), findsOneWidget);
+  });
+
+  testWidgets('number of questions input must be must be in range', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: CreateQuizPage(),
+      ),
+    );
+
+    final numQuestionsField = find.widgetWithText(TextFormField, 'Enter Number of Questions');
+    expect(numQuestionsField, findsOneWidget);
+
+    await tester.enterText(numQuestionsField, '200');
+    await tester.dragUntilVisible(
+      find.byType(ElevatedButton),
+      find.widgetWithText(ElevatedButton, 'Next'),
+      const Offset(0, -100),
+    );
+    final nextButton = find.text('Next');
+    expect(nextButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Number of questions should be between 2 and 20"), findsOneWidget);
+  });
+
+  testWidgets('create a short answer quiz requires input of both question and answer', (WidgetTester tester) async {
+    await tester.pumpWidget(
+       MaterialApp(
+        home: ShortAnswerQuestionPage(numQuest: 3),
+      ),
+    );
+
+    final nextButton = find.text('Next Question');
+    expect(nextButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Enter a question"), findsOneWidget);
+    expect(find.text("Enter an answer"), findsOneWidget);
+  });
+
+  testWidgets('Valid question and answer in short questions goes to next question', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ShortAnswerQuestionPage(numQuest: 3),
+      ),
+    );
+    expect(find.text("Question 1"), findsOneWidget);
+    final QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField = find.widgetWithText(TextFormField, 'Enter the correct answer here');
+    expect(QuestionField, findsOneWidget);
+    expect(AnswerField, findsOneWidget);
+
+    await tester.enterText(QuestionField, 'What is your name');
+    await tester.enterText(AnswerField, 'Bob');
+
+    final nextButton = find.text('Next Question');
+    expect(nextButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Question 2"), findsOneWidget);
+
+  });
+
+  testWidgets('User can go back and edit previous questions in Short answer quizes', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ShortAnswerQuestionPage(numQuest: 3),
+      ),
+    );
+    expect(find.text("Question 1"), findsOneWidget);
+    final QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField = find.widgetWithText(TextFormField, 'Enter the correct answer here');
+    expect(QuestionField, findsOneWidget);
+    expect(AnswerField, findsOneWidget);
+
+    await tester.enterText(QuestionField, 'What is your name');
+    await tester.enterText(AnswerField, 'Bob');
+
+    final nextButton = find.text('Next Question');
+    expect(nextButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Question 2"), findsOneWidget);
+    expect(find.text("Enter your question here"), findsOneWidget);
+    final prevButton = find.text('Previous Question');
+    expect(prevButton, findsOneWidget);
+    expect(nextButton, findsOneWidget);
+    await tester.tap(prevButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Question 1"), findsOneWidget);
+    expect(find.text("What is your name"), findsOneWidget);
+
+  });
+
+
+
 
   // group('MenuPage', () {
   //   late MenuPage menuPage;
@@ -325,13 +522,11 @@ void main() {
   //   });
   //
   // });
+
   }
 
-class MockCollectionReference {
-}
 
-class MockDocumentSnapshot {
-}
+
 
 
 

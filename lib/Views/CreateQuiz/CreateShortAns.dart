@@ -5,8 +5,8 @@ import 'package:quiz_website/ColourPallete.dart';
 import '../../../../menu.dart';
 
 class ShortAnswerQuestionPage extends StatefulWidget {
-  const ShortAnswerQuestionPage({Key? key}) : super(key: key);
-
+  const ShortAnswerQuestionPage({Key? key, required this.numQuest}) : super(key: key);
+  final int numQuest;
   @override
   _ShortAnswerQuestionPageState createState() =>
       _ShortAnswerQuestionPageState();
@@ -14,9 +14,15 @@ class ShortAnswerQuestionPage extends StatefulWidget {
 
 class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
   final _formKey = GlobalKey<FormState>();
+  late int numberOfQuestions;
 
+  @override
+  void initState() {
+    super.initState();
+    numberOfQuestions = widget.numQuest;
+  }
   ///change this to get number of questions from database
-  int numberOfQuestions = 5;
+
   int currentQuestionIndex = 0;
 
   ///list of question class
@@ -62,28 +68,6 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
     }
   }
 
-  Future<int> _getNumberOfQuestions() async {
-    // get number of questions from databse
-    int numberOfQuestions = 0;
-    final CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
-
-    String? username = await getUser();
-    if (username != null) {
-      QuerySnapshot questionsSnapshot = await quizzesCollection
-          .where('Username', isEqualTo: username)
-          .orderBy('Date_Created', descending: true)
-          .limit(1)
-          .get();
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
-        numberOfQuestions = mostRecentQuestion['Number_of_questions'];
-      }
-    }
-    numberofQuestions = numberOfQuestions;
-    return numberOfQuestions;
-  }
 
   Future<String> _getQuizID() async {
     // get number of questions from databse
@@ -151,8 +135,8 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
   void _nextQuestion() async {
     if (_formKey.currentState!.validate()) {
       ///if more question still are still to come
-      print(await (_getNumberOfQuestions()));
-      if (currentQuestionIndex < (await (_getNumberOfQuestions()) - 1)) {
+
+      if (currentQuestionIndex < (numberOfQuestions - 1)) {
         ///if we are on a question already added to the list( we backtracked)
         if (currentQuestionIndex < questions.length) {
           int index = currentQuestionIndex;
@@ -288,25 +272,11 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                         ///runs the code to go to the next question
                         _nextQuestion();
                       },
-                      child: FutureBuilder<int>(
-                        future: _getNumberOfQuestions(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            int numberOfQuestions = snapshot.data!;
-                            return Text(
-
+                      child:  Text(
                                 ///changes from next question to publish on last question
                                 currentQuestionIndex + 1 == numberOfQuestions
                                     ? 'Publish'
-                                    : 'Next Question');
-                          }
-                        },
-                      ),
+                                    : 'Next Question'),
                     ),
                   ],
                 )

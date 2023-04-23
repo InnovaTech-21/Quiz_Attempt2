@@ -149,10 +149,11 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       //builder: (context) =>
       //ImageBased())); //chnage page once next page is created
       if (getQuizType() == 'Short-Answer') {
+        int num= int.parse(numQuestionsController.text);
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => const ShortAnswerQuestionPage()),
+              builder: (context) =>  ShortAnswerQuestionPage(numQuest: num)),
         );
       } else if (getQuizType() == 'Image-Based') {
         Navigator.push(

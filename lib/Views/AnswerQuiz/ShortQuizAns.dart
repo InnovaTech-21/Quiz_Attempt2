@@ -2,14 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ShortQuizAnswer extends StatefulWidget {
-  const ShortQuizAnswer({Key? key}) : super(key: key);
 
+  const ShortQuizAnswer({Key? key,required this.quiz}) : super(key: key);
+  final String quiz;
   @override
   ShortQuizAnswerState createState() => ShortQuizAnswerState();
 }
 
 class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   int _currentIndex = 0;
+  late String quiz;
+
+  @override
+  void initState() {
+    super.initState();
+    quiz = widget.quiz;
+  }
 
   List<TextEditingController> answerControllers = [];
   bool isSubmited=false;
@@ -68,7 +76,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   }
 
   ///will be the quiz id from quiz selected in previous page
-  String quizSelected="9rQT7Qkl7DkHw4wDd0HE";
+
 
   ///loads the quiz questions and answers for use throughout page
   Future<void> getQuestionsAnswers(String x) async {
@@ -116,7 +124,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: FutureBuilder(
-          future: getQuestionsAnswers(quizSelected),
+          future: getQuestionsAnswers(quiz),
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
