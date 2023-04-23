@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
+import 'package:quiz_website/menu.dart';
 import '../../main.dart';
 
 class SelectPage extends StatefulWidget {
@@ -29,9 +30,8 @@ class _SelectPageState extends State<SelectPage> {
 
       CollectionReference users = FirebaseFirestore.instance.collection(
           'Quizzes');
-
+      x = _selectedFilter;
       //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-      x = "Anime";
       QuerySnapshot questionsSnapshot = await users
           .where('Quiz_Category', isEqualTo: x)
           .orderBy('Date_Created', descending: true)
@@ -79,7 +79,7 @@ class _SelectPageState extends State<SelectPage> {
             Navigator.push(
               ///goes to welcome page
               context,
-              MaterialPageRoute(builder: (context) => MyApp()),
+              MaterialPageRoute(builder: (context) => MenuPage()),
             );
           },
         ),
