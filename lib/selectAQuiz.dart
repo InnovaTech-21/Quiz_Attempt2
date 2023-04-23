@@ -24,6 +24,7 @@ class _SelectPageState extends State<SelectPage> {
   ///List of correct answers
   final List <String> _NumberofQuestions=[];
   final List<String> _QuizCategory = []; // load in the questions
+  final List<String> _Quiz_ID = [];
 
 
   String _selectedFilter = 'All'; // Variable to store selected filter, set initial value to 'All'
@@ -57,6 +58,7 @@ class _SelectPageState extends State<SelectPage> {
         for (int i = 0; i < questionsSnapshot.docs.length; i++) {
           DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
           Map<String, dynamic> questionAnswerMap = {
+            "Quiz_ID" : quizDoc["Quiz_ID"],
             "QuizName": quizDoc["QuizName"],
             "Quiz_Description": quizDoc["Quiz_Description"],
             "Quiz_Category": quizDoc["Quiz_Category"],
@@ -68,6 +70,7 @@ class _SelectPageState extends State<SelectPage> {
       }
 
       for (var i = 0; i < questionsAnswersList.length; i++) {
+        _Quiz_ID.add(questionsAnswersList[i]["Quiz_ID"]);
         _QuizName.add(questionsAnswersList[i]["QuizName"]);
         _QuizDesc.add(questionsAnswersList[i]["Quiz_Description"]);
         _QuizCategory.add(questionsAnswersList[i]["Quiz_Category"]);
@@ -204,7 +207,7 @@ class _SelectPageState extends State<SelectPage> {
                                           if (_QuizType[i] == "Short-Answer" ) {
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quiz:'pnAjOeMi0s4ZSPebRVw6' )),
+                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quiz: _Quiz_ID[i]  )),
                                             );
                                           }
                                           // Add your onPressed logic here

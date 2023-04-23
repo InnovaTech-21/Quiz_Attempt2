@@ -16,7 +16,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   @override
   void initState() {
     super.initState();
-    quiz = widget.quiz;
+    quiz= widget.quiz;
   }
 
   List<TextEditingController> answerControllers = [];
@@ -124,7 +124,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: FutureBuilder(
-          future: getQuestionsAnswers(quiz),
+          future: getQuestionsAnswers(quiz.toString()),
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
