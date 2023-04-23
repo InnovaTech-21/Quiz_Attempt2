@@ -25,6 +25,7 @@ class _SelectPageState extends State<SelectPage> {
   final List <String> _NumberofQuestions=[];
   final List<String> _QuizCategory = []; // load in the questions
 
+
   String _selectedFilter = 'All'; // Variable to store selected filter, set initial value to 'All'
   Future<void> getQuizInformation(String x) async {
 
@@ -195,8 +196,15 @@ class _SelectPageState extends State<SelectPage> {
                                       width: 400,
                                       child: ElevatedButton(
                                         onPressed: () {
+                                          if (_QuizType[i] == "Short-Answer" ) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quiz:'pnAjOeMi0s4ZSPebRVw6' )),
+                                            );
+                                          }
                                           // Add your onPressed logic here
                                         },
+
                                         style: ElevatedButton.styleFrom(
                                           padding: const EdgeInsets.all(27),
                                           primary: ColourPallete.borderColor,
