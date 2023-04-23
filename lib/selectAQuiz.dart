@@ -32,16 +32,21 @@ class _SelectPageState extends State<SelectPage> {
       CollectionReference users = FirebaseFirestore.instance.collection(
           'Quizzes');
       x = _selectedFilter;
+     String  y = 'Finished';
       QuerySnapshot questionsSnapshot;
       //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
       if(( x != "All")) {
-        questionsSnapshot = await users
-            .where('Quiz_Category', isEqualTo: x)
-            .orderBy('Date_Created', descending: true)
-            .get();
+
+          questionsSnapshot = await users
+              .where('Quiz_Category', isEqualTo: x)
+              .where('Status', isEqualTo: y)
+              .orderBy('Date_Created', descending: true)
+              .get();
+
       }
       else{
-        questionsSnapshot = await users.get();
+        questionsSnapshot = await users.where('Status', isEqualTo: y)
+            .orderBy('Date_Created', descending: true).get();
       }
 
       //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
