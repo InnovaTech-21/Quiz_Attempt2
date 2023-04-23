@@ -31,12 +31,19 @@ class _SelectPageState extends State<SelectPage> {
       CollectionReference users = FirebaseFirestore.instance.collection(
           'Quizzes');
       x = _selectedFilter;
+      QuerySnapshot questionsSnapshot;
       //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-      QuerySnapshot questionsSnapshot = await users
-          .where('Quiz_Category', isEqualTo: x)
-          .orderBy('Date_Created', descending: true)
-          .get();
+      if(( x != "All")) {
+        questionsSnapshot = await users
+            .where('Quiz_Category', isEqualTo: x)
+            .orderBy('Date_Created', descending: true)
+            .get();
+      }
+      else{
+        questionsSnapshot = await users.get();
+      }
 
+      //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
      // String x = "2";
       List<Map<String, dynamic>> questionsAnswersList = [];
 
@@ -63,6 +70,7 @@ class _SelectPageState extends State<SelectPage> {
 
       }
      // _userAnswers=List.filled(questionsAnswersList.length, '');
+
     }
 
 
@@ -71,6 +79,7 @@ class _SelectPageState extends State<SelectPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+        backgroundColor: ColourPallete.backgroundColor,
       appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
         leading: IconButton(
@@ -84,8 +93,9 @@ class _SelectPageState extends State<SelectPage> {
           },
         ),
       ),
-      backgroundColor: ColourPallete.backgroundColor,
+
       body: Material(
+
           child: FutureBuilder(
               future: getQuizInformation("Anime"),
               builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -124,6 +134,7 @@ class _SelectPageState extends State<SelectPage> {
                 }
 
                 return SingleChildScrollView(
+
                   child: Center(
                     child: Column(
                       children: <Widget>[
@@ -154,6 +165,11 @@ class _SelectPageState extends State<SelectPage> {
                                         setState(() {
                                           _selectedFilter = value!;
                                         });
+                                        _QuizName.clear();
+                                        _QuizDesc.clear();
+                                        _QuizCategory.clear();
+                                        _QuizType.clear();
+                                        _NumberofQuestions.clear();
                                       },
                                       items: <String>[
                                         'All',
