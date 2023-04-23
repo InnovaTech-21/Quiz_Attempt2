@@ -204,7 +204,6 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
-            child: Center(
             child: Column(
               children: [
                 ///title that contains question number
@@ -215,11 +214,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                 SizedBox(height: 16),
 
                 ///question text box
-                ///
-                Container(
-                  width: 600,
-                  height: 400,
-                child: TextFormField(
+                TextFormField(
                   autocorrect: true,
                   textCapitalization: TextCapitalization.sentences,
                   controller: questionControllers[currentQuestionIndex],
@@ -230,32 +225,26 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                   maxLines: 5,
                   validator: validateQuestion,
                 ),
-                ),
-
+                SizedBox(height: 16),
 
                 ///answer text box
-                Container(
-                  width: 600,
-                  height: 300,
-                  child: TextFormField(
-                    autocorrect: true,
-                    textCapitalization: TextCapitalization.sentences,
-                    controller: answerControllers[currentQuestionIndex],
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter the correct answer here',
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLines: 2,
-                    validator: validateAnswer,
+                TextFormField(
+                  autocorrect: true,
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: answerControllers[currentQuestionIndex],
+                  keyboardType: TextInputType.text,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter the correct answer here',
+                    border: OutlineInputBorder(),
                   ),
+                  maxLines: 2,
+                  validator: validateAnswer,
                 ),
-
-                Column(
+                SizedBox(height: 16),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ///previous question button only appears when not on first question
-                    ///DecoratedBox(
                     if (currentQuestionIndex > 0)
                       ElevatedButton(
                         onPressed: () {
@@ -266,7 +255,6 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                         },
                         child: Text('Previous Question'),
                       ),
-
                     ElevatedButton(
                       onPressed: () {
                         ///runs the code to go to the next question
@@ -285,7 +273,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
           ),
         ),
       ),
-    ));
+    );
   }
 
   ///validation checks
