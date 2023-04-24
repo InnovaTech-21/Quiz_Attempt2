@@ -464,7 +464,82 @@ void main() {
     expect(find.text("Bob4"), findsOneWidget);
 
   });
+  group('Form Validation Tests', ()
+  {
+    late SignupState
+    instance;
 
+    setUp(() {
+      instance = SignupState();
+    });
+
+    test('Empty username should return an error', () {
+      final result = instance.validateUsername('');
+      expect(result, 'Enter username');
+    });
+
+    test('Short username should return an error', () {
+      final result = instance.validateUsername('abc');
+      expect(result, 'Username must be longer than 3 characters');
+    });
+
+    test('Valid username should return null', () {
+      final result = instance.validateUsername('john_doe');
+      expect(result, null);
+    });
+
+    test('Empty name should return an error', () {
+      final result = instance.validateName('');
+      expect(result, 'Enter name');
+    });
+
+    test('Short name should return an error', () {
+      final result = instance.validateName('A');
+      expect(result, 'Username must be at least 2 characters');
+    });
+
+    test('Valid name should return null', () {
+      final result = instance.validateName('John Doe');
+      expect(result, null);
+    });
+
+    test('Empty password should return an error', () {
+      final result = instance.validatePassword('');
+      expect(result, 'Enter password');
+    });
+
+    test('Short password should return an error', () {
+      final result = instance.validatePassword('12345');
+      expect(result, 'Must be longer than 5 characters');
+    });
+
+    test('Weak password should return an error', () {
+      final result = instance.validatePassword('abcd1234');
+      expect(
+          result, 'Must contain mix of lowercase, uppercase, digits, symbols.');
+    });
+
+    test('Strong password should return null', () {
+      final result = instance.validatePassword('Abcd1234@');
+      expect(result, null);
+    });
+
+    test('Empty confirm password should return an error', () {
+      final result = instance.validateConfirm('');
+      expect(result, 'Enter password');
+    });
+
+
+    test('Invalid email should return an error', () {
+      final result = instance.validateEmail('invalid.email.com');
+      expect(result, 'Enter Valid Email');
+    });
+
+    test('Valid email should return null', () {
+      final result = instance.validateEmail('valid.email@example.com');
+      expect(result, null);
+    });
+  });
 
   // group('MenuPage', () {
   //   late MenuPage menuPage;
