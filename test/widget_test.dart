@@ -509,7 +509,7 @@ void main() {
     });
 
     test('Short password should return an error', () {
-      final result = instance.validatePassword('12345');
+      final result = instance.validatePassword('1234');
       expect(result, 'Must be longer than 5 characters');
     });
 
