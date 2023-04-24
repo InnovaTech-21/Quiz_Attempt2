@@ -14,6 +14,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/menu.dart';
 import 'package:quiz_website/main.dart';
+import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
+import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
 import 'package:quiz_website/selectAQuiz.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
@@ -22,46 +24,46 @@ import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 
-class MockFirebaseAuth extends Mock implements FirebaseAuth {}
-class MockCollectionReference extends Mock implements CollectionReference<Map<String, dynamic>> {}
-
-class MockFirebase extends Mock implements Firebase {}
-
-class MockFirebaseUser extends Mock implements User {
-  @override
-  String get uid => '1234';
-}
-
-class MockQuerySnapshot extends Mock implements QuerySnapshot<Map<String, dynamic>> {
-  @override
-  List<QueryDocumentSnapshot<Map<String, dynamic>>> get docs => [
-    MockQueryDocumentSnapshot(),
-  ];
-}
-
-class MockQueryDocumentSnapshot extends Mock implements QueryDocumentSnapshot<Map<String, dynamic>> {
-  @override
-  Map<String, dynamic> data() => {
-    'email': 'test@test.com',
-    'password': 'password',
-  };
-}
-
-class MockFirebaseAuthFunctions {
-  static Future<User?> signInWithEmailAndPassword({required String email, required String password, required FirebaseAuth auth}) async {
-    // Check if email and password are valid
-    if (email.isNotEmpty && password.isNotEmpty) {
-      // Create a mock FirebaseUser
-      final user = MockFirebaseUser();
-
-      // Return the mock FirebaseUser
-      return user;
-    } else {
-      // Throw an exception if email or password are empty
-      throw FirebaseAuthException(code: 'invalid-email-and-password');
-    }
-  }
-}
+// class MockFirebaseAuth extends Mock implements FirebaseAuth {}
+// class MockCollectionReference extends Mock implements CollectionReference<Map<String, dynamic>> {}
+//
+// class MockFirebase extends Mock implements Firebase {}
+//
+// class MockFirebaseUser extends Mock implements User {
+//   @override
+//   String get uid => '1234';
+// }
+//
+// class MockQuerySnapshot extends Mock implements QuerySnapshot<Map<String, dynamic>> {
+//   @override
+//   List<QueryDocumentSnapshot<Map<String, dynamic>>> get docs => [
+//     MockQueryDocumentSnapshot(),
+//   ];
+// }
+//
+// class MockQueryDocumentSnapshot extends Mock implements QueryDocumentSnapshot<Map<String, dynamic>> {
+//   @override
+//   Map<String, dynamic> data() => {
+//     'email': 'test@test.com',
+//     'password': 'password',
+//   };
+// }
+//
+// class MockFirebaseAuthFunctions {
+//   static Future<User?> signInWithEmailAndPassword({required String email, required String password, required FirebaseAuth auth}) async {
+//     // Check if email and password are valid
+//     if (email.isNotEmpty && password.isNotEmpty) {
+//       // Create a mock FirebaseUser
+//       final user = MockFirebaseUser();
+//
+//       // Return the mock FirebaseUser
+//       return user;
+//     } else {
+//       // Throw an exception if email or password are empty
+//       throw FirebaseAuthException(code: 'invalid-email-and-password');
+//     }
+//   }
+// }
 
 
 void main() {
@@ -576,179 +578,25 @@ void main() {
     });
   });
 
-  // group('MenuPage', () {
-  //   late MenuPage menuPage;
-  //   late MockFirebaseAuth mockFirebaseAuth;
-  //   late MockFirebaseFirestore mockFirebaseFirestore;
-  //   late MockUser mockUser;
-  //
-  //   setUp(() {
-  //     mockFirebaseAuth = MockFirebaseAuth();
-  //     mockFirebaseFirestore = MockFirebaseFirestore();
-  //     mockUser = MockUser();
-  //     when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
-  //     menuPage = MenuPage();
-  //   });
-  //
-  //
-  //
-  //   testWidgets('Test review quiz button', (WidgetTester tester) async {
-  //     await tester.pumpWidget(menuPage);
-  //
-  //     final reviewQuizButton = find.text('Review a Quiz');
-  //     expect(reviewQuizButton, findsOneWidget);
-  //
-  //     // Tap review quiz button and verify navigation
-  //     await tester.tap(reviewQuizButton);
-  //     await tester.pumpAndSettle();
-  //     expect(find.byType(ShortQuizAnswer), findsOneWidget);
-  //   });
-  //
-  //
-  //
-  //
-  // });
-  // late LoginPageState loginPageState;
-  // late MockFirebaseAuth mockAuth;
-  //
-  // setUp(() {
-  //   mockAuth = MockFirebaseAuth();
-  //   loginPageState = LoginPageState();
-  // });
-  //
-  // group('Login', () {
-  //   testWidgets('Login button enabled when email and password are entered', (WidgetTester tester) async {
-  //     await tester.pumpWidget(
-  //       MaterialApp(
-  //         home: Scaffold(
-  //           // body: Login(
-  //           //   auth: mockAuth,
-  //          // ),
-  //         ),
-  //       ),
-  //     );
-  //
-  //     final emailInput = find.byType(TextFormField).first;
-  //     final passwordInput = find.byType(TextFormField).last;
-  //     final loginButton = find.byType(ElevatedButton);
-  //
-  //     expect(emailInput, findsOneWidget);
-  //     expect(passwordInput, findsOneWidget);
-  //     expect(loginButton, findsOneWidget);
-  //
-  //     await tester.enterText(emailInput, 'test@test.com');
-  //     await tester.enterText(passwordInput, 'password');
-  //
-  //     await tester.tap(loginButton);
-  //     await tester.pumpAndSettle();
-  //
-  //     expect(find.text('Login Successful'), findsOneWidget);
-  //   });
-  //
-  //   testWidgets('Login button disabled when email or password is not entered', (WidgetTester tester) async {
-  //     await tester.pumpWidget(
-  //       MaterialApp(
-  //         home: Scaffold(
-  //           // body: Login(
-  //           //   auth: mockAuth,
-  //           // ),
-  //         ),
-  //       ),
-  //     );
-  //
-  //     final emailInput = find.byType(TextFormField).first;
-  //     final passwordInput = find.byType(TextFormField).last;
-  //     final loginButton = find.byType(ElevatedButton);
-  //
-  //     expect(emailInput, findsOneWidget);
-  //     expect(passwordInput, findsOneWidget);
-  //     expect(loginButton, findsOneWidget);
-  //
-  //     await tester.enterText(emailInput, '');
-  //     await tester.enterText(passwordInput, '');
-  //
-  //     expect(tester.widget<ElevatedButton>(loginButton).enabled, false);
-  //   });
-  //
-  //   testWidgets('Login button triggers login process', (WidgetTester tester) async {
-  //     await tester.pumpWidget(
-  //       MaterialApp(
-  //         home: Scaffold(
-  //           // body: Login(
-  //           //   auth: mockAuth,
-  //           // ),
-  //         ),
-  //       ),
-  //     );
-  //
-  //     final emailInput = find.byType(TextFormField).first;
-  //     final passwordInput = find.byType(TextFormField).last;
-  //     final loginButton = find.byType(ElevatedButton);
-  //
-  //     expect(emailInput, findsOneWidget);
-  //     expect(passwordInput, findsOneWidget);
-  //     expect(loginButton, findsOneWidget);
-  //
-  //     await tester.enterText(emailInput, 'test@test.com');
-  //     await tester.enterText(passwordInput, 'password');
-  //
-  //     await tester.tap(loginButton);
-  //     await tester.pumpAndSettle();
-  //
-  //     verify(mockAuth.signInWithEmailAndPassword(email: 'test@test.com', password: 'password')).called(1);
-  //   });
-  // });
- // testWidgets('_showDialog displays message', (WidgetTester tester) async {
-    // Build the widget tree
- //   await tester.pumpWidget(MaterialApp(
-  //    home: Builder(builder: (BuildContext context) {
- //       return ElevatedButton(
-     //     onPressed: () => const LoginPage()._showDialog('Hello, world!', context),
-    //      child: const Text('Show Dialog'),
-     //   );
-    //  }),
-   // ));
+  testWidgets('create image quiz loads correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: imageBased(numQuest: 3),
+      ),
+    );
 
-    // Tap the button to show the dialog
-  //  await tester.tap(find.text('Show Dialog'));
-  //  await tester.pumpAndSettle();
+    expect(find.text("Image-Based Quiz"), findsOneWidget);
+    expect(find.byType(TextFormField), findsOneWidget);
+    await tester.dragUntilVisible(
+      find.byType(ElevatedButton),
+      find.widgetWithText(ElevatedButton, 'Next'),
+      const Offset(0, -100),
+    );
 
-    // Verify that the dialog is displayed with the correct message
-  //  expect(find.text('Hello, world!'), findsOneWidget);
- // });
+    expect(find.byType(FloatingActionButton), findsNWidgets(6));
+  });
 
-  // group('Firebase auth tests', ()
-  // {
-  //   late MockFirebaseAuth mockFirebaseAuth;
-  //
-  //   setUp(() {
-  //     // Create a new mock instance of the FirebaseAuth class for each test
-  //     mockFirebaseAuth = MockFirebaseAuth();
-  //   });
-  //
-  //   test('User can log in with valid credentials', () async {
-  //     // Create a new mock user
-  //     final mockUser = MockUser(email: 'test@example.com', password: 'password123');
-  //
-  //     // Mock the signInWithEmailAndPassword method of mockFirebaseAuth
-  //     when(mockFirebaseAuth.signInWithEmailAndPassword(
-  //         email: 'test@example.com', password: 'password123'))
-  //         .thenAnswer((_) async {
-  //           print('signInWithEmailAndPassword called');
-  //           return MockUserCredential(user: mockUser);
-  //     });
-  //
-  //     // Call the loginUsingEmailPassword function with the mock FirebaseAuth instance
-  //     final result = await LoginPageState.loginUsingEmailPassword(email: 'test@example.com',
-  //         password: 'password123',
-  //         context: MockBuildContext(),
-  //         auth: mockFirebaseAuth);
-  //
-  //     // Verify that the method returned the expected result
-  //     expect(result, equals(mockUser));
-  //   });
-  //
-  // });
+
 
   }
 

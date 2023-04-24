@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_website/Views/Login/login_view.dart';
-import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:email_validator/email_validator.dart';
 
-import '../../menu.dart';
-
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);

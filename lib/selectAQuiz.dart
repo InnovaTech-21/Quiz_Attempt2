@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
 import 'package:quiz_website/menu.dart';
 import '../../main.dart';
