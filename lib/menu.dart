@@ -100,7 +100,6 @@ class _MenuPageState extends State<MenuPage> {
                       MaterialPageRoute(
                           builder: (context) => const SelectPage()),
                     );
-
                   },
                   style: ElevatedButton.styleFrom(
                     fixedSize: const Size(450, 65), backgroundColor: Colors.transparent,
