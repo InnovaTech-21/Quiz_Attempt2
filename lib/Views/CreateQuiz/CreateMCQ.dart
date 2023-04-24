@@ -5,7 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:quiz_website/menu.dart';
 
 class mCQ_Question_Page extends StatefulWidget {
-  const mCQ_Question_Page({Key? key}) : super(key: key);
+  const mCQ_Question_Page({Key? key, required this.numQuest}) : super(key: key);
+  final int numQuest;
 
   @override
   _MCQ_Question_Page createState() => _MCQ_Question_Page();
@@ -13,7 +14,13 @@ class mCQ_Question_Page extends StatefulWidget {
 
 class _MCQ_Question_Page extends State<mCQ_Question_Page> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  int numberOfQuestions = 5;
+  late int numberOfQuestions;
+
+  @override
+  void initState() {
+    super.initState();
+    numberOfQuestions = widget.numQuest;
+  }
   int currentQuestionIndex = 0;
   List<Question> questions = [];
   int? numberofQuestions = 0;
@@ -69,28 +76,6 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
     }
   }
 
-  Future<int> _getNumberOfQuestions() async {
-    //GETS NUMBER OF QUESTIONS FROM DATABASE
-    int numberOfQuestions = 0;
-    final CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
-
-    String? username = await getUser();
-    if (username != null) {
-      QuerySnapshot questionsSnapshot = await quizzesCollection
-          .where('Username', isEqualTo: username)
-          .orderBy('Date_Created', descending: true)
-          .limit(1)
-          .get();
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
-        numberOfQuestions = mostRecentQuestion['Number_of_questions'];
-      }
-    }
-    numberofQuestions = numberOfQuestions;
-    return numberOfQuestions;
-  }
 
   Future<String> _getQuizID() async {
     //GET NUMBER OF QUESTIONS FROM DATABASE
@@ -162,7 +147,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
     if (_formKey.currentState!.validate()) {
       //IF MORE QUESTIONS ARE STILL TO COME
 
-      if (currentQuestionIndex < (await (_getNumberOfQuestions()) - 1)) {
+      if (currentQuestionIndex < (numberOfQuestions - 1)) {
         //IF ON A QUESTION ALREADY ADDED TO THE LIST (BACKTRACKED)
         if (currentQuestionIndex < questions.length) {
           int index = currentQuestionIndex;
@@ -356,25 +341,12 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
                         ///BUTTON TO NEXT QUESTION
                         _nextQuestion();
                       },
-                      child: FutureBuilder<int>(
-                        future: _getNumberOfQuestions(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            int numberOfQuestions = snapshot.data!;
-                            return Text(
-
+                      child:  Text(
                                 //CHANGES FROM NEXT QUESTION TO PUBLISH ON LAST QUESTION
                                 currentQuestionIndex + 1 == numberOfQuestions
                                     ? 'Publish'
-                                    : 'Next Question');
-                          }
-                        },
-                      ),
+                                    : 'Next Question'),
+
                     ),
                   ],
                 )

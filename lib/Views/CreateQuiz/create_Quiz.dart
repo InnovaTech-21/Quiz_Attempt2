@@ -144,12 +144,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       addDataToFirestore();
 
       ///go to welcome page
-      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> Menu())); chnage page once next page is created
-      //Navigator.of(context).pushReplacement(MaterialPageRoute(
-      //builder: (context) =>
-      //ImageBased())); //chnage page once next page is created
+      int num= int.parse(numQuestionsController.text);
       if (getQuizType() == 'Short-Answer') {
-        int num= int.parse(numQuestionsController.text);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -158,12 +154,12 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       } else if (getQuizType() == 'Image-Based') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const imageBased()),
+          MaterialPageRoute(builder: (context) =>  imageBased(numQuest: num)),
         );
       } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const mCQ_Question_Page()),
+          MaterialPageRoute(builder: (context) =>  mCQ_Question_Page(numQuest: num)),
         );
       } else {
         _showDialog("Goes to " + getQuizType()! + " page");

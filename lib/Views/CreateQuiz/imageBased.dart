@@ -5,7 +5,8 @@ import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 
 class imageBased extends StatefulWidget {
-  const imageBased({Key? key});
+  const imageBased({Key? key, required this.numQuest}) : super(key: key);
+  final int numQuest;
 
   @override
   _imageBasedState createState() => _imageBasedState();
@@ -20,6 +21,13 @@ class _imageBasedState extends State<imageBased> {
   File? _imageFile6;
   final _picker = ImagePicker();
 
+  late int numberOfQuestions;
+
+  @override
+  void initState() {
+    super.initState();
+    numberOfQuestions = widget.numQuest;
+  }
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.getImage(source: source);
 

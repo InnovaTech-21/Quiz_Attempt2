@@ -19,7 +19,7 @@ import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
-
+import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
 class MockCollectionReference extends Mock implements CollectionReference<Map<String, dynamic>> {}
@@ -347,6 +347,123 @@ void main() {
   });
 
 
+  testWidgets('create a mcq requires input of both question and 4 answers', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: mCQ_Question_Page(numQuest: 3),
+      ),
+    );
+
+    await tester.dragUntilVisible(
+      find.byType(ElevatedButton),
+      find.widgetWithText(ElevatedButton, 'Next'),
+      const Offset(0, -100),
+    );
+    final nextButton = find.text('Next Question');
+    expect(nextButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Enter a question"), findsOneWidget);
+    expect(find.text("Enter an answer"), findsNWidgets(4));
+  });
+
+  testWidgets('create a mcq goes to next question when input valid', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: mCQ_Question_Page(numQuest: 3),
+      ),
+    );
+    expect(find.text("Question 1"), findsOneWidget);
+    final QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField1 = find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
+    final AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
+    final AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
+    final AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
+    expect(QuestionField, findsOneWidget);
+    expect(AnswerField1, findsOneWidget);
+    expect(AnswerField2, findsOneWidget);
+    expect(AnswerField3, findsOneWidget);
+    expect(AnswerField4, findsOneWidget);
+
+
+    await tester.enterText(QuestionField, 'What is your name');
+    await tester.enterText(AnswerField1, 'Bob1');
+    await tester.enterText(AnswerField2, 'Bob2');
+    await tester.enterText(AnswerField3, 'Bob3');
+    await tester.enterText(AnswerField4, 'Bob4');
+
+    await tester.dragUntilVisible(
+      find.byType(ElevatedButton),
+      find.widgetWithText(ElevatedButton, 'Next'),
+      const Offset(0, -100),
+    );
+    final nextButton = find.text('Next Question');
+    expect(nextButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Question 2"), findsOneWidget);
+
+  });
+
+  testWidgets('User can go back and edit previous questions in MCQ', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: mCQ_Question_Page(numQuest: 3),
+      ),
+    );
+    expect(find.text("Question 1"), findsOneWidget);
+    final QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField1 = find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
+    final AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
+    final AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
+    final AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
+    expect(QuestionField, findsOneWidget);
+    expect(AnswerField1, findsOneWidget);
+    expect(AnswerField2, findsOneWidget);
+    expect(AnswerField3, findsOneWidget);
+    expect(AnswerField4, findsOneWidget);
+
+
+    await tester.enterText(QuestionField, 'What is your name');
+    await tester.enterText(AnswerField1, 'Bob1');
+    await tester.enterText(AnswerField2, 'Bob2');
+    await tester.enterText(AnswerField3, 'Bob3');
+    await tester.enterText(AnswerField4, 'Bob4');
+
+    await tester.dragUntilVisible(
+      find.byType(ElevatedButton),
+      find.widgetWithText(ElevatedButton, 'Next'),
+      const Offset(0, -100),
+    );
+    final nextButton = find.text('Next Question');
+    expect(nextButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Question 2"), findsOneWidget);
+    expect(find.text('Option 1 (correct answer)'), findsOneWidget);
+    expect(find.text('Option 2'), findsOneWidget);
+    expect(find.text('Option 3'), findsOneWidget);
+    expect(find.text('Option 4'), findsOneWidget);
+
+
+    final prevButton = find.text('Previous Question');
+    expect(prevButton, findsOneWidget);
+    await tester.tap(prevButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Question 1"), findsOneWidget);
+    expect(find.text("What is your name"), findsOneWidget);
+    expect(find.text("Bob1"), findsOneWidget);
+    expect(find.text("Bob2"), findsOneWidget);
+    expect(find.text("Bob3"), findsOneWidget);
+    expect(find.text("Bob4"), findsOneWidget);
+
+  });
 
 
   // group('MenuPage', () {

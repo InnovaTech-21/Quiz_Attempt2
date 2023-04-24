@@ -2,23 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ShortQuizAnswer extends StatefulWidget {
-
-  const ShortQuizAnswer({Key? key,required this.quiz}) : super(key: key);
-  final String quiz;
+  ShortQuizAnswer({Key? key, required this.quizID}) : super(key: key);
+  String quizID;
   @override
   ShortQuizAnswerState createState() => ShortQuizAnswerState();
 }
 
 class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   int _currentIndex = 0;
-  late String quiz;
+  late String quizSelected;
 
   @override
   void initState() {
     super.initState();
-    quiz= widget.quiz;
+    quizSelected = widget.quizID;
   }
-
   List<TextEditingController> answerControllers = [];
   bool isSubmited=false;
   bool isCorrect=false;
@@ -46,8 +44,8 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   void _submitAnswer() {
     setState(() {
       _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
-        _showDialog("Your Score: ${getScore()}");
-        isSubmited=true;
+      _showDialog("Your Score: ${getScore()}");
+      isSubmited=true;
     });
   }
 
@@ -87,7 +85,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
 
       //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
       QuerySnapshot questionsSnapshot = await users
-          .where('Quiz_Category', isEqualTo: x)
+          .where('QuizID', isEqualTo: x)
           .orderBy('Question_type', descending: true)
           .get();
 
@@ -124,7 +122,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: FutureBuilder(
-          future: getQuestionsAnswers(quiz.toString()),
+          future: getQuestionsAnswers(quizSelected),
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
@@ -159,13 +157,13 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
                 ),
                 ///shows correct answers after quiz submitted
                 if (isSubmited )
-                Text(
-                'Correct answer: ${_correctAns[_currentIndex]}',
-                 style: TextStyle(
-                  color: _userAnswers[_currentIndex].toLowerCase() == _correctAns[_currentIndex].toLowerCase()
-                  ? Colors.green
-                  : Colors.red,
-                   ),
+                  Text(
+                    'Correct answer: ${_correctAns[_currentIndex]}',
+                    style: TextStyle(
+                      color: _userAnswers[_currentIndex].toLowerCase() == _correctAns[_currentIndex].toLowerCase()
+                          ? Colors.green
+                          : Colors.red,
+                    ),
                   ),
                 SizedBox(height: 20),
                 Row(

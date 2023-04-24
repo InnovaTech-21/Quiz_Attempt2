@@ -207,7 +207,7 @@ class _SelectPageState extends State<SelectPage> {
                                           if (_QuizType[i] == "Short-Answer" ) {
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quiz: _Quiz_ID[i]  )),
+                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i]  )),
                                             );
                                           }
                                           // Add your onPressed logic here

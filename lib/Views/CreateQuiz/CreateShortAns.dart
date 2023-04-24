@@ -20,6 +20,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
   void initState() {
     super.initState();
     numberOfQuestions = widget.numQuest;
+
   }
   ///change this to get number of questions from database
 
