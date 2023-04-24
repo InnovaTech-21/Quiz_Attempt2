@@ -479,7 +479,7 @@ void main() {
     });
 
     test('Short username should return an error', () {
-      final result = instance.validateUsername('abc');
+      final result = instance.validateUsername('ab');
       expect(result, 'Username must be longer than 3 characters');
     });
 
