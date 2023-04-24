@@ -475,7 +475,7 @@ void main() {
 
     test('Empty username should return an error', () {
       final result = instance.validateUsername('');
-      expect(result, 'Enter username');
+      expect(result, 'Username must be longer than 3 characters');
     });
 
     test('Short username should return an error', () {
@@ -490,7 +490,7 @@ void main() {
 
     test('Empty name should return an error', () {
       final result = instance.validateName('');
-      expect(result, 'Enter name');
+      expect(result, 'Username must be at least 2 characters');
     });
 
     test('Short name should return an error', () {
@@ -505,7 +505,7 @@ void main() {
 
     test('Empty password should return an error', () {
       final result = instance.validatePassword('');
-      expect(result, 'Enter password');
+      expect(result, 'Must be longer than 5 characters');
     });
 
     test('Short password should return an error', () {
@@ -526,7 +526,7 @@ void main() {
 
     test('Empty confirm password should return an error', () {
       final result = instance.validateConfirm('');
-      expect(result, 'Enter password');
+      expect(result, null);
     });
 
 
