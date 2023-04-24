@@ -14,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/menu.dart';
 import 'package:quiz_website/main.dart';
+import 'package:quiz_website/selectAQuiz.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
@@ -465,6 +466,39 @@ void main() {
 
   });
 
+  testWidgets('valid email required to reset password', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: ForgotPasswordPage(),
+      ),
+    );
+
+
+    final resetButton = find.widgetWithText(ElevatedButton, 'Reset Password');
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(resetButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Enter Valid Email"), findsOneWidget);
+
+  });
+
+  testWidgets('review a quiz button goes to select quiz page', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: MenuPage(),
+      ),
+    );
+
+
+    final doQuizButton = find.widgetWithText(ElevatedButton, 'Review a Quiz');
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(doQuizButton);
+    await tester.pumpAndSettle();
+    expect(find.byType(SelectPage), findsOneWidget);
+
+  });
 
   // group('MenuPage', () {
   //   late MenuPage menuPage;

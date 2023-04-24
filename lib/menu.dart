@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
-import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
+
 import 'package:quiz_website/selectAQuiz.dart';
 import '../../main.dart';
 
@@ -95,7 +95,6 @@ class _MenuPageState extends State<MenuPage> {
                 ),
                 child: ElevatedButton(
                   onPressed: ()  {
-                    ///testing if shortquizAns works
                     Navigator.push(
                       context,
                       MaterialPageRoute(
