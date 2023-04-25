@@ -115,6 +115,7 @@ class _SelectPageState extends State<SelectPage> {
                 }
 
                 // Filter quiz data based on selected category
+                List<String> filteredQuiz_ID = [];
                 List<String> filteredQuizName = [];
                 List<String> filteredQuizDesc = [];
                 List<String> filteredQuizCategory = [];
@@ -123,6 +124,7 @@ class _SelectPageState extends State<SelectPage> {
 
                 if (_selectedFilter == 'All') {
                   // Show all quizzes
+                  filteredQuiz_ID = List.from(_Quiz_ID);
                   filteredQuizName = List.from(_QuizName);
                   filteredQuizDesc = List.from(_QuizDesc);
                   filteredQuizCategory = List.from(_QuizCategory);
@@ -132,6 +134,7 @@ class _SelectPageState extends State<SelectPage> {
                   // Show quizzes with selected category
                   for (int i = 0; i < _QuizCategory.length; i++) {
                     if (_QuizCategory[i] == _selectedFilter) {
+                      filteredQuiz_ID.add(_Quiz_ID[i]);
                       filteredQuizName.add(_QuizName[i]);
                       filteredQuizDesc.add(_QuizDesc[i]);
                       filteredQuizCategory.add(_QuizCategory[i]);
@@ -173,6 +176,7 @@ class _SelectPageState extends State<SelectPage> {
                                         setState(() {
                                           _selectedFilter = value!;
                                         });
+                                        _Quiz_ID.clear();
                                         _QuizName.clear();
                                         _QuizDesc.clear();
                                         _QuizCategory.clear();
