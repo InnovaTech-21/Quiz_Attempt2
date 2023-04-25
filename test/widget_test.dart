@@ -595,10 +595,63 @@ void main() {
 
     expect(find.byType(FloatingActionButton), findsNWidgets(6));
   });
+  late CreateQuizPageState quizForm;
+  late MockGetUser mockGetUser;
+
+  setUp(() {
+    quizForm = CreateQuizPageState();
+    mockGetUser = MockGetUser();
+  });
+
+  group('QuizForm', () {
 
 
 
-  }
+
+    test('setUsername() sets the username field', () {
+      quizForm.setUsername('test');
+
+      expect(quizForm.username, 'test');
+    });
+
+    test('getQuizType() returns the quizType field', () {
+      quizForm.quizType = 'Type';
+
+      expect(quizForm.getQuizType(), 'Type');
+    });
+
+    test('getQuizCategory() returns the quizCategory field', () {
+      quizForm.quizCategory = 'Category';
+
+      expect(quizForm.getQuizCategory(), 'Category');
+    });
+
+    test('getQuizName() returns the quizNameController text', () {
+      quizForm.quizNameController.text = 'Quiz Name';
+
+      expect(quizForm.getQuizName(), 'Quiz Name');
+    });
+
+    test('getQuizDescription() returns the quizDescriptionController text', () {
+      quizForm.quizDescriptionController.text = 'Quiz Description';
+
+      expect(quizForm.getQuizDescription(), 'Quiz Description');
+    });
+
+    test('getNumberofQuestions() returns the int value of numQuestionsController text', () {
+      quizForm.numQuestionsController.text = '5';
+
+      expect(quizForm.getNumberofQuestions(), 5);
+    });
+  });
+}
+
+
+
+
+class MockGetUser extends Mock {
+  Future<String?> call();
+}
 
 
 
