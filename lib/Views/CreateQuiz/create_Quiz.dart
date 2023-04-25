@@ -29,7 +29,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
   ///add data to database
   void addDataToFirestore() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
+
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -38,11 +38,11 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           FirebaseFirestore.instance.collection("Users").doc(uID);
       userRef.get().then((doc) {
         if (doc.exists) {
-          String username = "username";
-          Object? y = doc.data();
-          //     nameuser = y["username"]?.toString();
+
+
+
         } else {
-          print('User Not Found');
+
         }
       }).catchError((error) => print("Failed to get User"));
     } else {
@@ -51,7 +51,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
     ///create a user with email and password
     String? nameuser = await getUser();
-    print(nameuser);
+
     String? str;
 
     getUser().then((result) {

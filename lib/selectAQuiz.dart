@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
 import 'package:quiz_website/menu.dart';
-import '../../main.dart';
+
 
 class SelectPage extends StatefulWidget {
   const SelectPage({Key? key}) : super(key: key);
@@ -217,8 +217,7 @@ class _SelectPageState extends State<SelectPage> {
                                         },
 
                                         style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.all(27),
-                                          primary: ColourPallete.borderColor,
+                                          padding: const EdgeInsets.all(27), backgroundColor: ColourPallete.borderColor,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(10),
                                             side: BorderSide(

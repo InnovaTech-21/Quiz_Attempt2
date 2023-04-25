@@ -20,9 +20,9 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   String? username;
   Future<String?> getUser() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
+
     User? user = FirebaseAuth.instance.currentUser;
-    String? nameuser = '';
+
     if (user != null) {
       String uID = user.uid;
       try {

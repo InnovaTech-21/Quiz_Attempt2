@@ -78,6 +78,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
 
   ///loads the quiz questions and answers for use throughout page
   Future<void> getQuestionsAnswers(String x) async {
+
     if (_questions.isEmpty) {
 
       CollectionReference users = FirebaseFirestore.instance.collection(

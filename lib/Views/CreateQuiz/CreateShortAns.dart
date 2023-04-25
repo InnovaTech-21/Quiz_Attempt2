@@ -28,7 +28,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
 
   ///list of question class
   List<Question> questions = [];
-  int? numberofQuestions = 0;
+
 
   ///controllers to get the values from the text boxes
   List<TextEditingController> questionControllers = [];
@@ -117,6 +117,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
 
   void addDataToFirestore(int index) async {
     ///Create quizzes created successfully, now add data to Firestore
+
     CollectionReference users =
         FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
@@ -125,7 +126,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
       'Question': questions[index].question.toString(),
       'Answers': questions[index].answer.toString(),
       'QuizID': await _getQuizID(),
-      'Question_type': "MCQ",
+      'Question_type': "Short Answer",
       'QuestionNo': index,
     };
 
@@ -174,7 +175,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
         ));
 
         /// write to database
-        for (int i = 0; i < numberofQuestions!; i++) {
+        for (int i = 0; i < numberOfQuestions; i++) {
           addDataToFirestore(i);
         }
         updateQuizzesStattus();
@@ -210,7 +211,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                 ///title that contains question number
                 Text(
                   'Question ${currentQuestionIndex + 1}',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 16),
 
