@@ -14,9 +14,9 @@ jobs:
       - run: flutter test --coverage
       - run: flutter pub get
       - run: flutter build web
-      - run: https://quiz-database-3b25e.web.app
+    
       - store_artifacts:
-            path: build/web/
+            path: build/web/https://quiz-database-3b25e.web.app
       - store_test_results:
             path: test-results
 workflows:
