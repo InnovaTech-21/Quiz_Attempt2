@@ -538,7 +538,7 @@ void main() {
 
   });
 
-  testWidgets('review a quiz button goes to select quiz page', (WidgetTester tester) async {
+  testWidgets('select a quiz to answer button goes to select quiz page', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: MenuPage(),
@@ -546,7 +546,7 @@ void main() {
     );
 
 
-    final doQuizButton = find.widgetWithText(ElevatedButton, 'Review a Quiz');
+    final doQuizButton = find.widgetWithText(ElevatedButton, 'Select a Quiz to Answer');
 
     // Tap create quiz button and verify navigation
     await tester.tap(doQuizButton);
