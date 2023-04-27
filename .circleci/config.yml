@@ -14,12 +14,9 @@ jobs:
       - run: flutter test --coverage
       - run: flutter pub get
       - run: flutter build web
-    
+      - run: flutter build apk --release
+
       - store_artifacts:
-            path: build/web/https://quiz-database-3b25e.web.app
+            path: build/app/outputs/flutter-apk/app-release.apk
       - store_test_results:
-            path: test-results
-workflows:
-  build:
-    jobs:
-      - build
+            path: test-results change this code so it runs the web app
