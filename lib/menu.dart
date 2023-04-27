@@ -105,7 +105,7 @@ class _MenuPageState extends State<MenuPage> {
                     shadowColor: Colors.transparent,
                   ),
                   child: const Text(
-                    'Review a Quiz',
+                    'Select a Quiz to Answer',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 19,
