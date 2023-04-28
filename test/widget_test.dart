@@ -5,9 +5,11 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:mockito/mockito.dart';
 import 'package:quiz_website/Views/Login/login_view.dart';
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
@@ -22,46 +24,46 @@ import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 
-// class MockFirebaseAuth extends Mock implements FirebaseAuth {}
-// class MockCollectionReference extends Mock implements CollectionReference<Map<String, dynamic>> {}
-//
-// class MockFirebase extends Mock implements Firebase {}
-//
-// class MockFirebaseUser extends Mock implements User {
-//   @override
-//   String get uid => '1234';
-// }
-//
-// class MockQuerySnapshot extends Mock implements QuerySnapshot<Map<String, dynamic>> {
-//   @override
-//   List<QueryDocumentSnapshot<Map<String, dynamic>>> get docs => [
-//     MockQueryDocumentSnapshot(),
-//   ];
-// }
-//
-// class MockQueryDocumentSnapshot extends Mock implements QueryDocumentSnapshot<Map<String, dynamic>> {
-//   @override
-//   Map<String, dynamic> data() => {
-//     'email': 'test@test.com',
-//     'password': 'password',
-//   };
-// }
-//
-// class MockFirebaseAuthFunctions {
-//   static Future<User?> signInWithEmailAndPassword({required String email, required String password, required FirebaseAuth auth}) async {
-//     // Check if email and password are valid
-//     if (email.isNotEmpty && password.isNotEmpty) {
-//       // Create a mock FirebaseUser
-//       final user = MockFirebaseUser();
-//
-//       // Return the mock FirebaseUser
-//       return user;
-//     } else {
-//       // Throw an exception if email or password are empty
-//       throw FirebaseAuthException(code: 'invalid-email-and-password');
-//     }
-//   }
-// }
+class MockFirebaseAuth extends Mock implements FirebaseAuth {}
+class MockCollectionReference extends Mock implements CollectionReference<Map<String, dynamic>> {}
+
+class MockFirebase extends Mock implements Firebase {}
+
+class MockFirebaseUser extends Mock implements User {
+  @override
+  String get uid => '1234';
+}
+
+class MockQuerySnapshot extends Mock implements QuerySnapshot<Map<String, dynamic>> {
+  @override
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> get docs => [
+    MockQueryDocumentSnapshot(),
+  ];
+}
+
+class MockQueryDocumentSnapshot extends Mock implements QueryDocumentSnapshot<Map<String, dynamic>> {
+  @override
+  Map<String, dynamic> data() => {
+    'email': 'test@test.com',
+    'password': 'password',
+  };
+}
+
+class MockFirebaseAuthFunctions {
+  static Future<User?> signInWithEmailAndPassword({required String email, required String password, required FirebaseAuth auth}) async {
+    // Check if email and password are valid
+    if (email.isNotEmpty && password.isNotEmpty) {
+      // Create a mock FirebaseUser
+      final user = MockFirebaseUser();
+
+      // Return the mock FirebaseUser
+      return user;
+    } else {
+      // Throw an exception if email or password are empty
+      throw FirebaseAuthException(code: 'invalid-email-and-password');
+    }
+  }
+}
 
 
 void main() {
@@ -593,6 +595,8 @@ void main() {
 
     expect(find.byType(FloatingActionButton), findsNWidgets(6));
   });
+
+
 
 }
 

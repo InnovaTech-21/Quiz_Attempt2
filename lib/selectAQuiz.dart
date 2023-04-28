@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
+import 'package:quiz_website/Views/AnswerQuiz/mcqAnswer.dart';
 import 'package:quiz_website/menu.dart';
 
 
@@ -27,6 +28,7 @@ class _SelectPageState extends State<SelectPage> {
 
 
   String _selectedFilter = 'All'; // Variable to store selected filter, set initial value to 'All'
+  ///method to load completed quiz's from database
   Future<void> getQuizInformation(String x) async {
 
       CollectionReference users = FirebaseFirestore.instance.collection(
@@ -103,7 +105,7 @@ class _SelectPageState extends State<SelectPage> {
       ),
 
       body: Material(
-
+          ///builds widget when quiz details are retrieved
           child: FutureBuilder(
               future: getQuizInformation("Anime"),
               builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -184,10 +186,7 @@ class _SelectPageState extends State<SelectPage> {
                                         _NumberofQuestions.clear();
                                       },
                                       items: <String>[
-                                        'All',
-                                        'Anime',
-                                        'Kpop',
-                                        'Kdrama'
+                                        'All','Movies','Sports','Celeb','Music','Books','TV Shows','Word Games','General Knowledge','Food','Kdrama', 'Anime', 'Kpop'
                                       ] // Add 'All' as an option
                                           .map<DropdownMenuItem<String>>(
                                               (String value) {
@@ -207,10 +206,17 @@ class _SelectPageState extends State<SelectPage> {
                                       width: 400,
                                       child: ElevatedButton(
                                         onPressed: () {
+                                          ///goes to relevant answer quiz page
                                           if (_QuizType[i] == "Short-Answer" ) {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i]  )),
+                                            );
+                                          }
+                                          if (_QuizType[i] == "Multiple Choice" ) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => mcqQuizAnswer(quizID: _Quiz_ID[i]  )),
                                             );
                                           }
                                           // Add your onPressed logic here

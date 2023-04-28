@@ -23,7 +23,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
   }
   int currentQuestionIndex = 0;
   List<Question> questions = [];
-  int? numberofQuestions = 0;
+
   List<TextEditingController> questionControllers = [];
   List<TextEditingController> correctanswerControllers = [];
   List<TextEditingController> randomAnswerControllers1 = [];
@@ -193,7 +193,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
         ));
 
         //WRITE TO DATABASE
-        for (int i = 0; i < numberofQuestions!; i++) {
+        for (int i = 0; i < numberOfQuestions; i++) {
           addDataToFirestore(i);
         }
         updateQuizzesStattus();

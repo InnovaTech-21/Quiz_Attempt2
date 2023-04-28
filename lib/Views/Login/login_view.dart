@@ -56,10 +56,11 @@ class LoginPageState extends State<LoginPage> {
   //   }
   // }
 
-  static Future<User?>loginUsingEmailPassword({required String email, required String password ,required BuildContext context, required FirebaseAuth auth  }) async{
+  static Future<User?>loginUsingEmailPassword({required String email, required String password  }) async{
     User? user;
     try{
-      UserCredential userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
+
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       user =userCredential.user;
 
     }  on FirebaseAuthException catch(e){
@@ -228,7 +229,9 @@ class LoginPageState extends State<LoginPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context, auth: FirebaseAuth.instance);
+                                    // usernameController.text='shakeel@gmail.com';
+                                    // passwordController.text='\$Hak3l';
+                                    user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text);
                                     validateAndSave();
                                   },
                                   style: ElevatedButton.styleFrom(

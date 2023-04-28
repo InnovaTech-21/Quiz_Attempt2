@@ -19,15 +19,14 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
   ///set text controllers
   final TextEditingController quizNameController = TextEditingController();
-  final TextEditingController quizDescriptionController =
-      TextEditingController();
+  final TextEditingController quizDescriptionController =TextEditingController();
   final TextEditingController numQuestionsController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   String? username;
   String? quizType;
   String? quizCategory;
 
-  ///add data to database
+  ///add data of quiz to be made to database
   void addDataToFirestore() async {
 
     User? user = FirebaseAuth.instance.currentUser;
@@ -285,7 +284,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                               'Select Quiz Category', // updated hint text for combo box
                         ),
                         value: quizCategory,
-                        items: <String>['Kdrama', 'Anime', 'Kpop']
+                        items: <String>['Movies','Sports','Celeb','Music','Books','TV Shows','Word Games','General Knowledge','Food','Kdrama', 'Anime', 'Kpop']
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
