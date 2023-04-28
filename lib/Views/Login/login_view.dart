@@ -32,7 +32,7 @@ class LoginPageState extends State<LoginPage> {
   void validateAndSave() {
     final FormState? form = _formKey.currentState;
     if (form!.validate()) {
-      _showDialog('Login Successful');
+
       clearInputs();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage()));
       //print('All fields entered, please check corresponding details');
@@ -286,25 +286,6 @@ class LoginPageState extends State<LoginPage> {
                           )
                         ]))))));
   }
-  void _showDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Message'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
 
-  }
 
 }
