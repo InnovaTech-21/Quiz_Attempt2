@@ -17,6 +17,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
   late int numberOfQuestions;
 
   @override
+  ///sets up page with number of questions
   void initState() {
     super.initState();
     numberOfQuestions = widget.numQuest;
