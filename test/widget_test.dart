@@ -548,7 +548,7 @@ void main() {
     );
 
 
-    final doQuizButton = find.widgetWithText(ElevatedButton, 'Select a Quiz to Answer');
+    final doQuizButton = find.widgetWithText(ElevatedButton, 'Answer a Quiz');
 
     // Tap create quiz button and verify navigation
     await tester.tap(doQuizButton);
