@@ -5,8 +5,8 @@ import 'package:quiz_website/ColourPallete.dart';
 import '../../../../menu.dart';
 
 class ShortAnswerQuestionPage extends StatefulWidget {
-  const ShortAnswerQuestionPage({Key? key, required this.numQuest}) : super(key: key);
-  final int numQuest;
+  const ShortAnswerQuestionPage({Key? key}) : super(key: key);
+
   @override
   _ShortAnswerQuestionPageState createState() =>
       _ShortAnswerQuestionPageState();
@@ -14,14 +14,9 @@ class ShortAnswerQuestionPage extends StatefulWidget {
 
 class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
   final _formKey = GlobalKey<FormState>();
-  late int numberOfQuestions;
 
-  @override
-  void initState() {
-    super.initState();
-    numberOfQuestions = widget.numQuest;
 
-  }
+
   ///change this to get number of questions from database
 
   int currentQuestionIndex = 0;
@@ -58,7 +53,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
       String uID = user.uid;
       try {
         CollectionReference users =
-            FirebaseFirestore.instance.collection('Users');
+        FirebaseFirestore.instance.collection('Users');
         final snapshot = await users.doc(uID).get();
         final data = snapshot.data() as Map<String, dynamic>;
         // print (data['user_name']);
@@ -74,7 +69,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
     // get number of questions from databse
     String quizID = "";
     final CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
+    FirebaseFirestore.instance.collection('Quizzes');
 
     String? username = await getUser();
     if (username != null) {
@@ -119,7 +114,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
     ///Create quizzes created successfully, now add data to Firestore
 
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
+    FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
     Map<String, dynamic> userData = {
@@ -133,62 +128,83 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
     await users.doc(docRef.id).set(userData);
   }
 
+  void addNumberOfQuestions(String quizID, int numQuestions) async {
+    CollectionReference quizzesCollection =
+    FirebaseFirestore.instance.collection('Quizzes');
+
+    // Get the quiz document with the specified ID
+    QuerySnapshot quizQuery =
+    await quizzesCollection.where('Quiz_ID', isEqualTo: quizID).get();
+
+    if (quizQuery.docs.length == 1) {
+      // Update the number of questions for the quiz
+      DocumentReference quizDocRef = quizQuery.docs[0].reference;
+      await quizDocRef.update({'Number_of_questions': numQuestions});
+
+      print('Successfully updated the number of questions for QuizID $quizID');
+    } else {
+      print('Error: Found ${quizQuery.docs.length} quizzes with QuizID $quizID');
+    }
+  }
   ///checks if validations passed then continues
   void _nextQuestion() async {
     if (_formKey.currentState!.validate()) {
       ///if more question still are still to come
 
-      if (currentQuestionIndex < (numberOfQuestions - 1)) {
-        ///if we are on a question already added to the list( we backtracked)
-        if (currentQuestionIndex < questions.length) {
-          int index = currentQuestionIndex;
 
-          if (index < questions.length) {
-            ///loads in question and answer from list
-            loadExisting(index);
-          }
+      ///if we are on a question already added to the list( we backtracked)
+      if (currentQuestionIndex < questions.length) {
+        int index = currentQuestionIndex;
+
+        if (index < questions.length) {
+          ///loads in question and answer from list
+          loadExisting(index);
         }
-
-        ///if we are on a question that has no yet been added to the list
-        else {
-          questions.add(Question(
-            question: questionControllers[currentQuestionIndex].text,
-            answer: answerControllers[currentQuestionIndex].text,
-          ));
-
-          ///clears details for next question to be entered
-          questionControllers[currentQuestionIndex].clear();
-          answerControllers[currentQuestionIndex].clear();
-        }
-
-        ///increments our current question index then loads next question from loop
-        setState(() {
-          currentQuestionIndex++;
-        });
       }
 
-      ///if on the last question
+      ///if we are on a question that has no yet been added to the list
       else {
         questions.add(Question(
           question: questionControllers[currentQuestionIndex].text,
           answer: answerControllers[currentQuestionIndex].text,
         ));
 
-        /// write to database
-        for (int i = 0; i < numberOfQuestions; i++) {
-          addDataToFirestore(i);
-        }
-        updateQuizzesStattus();
+        ///clears details for next question to be entered
+        questionControllers[currentQuestionIndex].clear();
+        answerControllers[currentQuestionIndex].clear();
       }
+
+      ///increments our current question index then loads next question from loop
+      setState(() {
+        currentQuestionIndex++;
+      });
+
+
+    }
+  }
+
+  Future<void> _publish() async {
+    if (_formKey.currentState!.validate()) {
+      questions.add(Question(
+        question: questionControllers[currentQuestionIndex].text,
+        answer: answerControllers[currentQuestionIndex].text,
+      ));
+
+      addNumberOfQuestions(await _getQuizID(), questions.length);
+      /// write to database
+      for (int i = 0; i < questions.length; i++) {
+        addDataToFirestore(i);
+
+      }
+      updateQuizzesStattus();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    for (int i = 0; i < numberOfQuestions; i++) {
-      questionControllers.add(TextEditingController());
-      answerControllers.add(TextEditingController());
-    }
+    questionControllers.add(TextEditingController());
+    answerControllers.add(TextEditingController());
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
@@ -244,32 +260,47 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                 ),
                 SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     ///previous question button only appears when not on first question
                     if (currentQuestionIndex > 0)
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            currentQuestionIndex--;
-                          });
-                          loadExisting(currentQuestionIndex);
-                        },
-                        child: Text('Previous Question'),
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              currentQuestionIndex--;
+                            });
+                            loadExisting(currentQuestionIndex);
+                          },
+                          child: Text('Previous Question'),
+                        ),
                       ),
-                    ElevatedButton(
-                      onPressed: () {
-                        ///runs the code to go to the next question
-                        _nextQuestion();
-                      },
-                      child:  Text(
-                                ///changes from next question to publish on last question
-                                currentQuestionIndex + 1 == numberOfQuestions
-                                    ? 'Publish'
-                                    : 'Next Question'),
+                    SizedBox(
+                      width: 150,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          ///runs the code to go to the next question
+                          questionControllers.add(TextEditingController());
+                          answerControllers.add(TextEditingController());
+                          _nextQuestion();
+                        },
+                        child: Text('Next Question'),
+                      ),
                     ),
+                    if (currentQuestionIndex > 1)
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _publish();
+                          },
+                          child: Text('Publish'),
+                        ),
+                      ),
                   ],
                 )
+
               ],
             ),
           ),

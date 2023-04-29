@@ -225,60 +225,12 @@ void main() {
   });
 
 
-  testWidgets('number of questions input must be number', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: CreateQuizPage(),
-      ),
-    );
 
-    final numQuestionsField = find.widgetWithText(TextFormField, 'Enter Number of Questions');
-    expect(numQuestionsField, findsOneWidget);
-
-    await tester.enterText(numQuestionsField, 's');
-    await tester.dragUntilVisible(
-      find.byType(ElevatedButton),
-      find.widgetWithText(ElevatedButton, 'Next'),
-      const Offset(0, -100),
-    );
-    final nextButton = find.text('Next');
-    expect(nextButton, findsOneWidget);
-
-    // Tap create quiz button and verify navigation
-    await tester.tap(nextButton);
-    await tester.pumpAndSettle();
-    expect(find.text("Number must be a digit"), findsOneWidget);
-  });
-
-  testWidgets('number of questions input must be must be in range', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: CreateQuizPage(),
-      ),
-    );
-
-    final numQuestionsField = find.widgetWithText(TextFormField, 'Enter Number of Questions');
-    expect(numQuestionsField, findsOneWidget);
-
-    await tester.enterText(numQuestionsField, '200');
-    await tester.dragUntilVisible(
-      find.byType(ElevatedButton),
-      find.widgetWithText(ElevatedButton, 'Next'),
-      const Offset(0, -100),
-    );
-    final nextButton = find.text('Next');
-    expect(nextButton, findsOneWidget);
-
-    // Tap create quiz button and verify navigation
-    await tester.tap(nextButton);
-    await tester.pumpAndSettle();
-    expect(find.text("Number of questions should be between 2 and 20"), findsOneWidget);
-  });
 
   testWidgets('create a short answer quiz requires input of both question and answer', (WidgetTester tester) async {
     await tester.pumpWidget(
        MaterialApp(
-        home: ShortAnswerQuestionPage(numQuest: 3),
+        home: ShortAnswerQuestionPage(),
       ),
     );
 
@@ -295,7 +247,7 @@ void main() {
   testWidgets('Valid question and answer in short questions goes to next question', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: ShortAnswerQuestionPage(numQuest: 3),
+        home: ShortAnswerQuestionPage(),
       ),
     );
     expect(find.text("Question 1"), findsOneWidget);
@@ -320,7 +272,7 @@ void main() {
   testWidgets('User can go back and edit previous questions in Short answer quizes', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: ShortAnswerQuestionPage(numQuest: 3),
+        home: ShortAnswerQuestionPage(),
       ),
     );
     expect(find.text("Question 1"), findsOneWidget);
@@ -354,7 +306,7 @@ void main() {
   testWidgets('create a mcq requires input of both question and 4 answers', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: mCQ_Question_Page(numQuest: 3),
+        home: mCQ_Question_Page(),
       ),
     );
 
@@ -376,7 +328,7 @@ void main() {
   testWidgets('create a mcq goes to next question when input valid', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: mCQ_Question_Page(numQuest: 3),
+        home: mCQ_Question_Page(),
       ),
     );
     expect(find.text("Question 1"), findsOneWidget);
@@ -416,7 +368,7 @@ void main() {
   testWidgets('User can go back and edit previous questions in MCQ', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: mCQ_Question_Page(numQuest: 3),
+        home: mCQ_Question_Page(),
       ),
     );
     expect(find.text("Question 1"), findsOneWidget);

@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:quiz_website/menu.dart';
 
 class mCQ_Question_Page extends StatefulWidget {
-  const mCQ_Question_Page({Key? key, required this.numQuest}) : super(key: key);
-  final int numQuest;
+  const mCQ_Question_Page({Key? key}) : super(key: key);
+
 
   @override
   _MCQ_Question_Page createState() => _MCQ_Question_Page();
@@ -14,14 +14,9 @@ class mCQ_Question_Page extends StatefulWidget {
 
 class _MCQ_Question_Page extends State<mCQ_Question_Page> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late int numberOfQuestions;
 
-  @override
-  ///sets up page with number of questions
-  void initState() {
-    super.initState();
-    numberOfQuestions = widget.numQuest;
-  }
+
+
   int currentQuestionIndex = 0;
   List<Question> questions = [];
 
@@ -148,7 +143,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
     if (_formKey.currentState!.validate()) {
       //IF MORE QUESTIONS ARE STILL TO COME
 
-      if (currentQuestionIndex < (numberOfQuestions - 1)) {
+
         //IF ON A QUESTION ALREADY ADDED TO THE LIST (BACKTRACKED)
         if (currentQuestionIndex < questions.length) {
           int index = currentQuestionIndex;
@@ -181,36 +176,57 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
         setState(() {
           currentQuestionIndex++;
         });
-      }
 
-      //IF ON THE LAST QUESTION
-      else {
-        questions.add(Question(
-          question: questionControllers[currentQuestionIndex].text,
-          answer: correctanswerControllers[currentQuestionIndex].text,
-          randoption1: randomAnswerControllers1[currentQuestionIndex].text,
-          randoption2: randomAnswerControllers2[currentQuestionIndex].text,
-          randoption3: randomAnswerControllers3[currentQuestionIndex].text,
-        ));
 
-        //WRITE TO DATABASE
-        for (int i = 0; i < numberOfQuestions; i++) {
-          addDataToFirestore(i);
-        }
-        updateQuizzesStattus();
-      }
+
+    }
+  }
+  void addNumberOfQuestions(String quizID, int numQuestions) async {
+    CollectionReference quizzesCollection =
+    FirebaseFirestore.instance.collection('Quizzes');
+
+    // Get the quiz document with the specified ID
+    QuerySnapshot quizQuery =
+    await quizzesCollection.where('Quiz_ID', isEqualTo: quizID).get();
+
+    if (quizQuery.docs.length == 1) {
+      // Update the number of questions for the quiz
+      DocumentReference quizDocRef = quizQuery.docs[0].reference;
+      await quizDocRef.update({'Number_of_questions': numQuestions});
+
+      print('Successfully updated the number of questions for QuizID $quizID');
+    } else {
+      print('Error: Found ${quizQuery.docs.length} quizzes with QuizID $quizID');
     }
   }
 
+  Future<void> _publish() async {
+    if (_formKey.currentState!.validate()) {
+      questions.add(Question(
+        question: questionControllers[currentQuestionIndex].text,
+        answer: correctanswerControllers[currentQuestionIndex].text,
+        randoption1: randomAnswerControllers1[currentQuestionIndex].text,
+        randoption2: randomAnswerControllers2[currentQuestionIndex].text,
+        randoption3: randomAnswerControllers3[currentQuestionIndex].text,
+      ));
+      addNumberOfQuestions(await _getQuizID(), questions.length);
+      //WRITE TO DATABASE
+      for (int i = 0; i < questions.length; i++) {
+        addDataToFirestore(i);
+      }
+      updateQuizzesStattus();
+    }
+
+  }
   @override
   Widget build(BuildContext context) {
-    for (int i = 0; i < numberOfQuestions; i++) {
+
       questionControllers.add(TextEditingController());
       correctanswerControllers.add(TextEditingController());
       randomAnswerControllers1.add(TextEditingController());
       randomAnswerControllers2.add(TextEditingController());
       randomAnswerControllers3.add(TextEditingController());
-    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
@@ -324,31 +340,47 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
                 ),
                 SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    //BUTTON TO PREVIOUS QUESTION
+                    ///previous question button only appears when not on first question
                     if (currentQuestionIndex > 0)
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            currentQuestionIndex--;
-                          });
-                          loadExisting(currentQuestionIndex);
-                        },
-                        child: Text('Previous Question'),
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              currentQuestionIndex--;
+                            });
+                            loadExisting(currentQuestionIndex);
+                          },
+                          child: Text('Previous Question'),
+                        ),
                       ),
-                    ElevatedButton(
-                      onPressed: () {
-                        ///BUTTON TO NEXT QUESTION
-                        _nextQuestion();
-                      },
-                      child:  Text(
-                                //CHANGES FROM NEXT QUESTION TO PUBLISH ON LAST QUESTION
-                                currentQuestionIndex + 1 == numberOfQuestions
-                                    ? 'Publish'
-                                    : 'Next Question'),
-
+                    SizedBox(
+                      width: 150,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          ///runs the code to go to the next question
+                          questionControllers.add(TextEditingController());
+                          correctanswerControllers.add(TextEditingController());
+                          randomAnswerControllers1.add(TextEditingController());
+                          randomAnswerControllers2.add(TextEditingController());
+                          randomAnswerControllers3.add(TextEditingController());
+                          _nextQuestion();
+                        },
+                        child: Text('Next Question'),
+                      ),
                     ),
+                    if (currentQuestionIndex > 1)
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _publish();
+                          },
+                          child: Text('Publish'),
+                        ),
+                      ),
                   ],
                 )
               ],

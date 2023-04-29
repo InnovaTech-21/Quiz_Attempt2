@@ -89,7 +89,7 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
       //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
       QuerySnapshot questionsSnapshot = await users
           .where('QuizID', isEqualTo: x)
-          .orderBy('Question_type', descending: true)
+          .orderBy('QuestionNo', descending: false)
           .get();
 
       List<Map<String, dynamic>> questionsAnswersList = [];
