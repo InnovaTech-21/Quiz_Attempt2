@@ -137,6 +137,7 @@ class _SelectPageState extends State<SelectPage> {
                   for (int i = 0; i < _QuizCategory.length; i++) {
                     if (_QuizCategory[i] == _selectedFilter) {
                       filteredQuiz_ID.add(_Quiz_ID[i]);
+
                       filteredQuizName.add(_QuizName[i]);
                       filteredQuizDesc.add(_QuizDesc[i]);
                       filteredQuizCategory.add(_QuizCategory[i]);
@@ -208,8 +209,10 @@ class _SelectPageState extends State<SelectPage> {
                                         onPressed: () {
                                           ///goes to relevant answer quiz page
                                           if (_QuizType[i] == "Short-Answer" ) {
+                                            print(_Quiz_ID[i]);
                                             Navigator.push(
                                               context,
+
                                               MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i]  )),
                                             );
                                           }

@@ -10,14 +10,14 @@ class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
 
   @override
-  State<MenuPage> createState() => _MenuPageState();
+  State<MenuPage> createState() => MenuPageState();
 
 
 
 }
 
 
-class _MenuPageState extends State<MenuPage> {
+class MenuPageState extends State<MenuPage> {
   String? username;
   Future<String?> getUser() async {
 

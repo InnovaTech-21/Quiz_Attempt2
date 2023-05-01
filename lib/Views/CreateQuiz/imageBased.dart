@@ -1,12 +1,14 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 
 class imageBased extends StatefulWidget {
-  const imageBased({Key? key, required this.numQuest}) : super(key: key);
-  final int numQuest;
+  const imageBased({Key? key, required int numQuest});
 
   @override
   _imageBasedState createState() => _imageBasedState();
@@ -20,36 +22,133 @@ class _imageBasedState extends State<imageBased> {
   File? _imageFile5;
   File? _imageFile6;
   final _picker = ImagePicker();
+  String? _imageUrl1;
+  String? _imageUrl2;
+  String? _imageUrl3;
+  String? _imageUrl4;
+  String? _imageUrl5;
+  String? _imageUrl6;
+  final TextEditingController questionController = TextEditingController();
 
-  late int numberOfQuestions;
 
-  @override
-  void initState() {
-    super.initState();
-    numberOfQuestions = widget.numQuest;
+  Future<void> _saveQuestion(String questionText, List<String> imageUrls) async {
+    // Create a new document in the Questions collection
+    final DocumentReference docRef =
+    FirebaseFirestore.instance.collection('Questions').doc();
+
+    // Set the fields of the new document
+    await docRef.set({
+      'question': questionText,
+      'images': imageUrls,
+      // Add any other fields for the question data
+    });
   }
+
+  Future<String> _uploadImageAndGetUrl(File imageFile) async {
+    // Upload the image to Firebase Storage
+    final Reference ref = FirebaseStorage.instance
+        .ref()
+        .child('images');
+    final UploadTask uploadTask = ref.putFile(imageFile);
+    await uploadTask.whenComplete(() {});
+
+    // Get the download URL for the image
+    final String downloadUrl = await ref.getDownloadURL();
+    return downloadUrl;
+  }
+
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.getImage(source: source);
 
     if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+      String downloadUrl = await _uploadImageAndGetUrl(imageFile);
+
       setState(() {
+        // Update the image file and URL based on which image slot is empty
         if (_imageFile1 == null) {
-          _imageFile1 = File(pickedFile.path);
+          _imageFile1 = imageFile;
+          _imageUrl1 = downloadUrl;
         } else if (_imageFile2 == null) {
-          _imageFile2 = File(pickedFile.path);
+          _imageFile2 = imageFile;
+         _imageUrl2 = downloadUrl;
         } else if (_imageFile3 == null) {
-          _imageFile3 = File(pickedFile.path);
+          _imageFile3 = imageFile;
+         _imageUrl3 = downloadUrl;
         } else if (_imageFile4 == null) {
-          _imageFile4 = File(pickedFile.path);
+          _imageFile4 = imageFile;
+          _imageUrl4 = downloadUrl;
         } else if (_imageFile5 == null) {
-          _imageFile5 = File(pickedFile.path);
+          _imageFile5 = imageFile;
+          _imageUrl5 = downloadUrl;
         } else if (_imageFile6 == null) {
-          _imageFile6 = File(pickedFile.path);
+          _imageFile6 = imageFile;
+           _imageUrl6 = downloadUrl;
         }
       });
     }
   }
+  Future<void> _submitQuestion(String questionText, List<String?> imageUrls) async {
+    try {
+      // Upload the images and get their download URLs
+      List<String> downloadUrls = [];
+      for (String? imageUrl in imageUrls) {
+        File imageFile = File(imageUrl!);
+        String downloadUrl = await _uploadImageAndGetUrl(imageFile);
+        downloadUrls.add(downloadUrl);
+      }
 
+      // Create a new document in the Questions collection
+      final DocumentReference docRef = FirebaseFirestore.instance.collection('Questions').doc();
+
+      // Set the fields of the new document
+      await docRef.set({
+        'question': questionText,
+        'images': downloadUrls,
+        'QuizID':"111",
+        // Add any other fields for the question data
+      });
+      // Success message
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Success'),
+            content: const Text('Question submitted successfully.'),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (error) {
+      // Error message
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: const Text('Failed to submit the question.'),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,6 +185,7 @@ class _imageBasedState extends State<imageBased> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
+
                       children: <Widget>[
                         Text(
                           'Enter quiz question here:',
@@ -96,6 +196,7 @@ class _imageBasedState extends State<imageBased> {
                         ),
                         const SizedBox(height: 30),
                         TextFormField(
+                          controller: questionController,
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(27),
                             enabledBorder: OutlineInputBorder(
@@ -146,7 +247,7 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image1",
                                         onPressed: () {
-                                          _pickImage(ImageSource.camera);
+                                          _pickImage(ImageSource.gallery);
                                         },
                                         child: const Icon(Icons.add_photo_alternate),
                                       ),
@@ -176,7 +277,7 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image2",
                                         onPressed: () {
-                                          _pickImage(ImageSource.camera);
+                                          _pickImage(ImageSource.gallery);
                                         },
                                         child: const Icon(Icons.add_photo_alternate),
                                       ),
@@ -205,7 +306,7 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image3",
                                         onPressed: () {
-                                          _pickImage(ImageSource.camera);
+                                          _pickImage(ImageSource.gallery);
                                         },
                                         child: const Icon(Icons.add_photo_alternate),
                                       ),
@@ -239,7 +340,7 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image4",
                                         onPressed: () {
-                                          _pickImage(ImageSource.camera);
+                                          _pickImage(ImageSource.gallery);
                                         },
                                         child: const Icon(Icons.add_photo_alternate),
                                       ),
@@ -268,7 +369,7 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image5",
                                         onPressed: () {
-                                          _pickImage(ImageSource.camera);
+                                          _pickImage(ImageSource.gallery);
                                         },
                                         child: const Icon(Icons.add_photo_alternate),
                                       ),
@@ -298,7 +399,7 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image6",
                                         onPressed: () {
-                                          _pickImage(ImageSource.camera);
+                                          _pickImage(ImageSource.gallery);
                                         },
                                         child: const Icon(Icons.add_photo_alternate),
                                       ),
@@ -337,7 +438,16 @@ class _imageBasedState extends State<imageBased> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                List<String?> imageUrls = [
+                                await _uploadImageAndGetUrl(_imageFile1!) ,
+                                  await _uploadImageAndGetUrl(_imageFile2!),
+                                  await _uploadImageAndGetUrl(_imageFile3!),
+                                  await _uploadImageAndGetUrl(_imageFile4!),
+                                  await _uploadImageAndGetUrl(_imageFile5!),
+                                  await _uploadImageAndGetUrl(_imageFile6!),
+                                ];
+                                _submitQuestion(questionController.text, imageUrls);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(

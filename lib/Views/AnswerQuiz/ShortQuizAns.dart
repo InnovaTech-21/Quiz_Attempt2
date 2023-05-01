@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ShortQuizAnswer extends StatefulWidget {
@@ -27,10 +28,10 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   final List <String> _correctAns=[]; // load in the answers
   ///list of user answers
   List<String> _userAnswers = [];
-
+  int count=0;
   ///gets the users score at when they submit
   String getScore(){
-    int count=0;
+
     for(int i=0;i<_questions.length;i++){
       if(_userAnswers[i].toLowerCase()==_correctAns[i].toLowerCase()){
         count++;
@@ -39,14 +40,52 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
     String score='$count/${_questions.length}';
     return score;
   }
+  Future<String?> getUser() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = FirebaseAuth.instance.currentUser;
+    String? nameuser = '';
+    if (user != null) {
+      String uID = user.uid;
+      try {
+        CollectionReference users =
+        FirebaseFirestore.instance.collection('Users');
+        final snapshot = await users.doc(uID).get();
+        final data = snapshot.data() as Map<String, dynamic>;
+        // print (data['user_name']);
+        return data['user_name'];
+      } catch (e) {
+        return 'Error fetching user';
+      }
+    }
+  }
+  void addtoCompletedQuiz() async {
+    CollectionReference users =
+    FirebaseFirestore.instance.collection('QuizResults');
+    DocumentReference docRef = users.doc();
+    String docID = docRef.id;
+    Map<String, dynamic> userData = {
+      "Quiz_ID": quizSelected,
+      "CorrectAns":count,
+      "TotalAns": _questions.length,
+      "Date_Created": Timestamp.fromDate(DateTime.now()),
+      "UserID": await getUser(),
+
+    };
+
+    await users.doc(docRef.id).set(userData);
+  }
 
   ///saves the users answers to a list as they answer the questions
-  void _submitAnswer() {
+  void _submitAnswer() async {
+
     setState(() {
       _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       _showDialog("Your Score: ${getScore()}");
+      addtoCompletedQuiz();
+      print(1);
       isSubmited=true;
     });
+
   }
 
 

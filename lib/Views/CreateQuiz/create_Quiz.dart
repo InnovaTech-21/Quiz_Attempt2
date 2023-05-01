@@ -11,10 +11,10 @@ class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({Key? key}) : super(key: key);
 
   @override
-  State<CreateQuizPage> createState() => _CreateQuizPageState();
+  State<CreateQuizPage> createState() => CreateQuizPageState();
 }
 
-class _CreateQuizPageState extends State<CreateQuizPage> {
+class CreateQuizPageState extends State<CreateQuizPage> {
   final _formKey = GlobalKey<FormState>();
 
   ///set text controllers

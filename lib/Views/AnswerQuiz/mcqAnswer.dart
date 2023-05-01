@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class mcqQuizAnswer extends StatefulWidget {
@@ -47,11 +48,46 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
     String score = '$count/${_questions.length}';
     return score;
   }
+  Future<String?> getUser() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = FirebaseAuth.instance.currentUser;
+    String? nameuser = '';
+    if (user != null) {
+      String uID = user.uid;
+      try {
+        CollectionReference users =
+        FirebaseFirestore.instance.collection('Users');
+        final snapshot = await users.doc(uID).get();
+        final data = snapshot.data() as Map<String, dynamic>;
+        // print (data['user_name']);
+        return data['user_name'];
+      } catch (e) {
+        return 'Error fetching user';
+      }
+    }
+  }
+  void addtoCompletedQuiz() async {
+    CollectionReference users =
+    FirebaseFirestore.instance.collection('QuizResults');
+    DocumentReference docRef = users.doc();
+    String docID = docRef.id;
+    Map<String, dynamic> userData = {
+      "Quiz_ID": quizSelected,
+      "CorrectAns":_currentIndex,
+      "TotalAns": _questions.length,
+      "Date_Created": Timestamp.fromDate(DateTime.now()),
+      "UserID": await getUser(),
+
+    };
+
+    await users.doc(docRef.id).set(userData);
+  }
 
   ///saves the users answers to a list as they answer the questions
   void _submitAnswer() {
     setState(() {
 //      _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
+      addtoCompletedQuiz();
       _showDialog("Your Score: ${getScore()}");
       isSubmited = true;
     });
