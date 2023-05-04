@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
-import 'package:quiz_website/Views/AnswerQuiz/mcqAnswer.dart';
+import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
+import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
 import 'package:quiz_website/menu.dart';
 
 
