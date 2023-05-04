@@ -12,10 +12,17 @@ class ShortQuizAnswer extends StatefulWidget {
 }
 
 class ShortQuizAnswerState extends State<ShortQuizAnswer> {
+  ///vars for doing and checking quiz
   int _currentIndex = 0;
   late String quizSelected;
+  List<TextEditingController> answerControllers = [];
+  bool isSubmited=false;
+  bool isCorrect=false;
   ///vars for timed quizes
-  bool isTimed=false;
+  ///needed from database
+  bool isTimed=true;
+  int time= 60;
+
   late ValueNotifier<int> timeRemaining=ValueNotifier<int>(0);
   late Timer timer=Timer(Duration.zero, () {});
 
@@ -26,7 +33,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
     quizSelected = widget.quizID;
     ///sets up timer if needed
     if(isTimed) {
-    timeRemaining = ValueNotifier<int>(60);
+    timeRemaining = ValueNotifier<int>(time);
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (timeRemaining.value == 0) {
         timer.cancel();
@@ -45,9 +52,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   }
 
 
-  List<TextEditingController> answerControllers = [];
-  bool isSubmited=false;
-  bool isCorrect=false;
+
   ///list of questions from database
   final List<String> _questions = []; // load in the questions
 

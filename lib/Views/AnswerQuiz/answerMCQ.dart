@@ -13,10 +13,16 @@ class mcqQuizAnswer extends StatefulWidget {
 }
 
 class mcqQuizAnswerState extends State<mcqQuizAnswer> {
+  List<TextEditingController> answerControllers = [];
+  bool isSubmited = false;
+  bool isCorrect = false;
   int _currentIndex = 0;
   late String quizSelected;
   ///vars for timed quizes
-  bool isTimed=true;
+  ///needed from database
+  bool isTimed=false;
+  int time= 60;
+
   late ValueNotifier<int> timeRemaining=ValueNotifier<int>(0);
   late Timer timer=Timer(Duration.zero, () {});
 
@@ -27,7 +33,7 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
     quizSelected = widget.quizID;
     ///sets up timer if needed
     if(isTimed) {
-      timeRemaining = ValueNotifier<int>(60);
+      timeRemaining = ValueNotifier<int>(time);
       timer = Timer.periodic(Duration(seconds: 1), (timer) {
         if (timeRemaining.value == 0) {
           timer.cancel();
@@ -44,9 +50,7 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
     super.dispose();
   }
 
-  List<TextEditingController> answerControllers = [];
-  bool isSubmited = false;
-  bool isCorrect = false;
+
 
   ///list of questions from database
   final List<String> _questions = []; // load in the questions
