@@ -219,13 +219,13 @@ class _SelectPageState extends State<SelectPage> {
                                             Navigator.push(
                                               context,
 
-                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i],bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
+                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
                                             );
                                           }
                                           if (_QuizType[i] == "Multiple Choice" ) {
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => mcqQuizAnswer(quizID: _Quiz_ID[i]  )),
+                                              MaterialPageRoute(builder: (context) => mcqQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
                                             );
                                           }
                                           // Add your onPressed logic here
