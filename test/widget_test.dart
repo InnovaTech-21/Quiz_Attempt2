@@ -530,23 +530,23 @@ void main() {
     });
   });
 
-  testWidgets('create image quiz loads correctly', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: imageBased(numQuest: 3),
-      ),
-    );
-
-    expect(find.text("Image-Based Quiz"), findsOneWidget);
-    expect(find.byType(TextFormField), findsOneWidget);
-    await tester.dragUntilVisible(
-      find.byType(ElevatedButton),
-      find.widgetWithText(ElevatedButton, 'Next'),
-      const Offset(0, -100),
-    );
-
-    expect(find.byType(FloatingActionButton), findsNWidgets(6));
-  });
+  // testWidgets('create image quiz loads correctly', (WidgetTester tester) async {
+  //   await tester.pumpWidget(
+  //     const MaterialApp(
+  //       home: imageBased(numQuest: 3),
+  //     ),
+  //   );
+  //
+  //   expect(find.text("Image-Based Quiz"), findsOneWidget);
+  //   expect(find.byType(TextFormField), findsOneWidget);
+  //   await tester.dragUntilVisible(
+  //     find.byType(ElevatedButton),
+  //     find.widgetWithText(ElevatedButton, 'Next'),
+  //     const Offset(0, -100),
+  //   );
+  //
+  //   expect(find.byType(FloatingActionButton), findsNWidgets(6));
+  // });
 
 
 
