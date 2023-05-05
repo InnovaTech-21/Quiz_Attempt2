@@ -5,8 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ShortQuizAnswer extends StatefulWidget {
-  ShortQuizAnswer({Key? key, required this.quizID}) : super(key: key);
+  ShortQuizAnswer({Key? key, required this.quizID, required this.bTimed, required this.iTime}) : super(key: key);
   String quizID;
+  bool bTimed;
+  int iTime;
   @override
   ShortQuizAnswerState createState() => ShortQuizAnswerState();
 }
@@ -20,8 +22,8 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   bool isCorrect=false;
   ///vars for timed quizes
   ///needed from database
-  bool isTimed=true;
-  int time= 60;
+  late bool isTimed;
+  late int time;
 
   late ValueNotifier<int> timeRemaining=ValueNotifier<int>(0);
   late Timer timer=Timer(Duration.zero, () {});
@@ -31,6 +33,8 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   void initState() {
     super.initState();
     quizSelected = widget.quizID;
+    isTimed=widget.bTimed;
+    time=widget.iTime;
     ///sets up timer if needed
     if(isTimed) {
     timeRemaining = ValueNotifier<int>(time);

@@ -15,7 +15,9 @@ class SelectPage extends StatefulWidget {
 }
 
 class _SelectPageState extends State<SelectPage> {
-  final List<String> _QuizName = []; // load in the questions
+  final List<String> _QuizName = [];
+  final List<int> _TimerTime = [];
+  final List<bool> _QuizTimed = [];// load in the questions
 
   ///List of correct answers
   final List <String> _QuizType=[];
@@ -64,6 +66,8 @@ class _SelectPageState extends State<SelectPage> {
             "Quiz_Description": quizDoc["Quiz_Description"],
             "Quiz_Category": quizDoc["Quiz_Category"],
             "Quiz_Type":quizDoc["Quiz_Type"],
+            "QuizTimed":quizDoc["QuizTimed"],
+            "TimerTime":quizDoc["TimerTime"],
             "Number_of_questions":quizDoc["Number_of_questions"].toString(),
           };
           questionsAnswersList.add(questionAnswerMap);
@@ -72,6 +76,8 @@ class _SelectPageState extends State<SelectPage> {
 
       for (var i = 0; i < questionsAnswersList.length; i++) {
         _Quiz_ID.add(questionsAnswersList[i]["Quiz_ID"]);
+        _QuizTimed.add(questionsAnswersList[i]["QuizTimed"]);
+        _TimerTime.add(questionsAnswersList[i]["TimerTime"]);
         _QuizName.add(questionsAnswersList[i]["QuizName"]);
         _QuizDesc.add(questionsAnswersList[i]["Quiz_Description"]);
         _QuizCategory.add(questionsAnswersList[i]["Quiz_Category"]);
@@ -213,7 +219,7 @@ class _SelectPageState extends State<SelectPage> {
                                             Navigator.push(
                                               context,
 
-                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i]  )),
+                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i],bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
                                             );
                                           }
                                           if (_QuizType[i] == "Multiple Choice" ) {
