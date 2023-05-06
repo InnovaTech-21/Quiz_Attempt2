@@ -6,9 +6,9 @@ import '../../../../menu.dart';
 class publishPage extends StatefulWidget {
   final List<String> questions;
   final List<String> answers;
+  final int quizType;
 
-
-  publishPage({required this.questions, required this.answers});
+  publishPage({required this.questions, required this.answers,required this.quizType});
 
   @override
   _publishPageState createState() => _publishPageState();
@@ -114,15 +114,48 @@ class _publishPageState extends State<publishPage> {
     FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
-    Map<String, dynamic> userData = {
-      'Question': widget.questions[index].toString(),
-      'Answers': widget.answers[index].toString(),
-      'QuizID': await _getQuizID(),
-      'Question_type': "Short Answer",
-      'QuestionNo': index,
-    };
-    await users.doc(docRef.id).set(userData);
+    if(widget.quizType==1) {
+      Map<String, dynamic> userData = {
+        'Question': widget.questions[index].toString(),
+        'Answers': widget.answers[index].toString(),
+        'QuizID': await _getQuizID(),
+        'Question_type': "Short Answer",
+        'QuestionNo': index,
+      };
+      await users.doc(docRef.id).set(userData);
+    }else if(widget.quizType==2){
+      List <String> ans=widget.answers[index].split('^');
+      String correctAns=ans[0];
+      String rand1=ans[1];
+      String rand2=ans[2];
+      String rand3=ans[3];
+
+      Map<String, dynamic> userData = {
+        'Question': widget.questions[index].toString(),
+        'Answers': correctAns,
+        'Option1': rand1,
+        'Option2': rand2,
+        'Option3': rand3,
+        'QuizID': await _getQuizID(),
+        'Question_type': "MCQ",
+        'QuestionNo': index,
+      };
+
+      await users.doc(docRef.id).set(userData);
+    }
+
   }
+
+  List<String> mcqDisplay(List<String> ans){
+
+    List <String> output=[];
+    for(int i=0;i<ans.length;i++){
+      List <String> splitAnswers=ans[i].split('^');
+      output.add('Correct option: ${splitAnswers[0]}\nRandom option: ${splitAnswers[1]}\nRandom option: ${splitAnswers[2]}\nRandom option: ${splitAnswers[3]}');
+    }
+    return output;
+  }
+
 
   void addNumberOfQuestions(String quizID, int numQuestions,bool isTimed,int time) async {
     CollectionReference quizzesCollection =
@@ -206,9 +239,16 @@ class _publishPageState extends State<publishPage> {
                         ),
                       ),
                       SizedBox(height: 8.0),
+                      if(widget.quizType==1)
                       Text(
                         widget.answers[index],
-                      ),
+                      )
+                      else if(widget.quizType==2)
+                        Text(
+                          mcqDisplay(widget.answers)[index],
+                        )
+
+
                     ],
 
                   ),

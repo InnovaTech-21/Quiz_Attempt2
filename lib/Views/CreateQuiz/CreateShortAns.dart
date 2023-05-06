@@ -183,7 +183,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         publishPage(questions: questions,
-                                            answers: answers)
+                                            answers: answers,quizType: 1,)
                                 ),
                               );
                             }

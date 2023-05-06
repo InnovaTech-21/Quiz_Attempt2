@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:quiz_website/menu.dart';
+import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
 
 class mCQ_Question_Page extends StatefulWidget {
   const mCQ_Question_Page({Key? key}) : super(key: key);
@@ -15,7 +13,8 @@ class mCQ_Question_Page extends StatefulWidget {
 class _MCQ_Question_Page extends State<mCQ_Question_Page> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-
+  List<String> quests = [];
+  List<String> answers = [];
 
   int currentQuestionIndex = 0;
   List<Question> questions = [];
@@ -53,89 +52,11 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
     }
   }
 
-  //GETS USERNAME
-  Future<String?> getUser() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      String uID = user.uid;
-      try {
-        CollectionReference users =
-            FirebaseFirestore.instance.collection('Users');
-        final snapshot = await users.doc(uID).get();
-        final data = snapshot.data() as Map<String, dynamic>;
-        return data['user_name'];
-      } catch (e) {
-        return 'Error fetching user';
-      }
+  void convertLists(){
+    for(int i=0;i<questions.length;i++){
+      quests.add(questions[i].question);
+      answers.add(questions[i].answer+'^'+questions[i].randoption1+'^'+questions[i].randoption2+'^'+questions[i].randoption3);
     }
-  }
-
-
-  Future<String> _getQuizID() async {
-    //GET NUMBER OF QUESTIONS FROM DATABASE
-    String quizID = "";
-    final CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
-
-    String? username = await getUser();
-    if (username != null) {
-      QuerySnapshot questionsSnapshot = await quizzesCollection
-          .where('Username', isEqualTo: username)
-          .orderBy('Date_Created', descending: true)
-          .limit(1)
-          .get();
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
-        quizID = mostRecentQuestion['Quiz_ID'].toString();
-      }
-    }
-
-    return quizID;
-  }
-
-  void updateQuizzesStattus() async {
-    DocumentReference docRef = FirebaseFirestore.instance
-        .collection('Quizzes')
-        .doc(await _getQuizID());
-
-//UPDATES THE DOCUMENT
-    docRef.update({
-      'Status': 'Finished',
-    }).then((value) async {
-      try {
-        await _showDialog("Quiz Created");
-      } finally {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MenuPage()),
-        );
-      }
-    }).catchError((error) {
-      _showDialog("Error creating quiz");
-    });
-  }
-
-  void addDataToFirestore(int index) async {
-    //CREATE QUIZZES CREATED SUCCESSFULLY, NOW ADDS DATA TO FIRESTORE
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
-    DocumentReference docRef = users.doc();
-
-    Map<String, dynamic> userData = {
-      'Question': questions[index].question.toString(),
-      'Answers': questions[index].answer.toString(),
-      'Option1': questions[index].randoption1.toString(),
-      'Option2': questions[index].randoption2.toString(),
-      'Option3': questions[index].randoption3.toString(),
-      'QuizID': await _getQuizID(),
-      'Question_type': "MCQ",
-      'QuestionNo': index,
-    };
-
-    await users.doc(docRef.id).set(userData);
   }
 
   //FIRST CHECKS IF VALIDATION CHECKS PASSED THEN CONTINUES
@@ -181,43 +102,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
 
     }
   }
-  void addNumberOfQuestions(String quizID, int numQuestions) async {
-    CollectionReference quizzesCollection =
-    FirebaseFirestore.instance.collection('Quizzes');
 
-    // Get the quiz document with the specified ID
-    QuerySnapshot quizQuery =
-    await quizzesCollection.where('Quiz_ID', isEqualTo: quizID).get();
-
-    if (quizQuery.docs.length == 1) {
-      // Update the number of questions for the quiz
-      DocumentReference quizDocRef = quizQuery.docs[0].reference;
-      await quizDocRef.update({'Number_of_questions': numQuestions});
-
-      print('Successfully updated the number of questions for QuizID $quizID');
-    } else {
-      print('Error: Found ${quizQuery.docs.length} quizzes with QuizID $quizID');
-    }
-  }
-
-  Future<void> _publish() async {
-    if (_formKey.currentState!.validate()) {
-      questions.add(Question(
-        question: questionControllers[currentQuestionIndex].text,
-        answer: correctanswerControllers[currentQuestionIndex].text,
-        randoption1: randomAnswerControllers1[currentQuestionIndex].text,
-        randoption2: randomAnswerControllers2[currentQuestionIndex].text,
-        randoption3: randomAnswerControllers3[currentQuestionIndex].text,
-      ));
-      addNumberOfQuestions(await _getQuizID(), questions.length);
-      //WRITE TO DATABASE
-      for (int i = 0; i < questions.length; i++) {
-        addDataToFirestore(i);
-      }
-      updateQuizzesStattus();
-    }
-
-  }
   @override
   Widget build(BuildContext context) {
 
@@ -376,7 +261,29 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
                         width: 150,
                         child: ElevatedButton(
                           onPressed: () {
-                            _publish();
+                            if (_formKey.currentState!.validate()) {
+                              questions.add(Question(
+                                question: questionControllers[currentQuestionIndex]
+                                    .text,
+                                answer: correctanswerControllers[currentQuestionIndex]
+                                    .text,
+                                randoption1: randomAnswerControllers1[currentQuestionIndex]
+                                    .text,
+                                randoption2: randomAnswerControllers2[currentQuestionIndex]
+                                    .text,
+                                randoption3: randomAnswerControllers3[currentQuestionIndex]
+                                    .text,
+                              ));
+                              convertLists();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        publishPage(questions: quests,
+                                          answers: answers,quizType: 2,)
+                                ),
+                              );
+                            }
                           },
                           child: Text('Publish'),
                         ),
