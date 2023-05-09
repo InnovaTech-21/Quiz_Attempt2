@@ -173,11 +173,20 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              questions.add(
-                                  questionControllers[currentQuestionIndex]
-                                      .text);
-                              answers.add(
-                                  answerControllers[currentQuestionIndex].text);
+                              if(currentQuestionIndex+1>questions.length) {
+                                questions.add(
+                                    questionControllers[currentQuestionIndex]
+                                        .text);
+                                answers.add(
+                                    answerControllers[currentQuestionIndex]
+                                        .text);
+                                questionControllers[currentQuestionIndex].addListener(() {
+                                  questions[currentQuestionIndex] = questionControllers[currentQuestionIndex].text;
+                                });
+                                answerControllers[currentQuestionIndex].addListener(() {
+                                  answers[currentQuestionIndex] = answerControllers[currentQuestionIndex].text;
+                                });
+                              }
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
