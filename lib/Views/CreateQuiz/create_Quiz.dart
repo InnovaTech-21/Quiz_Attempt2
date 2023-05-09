@@ -28,35 +28,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
 
   ///add data of quiz to be made to database
   void addDataToFirestore() async {
-
     User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      String uID = user.uid;
-      DocumentReference userRef =
-          FirebaseFirestore.instance.collection("Users").doc(uID);
-      userRef.get().then((doc) {
-        if (doc.exists) {
-
-
-
-        } else {
-
-        }
-      }).catchError((error) => print("Failed to get User"));
-    } else {
-      print("User Does not exsist");
-    }
-
-    ///create a user with email and password
-    String? nameuser = await getUser();
-
-    String? str;
-
-    getUser().then((result) {
-      str = result;
-    });
-
     ///Create quizzes created successfully, now add data to Firestore
     CollectionReference users =
         FirebaseFirestore.instance.collection('Quizzes');
@@ -69,7 +41,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       'Quiz_Description': getQuizDescription(),
       'Quiz_Category': getQuizCategory(),
       'Number_of_questions':0,
-      'Username': nameuser,
+      'Username': await getUser(),
       "Date_Created": Timestamp.fromDate(DateTime.now()),
       "Quiz_ID": docRef.id.toString(),
     };
@@ -151,7 +123,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       } else if (getQuizType() == 'Image-Based') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>  imageBased(numQuest: 2)),
+          MaterialPageRoute(builder: (context) =>  imageBased()),
         );
       } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
@@ -384,6 +356,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                           ),
                           child: ElevatedButton(
                             onPressed: () {
+
                               _submit();
                             },
                             style: ElevatedButton.styleFrom(

@@ -51,9 +51,10 @@ class SignupState extends State<Signup> {
 
     ///create a user with email and password
     UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-      email: getEmail(),
-      password:getPassword(),
+      email: emailController.text,
+      password:passwordController.text,
     );
+
 
     ///user created successfully, now add data to Firestore
     CollectionReference users = FirebaseFirestore.instance.collection('Users');
@@ -62,9 +63,9 @@ class SignupState extends State<Signup> {
       'date_of_birth': getDate(),
       'levels': 0,
       'total_score': 0,
-      'user_email': getEmail(),
-      'user_name': getUsername(),
-      'user_username': getName(),
+      'user_email': emailController.text,
+      'user_name': usernameController.text,
+      'user_username': nameController.text,
     };
 
     await users.doc(userCredential.user!.uid).set(userData);
@@ -91,7 +92,7 @@ class SignupState extends State<Signup> {
       ///write to database
       addDataToFirestore();
 
-      _showDialog("Account created");
+      showDialog1("Account created");
 
       ///go to welcome page
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage()));
@@ -103,21 +104,13 @@ class SignupState extends State<Signup> {
   }
 
   ///code to get values from input boxes
-  String getUsername() {
-    return usernameController.text;
-  }
 
-  String getName() {
-    return nameController.text;
-  }
 
-  String getEmail() {
-    return emailController.text;
-  }
 
-  String getPassword() {
-    return passwordController.text;
-  }
+
+
+
+
 
   String getConfirmPassword() {
     return confirmPasswordController.text;
@@ -420,10 +413,10 @@ class SignupState extends State<Signup> {
                             onPressed: () {
 
                               /// Check that date is valid
-                              if (_validateDay(_selectedDay) != null ||
-                                  _validateMonth(_selectedMonth) != null ||
-                                  _validateYear(_selectedYear) != null) {
-                                _showDialog("Enter valid date of birth");
+                              if (validateDay(_selectedDay) != null ||
+                                  validateMonth(_selectedMonth) != null ||
+                                  validateYear(_selectedYear) != null) {
+                                showDialog1("Enter valid date of birth");
 
                                 setState(() {
                                   check = false;
@@ -488,7 +481,7 @@ class SignupState extends State<Signup> {
             )));
   }
 
-  void _showDialog(String message) {
+  void showDialog1(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -563,36 +556,32 @@ class SignupState extends State<Signup> {
     if (value == null) {
       return 'Enter password';
     } else {
-      if (value != getPassword()) {
+      if (value != passwordController.text) {
         return 'Passwords do not match';
       }
     }
     return null;
   }
 
-  String? _validateMonth(String? value) {
+  String? validateMonth(String? value) {
     if (value == null) {
       return 'Please select a month';
     }
     return null;
   }
 
-  String? _validateDay(String? value) {
+  String? validateDay(String? value) {
     if (value == null) {
       return 'Please select a day';
     }
     return null;
   }
 
-  String? _validateYear(int? value) {
+  String? validateYear(int? value) {
     if (value == null) {
       return 'Please select a year';
     }
     return null;
   }
 
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
-  }
 }

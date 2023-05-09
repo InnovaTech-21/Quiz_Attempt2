@@ -110,7 +110,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 child: ElevatedButton(
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
-                                      resetPassword(context);
+                                      resetPassword();
                                     }
 
                                   },
@@ -151,7 +151,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       return null;
     }
   }
-  Future<void> resetPassword(BuildContext context) async {
+  Future<void> resetPassword() async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text);
       _showSuccessDialog(context, "Password reset email sent!");

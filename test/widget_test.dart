@@ -16,6 +16,7 @@ import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/menu.dart';
 import 'package:quiz_website/main.dart';
 import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
+import 'package:flutter/material.dart';
 
 import 'package:quiz_website/selectAQuiz.dart';
 
@@ -528,7 +529,41 @@ void main() {
       final result = instance.validateEmail('valid.email@example.com');
       expect(result, null);
     });
+    group('Date validation tests', () {
+      test('_validateMonth returns null for valid input', () {
+        final result = instance.validateMonth('January');
+        expect(result, isNull);
+      });
+
+      test('_validateMonth returns error message for null input', () {
+        final result = instance.validateMonth(null);
+        expect(result, equals('Please select a month'));
+      });
+
+      test('_validateDay returns null for valid input', () {
+        final result = instance.validateDay('1');
+        expect(result, isNull);
+      });
+
+      test('_validateDay returns error message for null input', () {
+        final result = instance.validateDay(null);
+        expect(result, equals('Please select a day'));
+      });
+
+      test('_validateYear returns null for valid input', () {
+        final result = instance.validateYear(2023);
+        expect(result, isNull);
+      });
+
+      test('_validateYear returns error message for null input', () {
+        final result = instance.validateYear(null);
+        expect(result, equals('Please select a year'));
+      });
+    });
+
+
   });
+
 
   // testWidgets('create image quiz loads correctly', (WidgetTester tester) async {
   //   await tester.pumpWidget(

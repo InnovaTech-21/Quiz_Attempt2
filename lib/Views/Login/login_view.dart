@@ -38,23 +38,7 @@ class LoginPageState extends State<LoginPage> {
       //print('All fields entered, please check corresponding details');
     }
   }
-  // int _success = 1;
-  // String _userEmail = "";
 
-  // void _singIn() async {
-  //   final User? user = (await _auth.signInWithEmailAndPassword(email: usernameController.text, password: passwordController.text)).user;
-  //
-  //   if(user != null) {
-  //     setState(() {
-  //       _success = 2;
-  //       //_userEmail = user.email;
-  //     });
-  //   } else {
-  //     setState(() {
-  //       _success = 3;
-  //     });
-  //   }
-  // }
 
   static Future<User?>loginUsingEmailPassword({required String email, required String password  }) async{
     User? user;
