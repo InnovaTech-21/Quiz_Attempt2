@@ -11,25 +11,24 @@ class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({Key? key}) : super(key: key);
 
   @override
-  State<CreateQuizPage> createState() => _CreateQuizPageState();
+  State<CreateQuizPage> createState() => CreateQuizPageState();
 }
 
-class _CreateQuizPageState extends State<CreateQuizPage> {
+class CreateQuizPageState extends State<CreateQuizPage> {
   final _formKey = GlobalKey<FormState>();
 
   ///set text controllers
   final TextEditingController quizNameController = TextEditingController();
-  final TextEditingController quizDescriptionController =
-      TextEditingController();
-  final TextEditingController numQuestionsController = TextEditingController();
+  final TextEditingController quizDescriptionController =TextEditingController();
+
   final TextEditingController usernameController = TextEditingController();
   String? username;
   String? quizType;
   String? quizCategory;
 
-  ///add data to database
+  ///add data of quiz to be made to database
   void addDataToFirestore() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
+
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -38,11 +37,11 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           FirebaseFirestore.instance.collection("Users").doc(uID);
       userRef.get().then((doc) {
         if (doc.exists) {
-          String username = "username";
-          Object? y = doc.data();
-          //     nameuser = y["username"]?.toString();
+
+
+
         } else {
-          print('User Not Found');
+
         }
       }).catchError((error) => print("Failed to get User"));
     } else {
@@ -51,7 +50,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
     ///create a user with email and password
     String? nameuser = await getUser();
-    print(nameuser);
+
     String? str;
 
     getUser().then((result) {
@@ -69,7 +68,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       'Quiz_Type': getQuizType(),
       'Quiz_Description': getQuizDescription(),
       'Quiz_Category': getQuizCategory(),
-      'Number_of_questions': getNumberofQuestions(),
+      'Number_of_questions':0,
       'Username': nameuser,
       "Date_Created": Timestamp.fromDate(DateTime.now()),
       "Quiz_ID": docRef.id.toString(),
@@ -102,7 +101,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
   void clearInputs() {
     quizNameController.clear();
     quizDescriptionController.clear();
-    numQuestionsController.clear();
+
     setState(() {
       quizType = null;
       quizCategory = null;
@@ -134,9 +133,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     return quizDescriptionController.text;
   }
 
-  int getNumberofQuestions() {
-    return int.parse(numQuestionsController.text);
-  }
+
 
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
@@ -144,25 +141,22 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       addDataToFirestore();
 
       ///go to welcome page
-      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> Menu())); chnage page once next page is created
-      //Navigator.of(context).pushReplacement(MaterialPageRoute(
-      //builder: (context) =>
-      //ImageBased())); //chnage page once next page is created
+
       if (getQuizType() == 'Short-Answer') {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => const ShortAnswerQuestionPage()),
+              builder: (context) =>  ShortAnswerQuestionPage()),
         );
       } else if (getQuizType() == 'Image-Based') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const imageBased()),
+          MaterialPageRoute(builder: (context) =>  imageBased(numQuest: 2)),
         );
       } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const mCQ_Question_Page()),
+          MaterialPageRoute(builder: (context) =>  mCQ_Question_Page()),
         );
       } else {
         _showDialog("Goes to " + getQuizType()! + " page");
@@ -288,7 +282,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                               'Select Quiz Category', // updated hint text for combo box
                         ),
                         value: quizCategory,
-                        items: <String>['Kdrama', 'Anime', 'Kpop']
+                        items: <String>['Movies','Sports','Celeb','Music','Books','TV Shows','Word Games','General Knowledge','Food','Kdrama', 'Anime', 'Kpop']
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -371,36 +365,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: SizedBox(
-                      width: 600,
 
-                      ///text box for number of questions
-                      child: TextFormField(
-                        controller: numQuestionsController,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(27),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.borderColor,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.gradient2,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          hintText: 'Enter Number of Questions',
-                        ),
-                        validator: validateNumber,
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 20),
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -456,21 +421,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     return null;
   }
 
-  String? validateNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Enter number of questions";
-    } else {
-      if (double.tryParse(value) == null) {
-        return "Number must be a digit";
-      } else {
-        int numValue = int.parse(value);
-        if (numValue < 2 || numValue > 20) {
-          return "Number of questions should be between 2 and 20";
-        }
-      }
-    }
-    return null;
-  }
+
 
   void _showDialog(String message) {
     showDialog(

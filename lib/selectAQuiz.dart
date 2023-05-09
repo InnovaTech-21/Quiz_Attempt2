@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
-import 'package:quiz_website/Views/AnswerQuiz/ShortQuizAns.dart';
-import '../../main.dart';
+import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
+import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
+import 'package:quiz_website/menu.dart';
+
 
 class SelectPage extends StatefulWidget {
   const SelectPage({Key? key}) : super(key: key);
@@ -14,7 +15,9 @@ class SelectPage extends StatefulWidget {
 }
 
 class _SelectPageState extends State<SelectPage> {
-  final List<String> _QuizName = []; // load in the questions
+  final List<String> _QuizName = [];
+  final List<int> _TimerTime = [];
+  final List<bool> _QuizTimed = [];// load in the questions
 
   ///List of correct answers
   final List <String> _QuizType=[];
@@ -23,20 +26,34 @@ class _SelectPageState extends State<SelectPage> {
   ///List of correct answers
   final List <String> _NumberofQuestions=[];
   final List<String> _QuizCategory = []; // load in the questions
+  final List<String> _Quiz_ID = [];
+
 
   String _selectedFilter = 'All'; // Variable to store selected filter, set initial value to 'All'
+  ///method to load completed quiz's from database
   Future<void> getQuizInformation(String x) async {
 
       CollectionReference users = FirebaseFirestore.instance.collection(
           'Quizzes');
+      x = _selectedFilter;
+     String  y = 'Finished';
+      QuerySnapshot questionsSnapshot;
+      //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
+      if(( x != "All")) {
+
+          questionsSnapshot = await users
+              .where('Quiz_Category', isEqualTo: x)
+              .where('Status', isEqualTo: y)
+              .orderBy('Date_Created', descending: true)
+              .get();
+
+      }
+      else{
+        questionsSnapshot = await users.where('Status', isEqualTo: y)
+            .orderBy('Date_Created', descending: true).get();
+      }
 
       //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-      x = "Anime";
-      QuerySnapshot questionsSnapshot = await users
-          .where('Quiz_Category', isEqualTo: x)
-          .orderBy('Date_Created', descending: true)
-          .get();
-
      // String x = "2";
       List<Map<String, dynamic>> questionsAnswersList = [];
 
@@ -44,10 +61,13 @@ class _SelectPageState extends State<SelectPage> {
         for (int i = 0; i < questionsSnapshot.docs.length; i++) {
           DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
           Map<String, dynamic> questionAnswerMap = {
+            "Quiz_ID" : quizDoc["Quiz_ID"],
             "QuizName": quizDoc["QuizName"],
             "Quiz_Description": quizDoc["Quiz_Description"],
             "Quiz_Category": quizDoc["Quiz_Category"],
             "Quiz_Type":quizDoc["Quiz_Type"],
+            "QuizTimed":quizDoc["QuizTimed"],
+            "TimerTime":quizDoc["TimerTime"],
             "Number_of_questions":quizDoc["Number_of_questions"].toString(),
           };
           questionsAnswersList.add(questionAnswerMap);
@@ -55,6 +75,9 @@ class _SelectPageState extends State<SelectPage> {
       }
 
       for (var i = 0; i < questionsAnswersList.length; i++) {
+        _Quiz_ID.add(questionsAnswersList[i]["Quiz_ID"]);
+        _QuizTimed.add(questionsAnswersList[i]["QuizTimed"]);
+        _TimerTime.add(questionsAnswersList[i]["TimerTime"]);
         _QuizName.add(questionsAnswersList[i]["QuizName"]);
         _QuizDesc.add(questionsAnswersList[i]["Quiz_Description"]);
         _QuizCategory.add(questionsAnswersList[i]["Quiz_Category"]);
@@ -63,6 +86,7 @@ class _SelectPageState extends State<SelectPage> {
 
       }
      // _userAnswers=List.filled(questionsAnswersList.length, '');
+
     }
 
 
@@ -71,6 +95,7 @@ class _SelectPageState extends State<SelectPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+        backgroundColor: ColourPallete.backgroundColor,
       appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
         leading: IconButton(
@@ -79,13 +104,14 @@ class _SelectPageState extends State<SelectPage> {
             Navigator.push(
               ///goes to welcome page
               context,
-              MaterialPageRoute(builder: (context) => MyApp()),
+              MaterialPageRoute(builder: (context) => MenuPage()),
             );
           },
         ),
       ),
-      backgroundColor: ColourPallete.backgroundColor,
+
       body: Material(
+          ///builds widget when quiz details are retrieved
           child: FutureBuilder(
               future: getQuizInformation("Anime"),
               builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -97,6 +123,7 @@ class _SelectPageState extends State<SelectPage> {
                 }
 
                 // Filter quiz data based on selected category
+                List<String> filteredQuiz_ID = [];
                 List<String> filteredQuizName = [];
                 List<String> filteredQuizDesc = [];
                 List<String> filteredQuizCategory = [];
@@ -105,6 +132,7 @@ class _SelectPageState extends State<SelectPage> {
 
                 if (_selectedFilter == 'All') {
                   // Show all quizzes
+                  filteredQuiz_ID = List.from(_Quiz_ID);
                   filteredQuizName = List.from(_QuizName);
                   filteredQuizDesc = List.from(_QuizDesc);
                   filteredQuizCategory = List.from(_QuizCategory);
@@ -114,6 +142,8 @@ class _SelectPageState extends State<SelectPage> {
                   // Show quizzes with selected category
                   for (int i = 0; i < _QuizCategory.length; i++) {
                     if (_QuizCategory[i] == _selectedFilter) {
+                      filteredQuiz_ID.add(_Quiz_ID[i]);
+
                       filteredQuizName.add(_QuizName[i]);
                       filteredQuizDesc.add(_QuizDesc[i]);
                       filteredQuizCategory.add(_QuizCategory[i]);
@@ -124,6 +154,7 @@ class _SelectPageState extends State<SelectPage> {
                 }
 
                 return SingleChildScrollView(
+
                   child: Center(
                     child: Column(
                       children: <Widget>[
@@ -154,12 +185,15 @@ class _SelectPageState extends State<SelectPage> {
                                         setState(() {
                                           _selectedFilter = value!;
                                         });
+                                        _Quiz_ID.clear();
+                                        _QuizName.clear();
+                                        _QuizDesc.clear();
+                                        _QuizCategory.clear();
+                                        _QuizType.clear();
+                                        _NumberofQuestions.clear();
                                       },
                                       items: <String>[
-                                        'All',
-                                        'Anime',
-                                        'Kpop',
-                                        'Kdrama'
+                                        'All','Movies','Sports','Celeb','Music','Books','TV Shows','Word Games','General Knowledge','Food','Kdrama', 'Anime', 'Kpop'
                                       ] // Add 'All' as an option
                                           .map<DropdownMenuItem<String>>(
                                               (String value) {
@@ -179,11 +213,26 @@ class _SelectPageState extends State<SelectPage> {
                                       width: 400,
                                       child: ElevatedButton(
                                         onPressed: () {
+                                          ///goes to relevant answer quiz page
+                                          if (_QuizType[i] == "Short-Answer" ) {
+                                            print(_Quiz_ID[i]);
+                                            Navigator.push(
+                                              context,
+
+                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
+                                            );
+                                          }
+                                          if (_QuizType[i] == "Multiple Choice" ) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => mcqQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
+                                            );
+                                          }
                                           // Add your onPressed logic here
                                         },
+
                                         style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.all(27),
-                                          primary: ColourPallete.borderColor,
+                                          padding: const EdgeInsets.all(27), backgroundColor: ColourPallete.borderColor,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(10),
                                             side: BorderSide(

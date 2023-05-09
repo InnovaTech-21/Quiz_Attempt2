@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import '../../../../menu.dart';
+
+import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
+
 
 class ShortAnswerQuestionPage extends StatefulWidget {
   const ShortAnswerQuestionPage({Key? key}) : super(key: key);
@@ -15,13 +15,12 @@ class ShortAnswerQuestionPage extends StatefulWidget {
 class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
   final _formKey = GlobalKey<FormState>();
 
-  ///change this to get number of questions from database
-  int numberOfQuestions = 5;
   int currentQuestionIndex = 0;
 
   ///list of question class
-  List<Question> questions = [];
-  int? numberofQuestions = 0;
+  List<String> questions = [];
+  List<String> answers = [];
+
 
   ///controllers to get the values from the text boxes
   List<TextEditingController> questionControllers = [];
@@ -30,179 +29,61 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
   ///code to load the question details if already inputed by the user
   void loadExisting(int index) {
     if (index >= 0) {
-      questionControllers[index].text = questions[index].question;
-      answerControllers[index].text = questions[index].answer;
+      questionControllers[index].text = questions[index];
+      answerControllers[index].text = answers[index];
 
       ///listeners to see if user changes details
       questionControllers[index].addListener(() {
-        questions[index].question = questionControllers[index].text;
+        questions[index] = questionControllers[index].text;
       });
       answerControllers[index].addListener(() {
-        questions[index].answer = answerControllers[index].text;
+        answers[index] = answerControllers[index].text;
       });
     }
-  }
-
-  Future<String?> getUser() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = FirebaseAuth.instance.currentUser;
-    String? nameuser = '';
-    if (user != null) {
-      String uID = user.uid;
-      try {
-        CollectionReference users =
-            FirebaseFirestore.instance.collection('Users');
-        final snapshot = await users.doc(uID).get();
-        final data = snapshot.data() as Map<String, dynamic>;
-        // print (data['user_name']);
-        return data['user_name'];
-      } catch (e) {
-        return 'Error fetching user';
-      }
-    }
-  }
-
-  Future<int> _getNumberOfQuestions() async {
-    // get number of questions from databse
-    int numberOfQuestions = 0;
-    final CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
-
-    String? username = await getUser();
-    if (username != null) {
-      QuerySnapshot questionsSnapshot = await quizzesCollection
-          .where('Username', isEqualTo: username)
-          .orderBy('Date_Created', descending: true)
-          .limit(1)
-          .get();
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
-        numberOfQuestions = mostRecentQuestion['Number_of_questions'];
-      }
-    }
-    numberofQuestions = numberOfQuestions;
-    return numberOfQuestions;
-  }
-
-  Future<String> _getQuizID() async {
-    // get number of questions from databse
-    String quizID = "";
-    final CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
-
-    String? username = await getUser();
-    if (username != null) {
-      QuerySnapshot questionsSnapshot = await quizzesCollection
-          .where('Username', isEqualTo: username)
-          .orderBy('Date_Created', descending: true)
-          .limit(1)
-          .get();
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
-        quizID = mostRecentQuestion['Quiz_ID'].toString();
-      }
-    }
-
-    return quizID;
-  }
-
-  void updateQuizzesStattus() async {
-    DocumentReference docRef = FirebaseFirestore.instance
-        .collection('Quizzes')
-        .doc(await _getQuizID());
-
-// Update the document
-    docRef.update({
-      'Status': 'Finished',
-    }).then((value) async {
-      try {
-        await _showDialog("Quiz Created");
-      } finally {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MenuPage()),
-        );
-      }
-    }).catchError((error) {
-      _showDialog("Error creating quiz");
-    });
-  }
-
-  void addDataToFirestore(int index) async {
-    ///Create quizzes created successfully, now add data to Firestore
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
-    DocumentReference docRef = users.doc();
-    String docID = docRef.id;
-    Map<String, dynamic> userData = {
-      'Question': questions[index].question.toString(),
-      'Answers': questions[index].answer.toString(),
-      'QuizID': await _getQuizID(),
-      'Question_type': "MCQ",
-      'QuestionNo': index,
-    };
-
-    await users.doc(docRef.id).set(userData);
   }
 
   ///checks if validations passed then continues
   void _nextQuestion() async {
     if (_formKey.currentState!.validate()) {
       ///if more question still are still to come
-      print(await (_getNumberOfQuestions()));
-      if (currentQuestionIndex < (await (_getNumberOfQuestions()) - 1)) {
-        ///if we are on a question already added to the list( we backtracked)
-        if (currentQuestionIndex < questions.length) {
-          int index = currentQuestionIndex;
 
-          if (index < questions.length) {
-            ///loads in question and answer from list
-            loadExisting(index);
-          }
+
+      ///if we are on a question already added to the list( we backtracked)
+      if (currentQuestionIndex < questions.length) {
+        int index = currentQuestionIndex;
+
+        if (index < questions.length) {
+          ///loads in question and answer from list
+          loadExisting(index);
         }
-
-        ///if we are on a question that has no yet been added to the list
-        else {
-          questions.add(Question(
-            question: questionControllers[currentQuestionIndex].text,
-            answer: answerControllers[currentQuestionIndex].text,
-          ));
-
-          ///clears details for next question to be entered
-          questionControllers[currentQuestionIndex].clear();
-          answerControllers[currentQuestionIndex].clear();
-        }
-
-        ///increments our current question index then loads next question from loop
-        setState(() {
-          currentQuestionIndex++;
-        });
       }
 
-      ///if on the last question
+      ///if we are on a question that has no yet been added to the list
       else {
-        questions.add(Question(
-          question: questionControllers[currentQuestionIndex].text,
-          answer: answerControllers[currentQuestionIndex].text,
-        ));
+        questions.add( questionControllers[currentQuestionIndex].text);
+        answers.add(answerControllers[currentQuestionIndex].text);
 
-        /// write to database
-        for (int i = 0; i < numberofQuestions!; i++) {
-          addDataToFirestore(i);
-        }
-        updateQuizzesStattus();
+        ///clears details for next question to be entered
+        questionControllers[currentQuestionIndex].clear();
+        answerControllers[currentQuestionIndex].clear();
       }
+
+      ///increments our current question index then loads next question from loop
+      setState(() {
+        currentQuestionIndex++;
+      });
+
+
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
-    for (int i = 0; i < numberOfQuestions; i++) {
-      questionControllers.add(TextEditingController());
-      answerControllers.add(TextEditingController());
-    }
+    questionControllers.add(TextEditingController());
+    answerControllers.add(TextEditingController());
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
@@ -225,7 +106,7 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                 ///title that contains question number
                 Text(
                   'Question ${currentQuestionIndex + 1}',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 16),
 
@@ -258,46 +139,61 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
                 ),
                 SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     ///previous question button only appears when not on first question
                     if (currentQuestionIndex > 0)
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            currentQuestionIndex--;
-                          });
-                          loadExisting(currentQuestionIndex);
-                        },
-                        child: Text('Previous Question'),
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              currentQuestionIndex--;
+                            });
+                            loadExisting(currentQuestionIndex);
+                          },
+                          child: Text('Previous Question'),
+                        ),
                       ),
-                    ElevatedButton(
-                      onPressed: () {
-                        ///runs the code to go to the next question
-                        _nextQuestion();
-                      },
-                      child: FutureBuilder<int>(
-                        future: _getNumberOfQuestions(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            int numberOfQuestions = snapshot.data!;
-                            return Text(
-
-                                ///changes from next question to publish on last question
-                                currentQuestionIndex + 1 == numberOfQuestions
-                                    ? 'Publish'
-                                    : 'Next Question');
-                          }
+                    SizedBox(
+                      width: 150,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          ///runs the code to go to the next question
+                          questionControllers.add(TextEditingController());
+                          answerControllers.add(TextEditingController());
+                          _nextQuestion();
                         },
+                        child: Text('Next Question'),
                       ),
                     ),
+                    if (currentQuestionIndex > 1)
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              questions.add(
+                                  questionControllers[currentQuestionIndex]
+                                      .text);
+                              answers.add(
+                                  answerControllers[currentQuestionIndex].text);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        publishPage(questions: questions,
+                                            answers: answers,quizType: 1,)
+                                ),
+                              );
+                            }
+                          },
+                          child: Text('Done'),
+                        ),
+                      ),
                   ],
                 )
+
               ],
             ),
           ),
@@ -323,31 +219,13 @@ class _ShortAnswerQuestionPageState extends State<ShortAnswerQuestionPage> {
     }
   }
 
-  Future<void> _showDialog(String message) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Message'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 }
 
 ///question class
-class Question {
-  String question;
-  String answer;
-
-  Question({required this.question, required this.answer});
-}
+// class Question {
+//   String question;
+//   String answer;
+//
+//   Question({required this.question, required this.answer});
+// }

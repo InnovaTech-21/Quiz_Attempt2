@@ -7,9 +7,11 @@ import '../../main.dart';
 import '../../menu.dart';
 
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
+
 
 class LoginPage extends StatefulWidget {
+
+
   const LoginPage({Key? key}) : super(key: key);
 
   @override
@@ -30,7 +32,7 @@ class LoginPageState extends State<LoginPage> {
   void validateAndSave() {
     final FormState? form = _formKey.currentState;
     if (form!.validate()) {
-      _showDialog('Login Successful');
+
       clearInputs();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage()));
       //print('All fields entered, please check corresponding details');
@@ -54,10 +56,11 @@ class LoginPageState extends State<LoginPage> {
   //   }
   // }
 
-  static Future<User?>loginUsingEmailPassword({required String email, required String password ,required BuildContext context, required FirebaseAuth auth  }) async{
+  static Future<User?>loginUsingEmailPassword({required String email, required String password  }) async{
     User? user;
     try{
-      UserCredential userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
+
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       user =userCredential.user;
 
     }  on FirebaseAuthException catch(e){
@@ -73,6 +76,7 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
@@ -225,15 +229,10 @@ class LoginPageState extends State<LoginPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text, context: context, auth: FirebaseAuth.instance);
-
+                                    // usernameController.text='shakeel@gmail.com';
+                                    // passwordController.text='\$Hak3l';
+                                    user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text);
                                     validateAndSave();
-                                    // print(user);
-                                    // if (user!=null) {
-                                    //   //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> HomePage()));
-                                    //
-                                    // }
-
                                   },
                                   style: ElevatedButton.styleFrom(
                                     fixedSize: const Size(395, 55), backgroundColor: Colors.transparent,
@@ -287,25 +286,6 @@ class LoginPageState extends State<LoginPage> {
                           )
                         ]))))));
   }
-  void _showDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Message'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
 
-  }
 
 }

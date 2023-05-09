@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_website/Views/Login/login_view.dart';
-import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:email_validator/email_validator.dart';
 
-import '../../menu.dart';
-
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
@@ -95,17 +89,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   ),
                                   keyboardType: TextInputType.text,
                                   onFieldSubmitted: (value) {},
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Please enter your email';
-                                    }
-                                    final bool isValid = EmailValidator
-                                        .validate(value, true);
-                                    if (isValid == false) {
-                                      return 'Please enter a valid email';
-                                    }
-                                    return null;
-                                  },
+                                  validator: validateEmail,
                                 ),
                               ),
                             ),
@@ -125,7 +109,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    resetPassword(context);
+                                    if (_formKey.currentState!.validate()) {
+                                      resetPassword(context);
+                                    }
 
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -155,6 +141,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
+  String? validateEmail(String? value) {
+    String pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = RegExp(pattern);
+    if (!regex.hasMatch(value!)) {
+      return 'Enter Valid Email';
+    } else {
+      return null;
+    }
+  }
   Future<void> resetPassword(BuildContext context) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text);
