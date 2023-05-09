@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/selectAQuiz.dart';
+
+import 'package:quiz_website/Views/quizStats/quiz_stats.dart';
+
 import '../../main.dart';
 
 class MenuPage extends StatefulWidget {
@@ -146,6 +149,49 @@ class MenuPageState extends State<MenuPage> {
                       ),
                       child: const Text(
                         'Create a Quiz',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 19,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              
+              //added code below for new button
+              const SizedBox(height: 40),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          ColourPallete.gradient1,
+                          ColourPallete.gradient2,
+                        ],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                      ),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: ()  {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+
+                              builder: (context) => const QuizStatsPage()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(450, 65), backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                      ),
+                      child: const Text(
+                        'View Quiz Stats',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 19,
