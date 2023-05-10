@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class CreateMAQ extends StatefulWidget {
+  const CreateMAQ({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<CreateMAQ> createState() => _CreateMAQState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _CreateMAQState extends State<CreateMAQ> {
   final _formKey = GlobalKey<FormState>();
 
   List<TextEditingController> listController = [TextEditingController()];
