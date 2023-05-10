@@ -5,6 +5,7 @@ import 'package:quiz_website/ColourPallete.dart';
 
 import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
+import 'package:quiz_website/Views/CreateQuiz/createMAQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
 
 import '../../Database Services/database.dart';
@@ -22,7 +23,8 @@ class CreateQuizPageState extends State<CreateQuizPage> {
 
   ///set text controllers
   final TextEditingController quizNameController = TextEditingController();
-  final TextEditingController quizDescriptionController =TextEditingController();
+  final TextEditingController quizDescriptionController =
+      TextEditingController();
 
   final TextEditingController usernameController = TextEditingController();
   String? username;
@@ -30,16 +32,14 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   String? quizCategory;
 
   ///add data of quiz to be made to database
-  void addDataToFirestore(String getQuizName, getQuizType,getQuizDescription, getQuizCategory) async {
-    service.addDataToCreateaQuizFirestore(getQuizName, getQuizType, getQuizDescription, getQuizCategory);
-   // clearInputs();
+  void addDataToFirestore(String getQuizName, getQuizType, getQuizDescription,
+      getQuizCategory) async {
+    service.addDataToCreateaQuizFirestore(
+        getQuizName, getQuizType, getQuizDescription, getQuizCategory);
+    // clearInputs();
   }
 
-
-
   ///gets values from text boxes
-
-
 
   String? getQuizType() {
     return quizType;
@@ -49,30 +49,32 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     return quizCategory;
   }
 
-
-
-
-
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       ///write to database
-      service.addDataToCreateaQuizFirestore(quizNameController.text,getQuizType(),quizDescriptionController.text,getQuizCategory());
+      service.addDataToCreateaQuizFirestore(quizNameController.text,
+          getQuizType(), quizDescriptionController.text, getQuizCategory());
+
       ///go to welcome page
       if (getQuizType() == 'Short-Answer') {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) =>  ShortAnswerQuestionPage()),
+          MaterialPageRoute(builder: (context) => ShortAnswerQuestionPage()),
         );
       } else if (getQuizType() == 'Image-Based') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>  imageBased()),
+          MaterialPageRoute(builder: (context) => imageBased()),
         );
       } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>  mCQ_Question_Page()),
+          MaterialPageRoute(builder: (context) => mCQ_Question_Page()),
+        );
+      } else if (getQuizType() == 'Multiple Answer Quiz') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CreateMAQ()),
         );
       } else {
         _showDialog("Goes to " + getQuizType()! + " page");
@@ -198,8 +200,20 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                               'Select Quiz Category', // updated hint text for combo box
                         ),
                         value: quizCategory,
-                        items: <String>['Movies','Sports','Celeb','Music','Books','TV Shows','Word Games','General Knowledge','Food','Kdrama', 'Anime', 'Kpop']
-                            .map<DropdownMenuItem<String>>((String value) {
+                        items: <String>[
+                          'Movies',
+                          'Sports',
+                          'Celeb',
+                          'Music',
+                          'Books',
+                          'TV Shows',
+                          'Word Games',
+                          'General Knowledge',
+                          'Food',
+                          'Kdrama',
+                          'Anime',
+                          'Kpop'
+                        ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(
@@ -255,7 +269,8 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                         items: <String>[
                           'Multiple Choice',
                           'Image-Based',
-                          'Short-Answer'
+                          'Short-Answer',
+                          'Multiple Answer Quiz'
                         ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -281,7 +296,6 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -300,7 +314,6 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                           ),
                           child: ElevatedButton(
                             onPressed: () {
-
                               _submit();
                             },
                             style: ElevatedButton.styleFrom(
@@ -337,8 +350,6 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     }
     return null;
   }
-
-
 
   void _showDialog(String message) {
     showDialog(
