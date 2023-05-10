@@ -7,6 +7,8 @@ import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
 
+import '../../Database Services/database.dart';
+
 class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({Key? key}) : super(key: key);
 
@@ -16,6 +18,7 @@ class CreateQuizPage extends StatefulWidget {
 
 class CreateQuizPageState extends State<CreateQuizPage> {
   final _formKey = GlobalKey<FormState>();
+  DatabaseService service = DatabaseService();
 
   ///set text controllers
   final TextEditingController quizNameController = TextEditingController();
@@ -27,67 +30,16 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   String? quizCategory;
 
   ///add data of quiz to be made to database
-  void addDataToFirestore() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    ///Create quizzes created successfully, now add data to Firestore
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('Quizzes');
-    DocumentReference docRef = users.doc();
-    String docID = docRef.id;
-    Map<String, dynamic> userData = {
-      'Status': 'Pending',
-      'QuizName': getQuizName(),
-      'Quiz_Type': getQuizType(),
-      'Quiz_Description': getQuizDescription(),
-      'Quiz_Category': getQuizCategory(),
-      'Number_of_questions':0,
-      'Username': await getUser(),
-      "Date_Created": Timestamp.fromDate(DateTime.now()),
-      "Quiz_ID": docRef.id.toString(),
-    };
-
-    await users.doc(docRef.id).set(userData);
-    clearInputs();
+  void addDataToFirestore(String getQuizName, getQuizType,getQuizDescription, getQuizCategory) async {
+    service.addDataToCreateaQuizFirestore(getQuizName, getQuizType, getQuizDescription, getQuizCategory);
+   // clearInputs();
   }
 
-  Future<String?> getUser() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = FirebaseAuth.instance.currentUser;
-    String? nameuser = '';
-    if (user != null) {
-      String uID = user.uid;
-      try {
-        CollectionReference users =
-            FirebaseFirestore.instance.collection('Users');
-        final snapshot = await users.doc(uID).get();
-        final data = snapshot.data() as Map<String, dynamic>;
-        // print (data['user_name']);
-        return data['user_name'];
-      } catch (e) {
-        return 'Error fetching user';
-      }
-    }
-  }
 
-  ///clears inputs when page is left
-  void clearInputs() {
-    quizNameController.clear();
-    quizDescriptionController.clear();
-
-    setState(() {
-      quizType = null;
-      quizCategory = null;
-    });
-  }
 
   ///gets values from text boxes
-  Future<String?> getUsername() async {
-    return await getUser();
-  }
 
-  void setUsername(String username1) {
-    username = username1;
-  }
+
 
   String? getQuizType() {
     return quizType;
@@ -97,23 +49,15 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     return quizCategory;
   }
 
-  String getQuizName() {
-    return quizNameController.text;
-  }
 
-  String getQuizDescription() {
-    return quizDescriptionController.text;
-  }
 
 
 
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       ///write to database
-      addDataToFirestore();
-
+      service.addDataToCreateaQuizFirestore(quizNameController.text,getQuizType(),quizDescriptionController.text,getQuizCategory());
       ///go to welcome page
-
       if (getQuizType() == 'Short-Answer') {
         Navigator.push(
           context,

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
+import '../../Database Services/database.dart';
 import '../../main.dart';
 import '../../menu.dart';
 import '../Login/login_view.dart';
@@ -19,6 +20,7 @@ class Signup extends StatefulWidget {
 
 class SignupState extends State<Signup> {
   ///sets up form state watcher
+  DatabaseService service = DatabaseService();
   final _formKey = GlobalKey<FormState>();
 
   ///values to populate date dropdown
@@ -46,32 +48,7 @@ class SignupState extends State<Signup> {
 
 
   ///adds users to database
-  void addDataToFirestore() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
 
-    ///create a user with email and password
-    UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-      email: emailController.text,
-      password:passwordController.text,
-    );
-
-
-    ///user created successfully, now add data to Firestore
-    CollectionReference users = FirebaseFirestore.instance.collection('Users');
-
-    Map<String, dynamic> userData = {
-      'date_of_birth': getDate(),
-      'levels': 0,
-      'total_score': 0,
-      'user_email': emailController.text,
-      'user_name': usernameController.text,
-      'user_username': nameController.text,
-    };
-
-    await users.doc(userCredential.user!.uid).set(userData);
-    clearInputs();
-
-  }
 
   void clearInputs(){
     usernameController.clear();
@@ -90,8 +67,8 @@ class SignupState extends State<Signup> {
   Future<void> _submit() async {
     if (_formKey.currentState!.validate() && check) {
       ///write to database
-      addDataToFirestore();
-
+      service.addSignupToFirestore(emailController.text, passwordController.text,usernameController.text,nameController.text,getDate());
+      clearInputs();
       showDialog1("Account created");
 
       ///go to welcome page

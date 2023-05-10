@@ -8,48 +8,41 @@ import 'package:quiz_website/selectAQuiz.dart';
 import 'package:quiz_website/Views/quizStats/quiz_stats.dart';
 
 import '../../main.dart';
+import 'Database Services/database.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
 
   @override
   State<MenuPage> createState() => MenuPageState();
-
-
-
 }
-
-
 class MenuPageState extends State<MenuPage> {
   String? username;
-  Future<String?> getUser() async {
+  DatabaseService service = DatabaseService();
 
-    User? user = FirebaseAuth.instance.currentUser;
 
-    if (user != null) {
-      String uID = user.uid;
-      try {
-        CollectionReference users =
-        FirebaseFirestore.instance.collection('Users');
-        final snapshot = await users.doc(uID).get();
-        final data = snapshot.data() as Map<String, dynamic>;
-        // print (data['user_name']);
-        return data['user_name'];
-      } catch (e) {
-        return 'Error fetching user';
-      }
-    }
-  }
+
+
   Future<String> getUsername() async {
-     username =  await getUser();
-    return "Welcome ";
+  final user = await service.getUser();
+  setState(() {
+  username = "Welcome ${user ?? ''}";
+  });
+  return username!;
+  }
 
+  @override
+  void initState() {
+  super.initState();
+  getUsername();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
+
         backgroundColor: ColourPallete.backgroundColor,
         leading: TextButton(
           child: Text('Sign out'),
@@ -65,20 +58,30 @@ class MenuPageState extends State<MenuPage> {
       ),
       backgroundColor: ColourPallete.backgroundColor,
       body: Material(
+
         color: ColourPallete.backgroundColor,
-    child: SingleChildScrollView(
+      child: SingleChildScrollView(
         child: Center(
           child: Column(
             children: <Widget>[
               SizedBox(height: 50),
               SizedBox(width: 150),
-              Text(
-              "Welcome" ,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 50,
-                ),
-              ),
+                FutureBuilder<String>(
+                future: getUsername(), // Replace this with your function that retrieves the username
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      snapshot.data!,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 50,
+                      ),
+                    );
+                  } else {
+                    //return null;
+                    return CircularProgressIndicator();
+                  }
+                }),
           const SizedBox(height: 50),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,

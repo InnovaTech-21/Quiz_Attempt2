@@ -6,6 +6,8 @@ import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
 import 'package:quiz_website/menu.dart';
 
+import 'Database Services/database.dart';
+
 
 class SelectPage extends StatefulWidget {
   const SelectPage({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class _SelectPageState extends State<SelectPage> {
   final List<String> _QuizName = [];
   final List<int> _TimerTime = [];
   final List<bool> _QuizTimed = [];// load in the questions
-
+  DatabaseService service = DatabaseService();
   ///List of correct answers
   final List <String> _QuizType=[];
   final List<String> _QuizDesc = []; // load in the questions
@@ -29,50 +31,13 @@ class _SelectPageState extends State<SelectPage> {
   final List<String> _Quiz_ID = [];
 
 
-  String _selectedFilter = 'All'; // Variable to store selected filter, set initial value to 'All'
+  String x = 'All'; // Variable to store selected filter, set initial value to 'All'
   ///method to load completed quiz's from database
   Future<void> getQuizInformation(String x) async {
 
-      CollectionReference users = FirebaseFirestore.instance.collection(
-          'Quizzes');
-      x = _selectedFilter;
-     String  y = 'Finished';
-      QuerySnapshot questionsSnapshot;
-      //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-      if(( x != "All")) {
 
-          questionsSnapshot = await users
-              .where('Quiz_Category', isEqualTo: x)
-              .where('Status', isEqualTo: y)
-              .orderBy('Date_Created', descending: true)
-              .get();
+      List<Map<String, dynamic>> questionsAnswersList = await service.getQuizInformation(x);
 
-      }
-      else{
-        questionsSnapshot = await users.where('Status', isEqualTo: y)
-            .orderBy('Date_Created', descending: true).get();
-      }
-
-      //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-     // String x = "2";
-      List<Map<String, dynamic>> questionsAnswersList = [];
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        for (int i = 0; i < questionsSnapshot.docs.length; i++) {
-          DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
-          Map<String, dynamic> questionAnswerMap = {
-            "Quiz_ID" : quizDoc["Quiz_ID"],
-            "QuizName": quizDoc["QuizName"],
-            "Quiz_Description": quizDoc["Quiz_Description"],
-            "Quiz_Category": quizDoc["Quiz_Category"],
-            "Quiz_Type":quizDoc["Quiz_Type"],
-            "QuizTimed":quizDoc["QuizTimed"],
-            "TimerTime":quizDoc["TimerTime"],
-            "Number_of_questions":quizDoc["Number_of_questions"].toString(),
-          };
-          questionsAnswersList.add(questionAnswerMap);
-        }
-      }
 
       for (var i = 0; i < questionsAnswersList.length; i++) {
 
@@ -114,7 +79,7 @@ class _SelectPageState extends State<SelectPage> {
       body: Material(
           ///builds widget when quiz details are retrieved
           child: FutureBuilder(
-              future: getQuizInformation("Anime"),
+              future: getQuizInformation(x),
               builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -131,7 +96,7 @@ class _SelectPageState extends State<SelectPage> {
                 List<String> filteredQuizType = [];
                 List<String> filteredNumberofQuestions = [];
 
-                if (_selectedFilter == 'All') {
+                if (x == 'All') {
                   // Show all quizzes
                   filteredQuiz_ID = List.from(_Quiz_ID);
                   filteredQuizName = List.from(_QuizName);
@@ -142,7 +107,7 @@ class _SelectPageState extends State<SelectPage> {
                 } else {
                   // Show quizzes with selected category
                   for (int i = 0; i < _QuizCategory.length; i++) {
-                    if (_QuizCategory[i] == _selectedFilter) {
+                    if (_QuizCategory[i] == x) {
                       filteredQuiz_ID.add(_Quiz_ID[i]);
 
                       filteredQuizName.add(_QuizName[i]);
@@ -181,10 +146,10 @@ class _SelectPageState extends State<SelectPage> {
                                   child: SizedBox(
                                     width: 400,
                                     child: DropdownButton<String>(
-                                      value: _selectedFilter,
+                                      value: x,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _selectedFilter = value!;
+                                         x = value!;
                                         });
                                         _Quiz_ID.clear();
                                         _QuizName.clear();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_website/Database%20Services/auth.dart';
 import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
@@ -19,6 +20,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  AuthService service =AuthService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -40,23 +42,6 @@ class LoginPageState extends State<LoginPage> {
   }
 
 
-  static Future<User?>loginUsingEmailPassword({required String email, required String password  }) async{
-    User? user;
-    try{
-
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      user =userCredential.user;
-
-    }  on FirebaseAuthException catch(e){
-      if(e.code =="user-not-found"){
-        print("No user with that email");
-      }
-      else{
-
-      }
-    }
-    return user;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +200,7 @@ class LoginPageState extends State<LoginPage> {
                                   onPressed: () async {
                                     // usernameController.text='shakeel@gmail.com';
                                     // passwordController.text='\$Hak3l';
-                                    user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text);
+                                    user = await AuthService.loginUsingEmailPassword( email: usernameController.text, password: passwordController.text);
                                     validateAndSave();
                                   },
                                   style: ElevatedButton.styleFrom(

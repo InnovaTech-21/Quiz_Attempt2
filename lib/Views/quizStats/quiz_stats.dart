@@ -60,7 +60,7 @@ double getAverageScore() {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Average Score: ${averageScore?.toStringAsFixed(2) ?? 'N/A'}'),
+                  Text('Average Score: ${averageScore.toStringAsFixed(2) ?? 'N/A'}'),
                   const SizedBox(height: 16),
                   Text('Max Score: ${maxScore?.toString() ?? 'N/A'}'),
                   const SizedBox(height: 16),

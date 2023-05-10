@@ -3,6 +3,8 @@ import 'package:quiz_website/Views/Login/login_view.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../Database Services/database.dart';
+
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
@@ -14,6 +16,7 @@ class ForgotPasswordPage extends StatefulWidget {
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
+  DatabaseService service = DatabaseService();
 
   void dispose() {
     _emailController.dispose();
@@ -151,9 +154,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       return null;
     }
   }
+
   Future<void> resetPassword() async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text);
+      await service.resetPassword(_emailController.text);
       _showSuccessDialog(context, "Password reset email sent!");
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> LoginPage()));
     } on FirebaseAuthException catch (e) {
