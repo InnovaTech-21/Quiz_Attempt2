@@ -11,7 +11,7 @@ jobs:
     steps:
       - checkout
       - run: flutter doctor
-     
+      - run: flutter test --coverage
       - run: flutter pub get
       - run: flutter build web
       - run: flutter build apk --release
