@@ -1,0 +1,107 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "Questions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "QuizID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Question_type",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Questions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "QuizID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "QuestionNo",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Quizzes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Quiz_Category",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Date_Created",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Quizzes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Date_Created",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Quizzes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Quiz_Category",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Date_Created",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Quizzes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Username",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Date_Created",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Quizzes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Username",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Quiz_ID",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

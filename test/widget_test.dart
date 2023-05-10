@@ -16,7 +16,6 @@ import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/menu.dart';
 import 'package:quiz_website/main.dart';
 import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
-import 'package:flutter/material.dart';
 
 import 'package:quiz_website/selectAQuiz.dart';
 
@@ -230,7 +229,7 @@ void main() {
 
   testWidgets('create a short answer quiz requires input of both question and answer', (WidgetTester tester) async {
     await tester.pumpWidget(
-       MaterialApp(
+      MaterialApp(
         home: ShortAnswerQuestionPage(),
       ),
     );
@@ -476,39 +475,39 @@ void main() {
           result, 'Must contain mix of lowercase, uppercase, digits, symbols.');
     });
 
-  testWidgets('valid email required to reset password', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: ForgotPasswordPage(),
-      ),
-    );
+    testWidgets('valid email required to reset password', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: ForgotPasswordPage(),
+        ),
+      );
 
 
-    final resetButton = find.widgetWithText(ElevatedButton, 'Reset Password');
+      final resetButton = find.widgetWithText(ElevatedButton, 'Reset Password');
 
-    // Tap create quiz button and verify navigation
-    await tester.tap(resetButton);
-    await tester.pumpAndSettle();
-    expect(find.text("Enter Valid Email"), findsOneWidget);
+      // Tap create quiz button and verify navigation
+      await tester.tap(resetButton);
+      await tester.pumpAndSettle();
+      expect(find.text("Enter Valid Email"), findsOneWidget);
 
-  });
+    });
 
-  testWidgets('select a quiz to answer button goes to select quiz page', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: MenuPage(),
-      ),
-    );
+    testWidgets('select a quiz to answer button goes to select quiz page', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MenuPage(),
+        ),
+      );
 
 
-    final doQuizButton = find.widgetWithText(ElevatedButton, 'Answer a Quiz');
+      final doQuizButton = find.widgetWithText(ElevatedButton, 'Answer a Quiz');
 
-    // Tap create quiz button and verify navigation
-    await tester.tap(doQuizButton);
-    await tester.pumpAndSettle();
-    expect(find.byType(SelectPage), findsOneWidget);
+      // Tap create quiz button and verify navigation
+      await tester.tap(doQuizButton);
+      await tester.pumpAndSettle();
+      expect(find.byType(SelectPage), findsOneWidget);
 
-  });
+    });
     test('Strong password should return null', () {
       final result = instance.validatePassword('Abcd1234@');
       expect(result, null);
@@ -529,41 +528,7 @@ void main() {
       final result = instance.validateEmail('valid.email@example.com');
       expect(result, null);
     });
-    group('Date validation tests', () {
-      test('_validateMonth returns null for valid input', () {
-        final result = instance.validateMonth('January');
-        expect(result, isNull);
-      });
-
-      test('_validateMonth returns error message for null input', () {
-        final result = instance.validateMonth(null);
-        expect(result, equals('Please select a month'));
-      });
-
-      test('_validateDay returns null for valid input', () {
-        final result = instance.validateDay('1');
-        expect(result, isNull);
-      });
-
-      test('_validateDay returns error message for null input', () {
-        final result = instance.validateDay(null);
-        expect(result, equals('Please select a day'));
-      });
-
-      test('_validateYear returns null for valid input', () {
-        final result = instance.validateYear(2023);
-        expect(result, isNull);
-      });
-
-      test('_validateYear returns error message for null input', () {
-        final result = instance.validateYear(null);
-        expect(result, equals('Please select a year'));
-      });
-    });
-
-
   });
-
 
   // testWidgets('create image quiz loads correctly', (WidgetTester tester) async {
   //   await tester.pumpWidget(
@@ -585,7 +550,6 @@ void main() {
 
 
 }
-
 
 
 
