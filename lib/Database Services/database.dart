@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -6,26 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 
 import '../menu.dart';
+
 class DatabaseService {
   ///updatefinished quizzes
   Future<void> updateQuizzesStattus() async {
-    DocumentReference docRef = FirebaseFirestore.instance
-        .collection('Quizzes')
-        .doc(await getQuizID());
+    DocumentReference docRef =
+        FirebaseFirestore.instance.collection('Quizzes').doc(await getQuizID());
 
 // Update the document
     docRef.update({
       'Status': 'Finished',
     });
   }
-  Future<void> PublishDataToFirestore(int index, int Quiztype,   List<String> questions, List<String> answers) async {
+
+  Future<void> PublishDataToFirestore(int index, int Quiztype,
+      List<String> questions, List<String> answers) async {
     ///Create quizzes created successfully, now add data to Firestore
 
     CollectionReference users =
-    FirebaseFirestore.instance.collection('Questions');
+        FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
-    if(Quiztype==0) {
+    if (Quiztype == 0) {
       Map<String, dynamic> userData = {
         'Question': questions[index].toString(),
         'Answers': answers[index].toString(),
@@ -34,12 +35,12 @@ class DatabaseService {
         'QuestionNo': index,
       };
       await users.doc(docRef.id).set(userData);
-    }else if(Quiztype==1){
-      List <String> ans= answers[index].split('^');
-      String correctAns=ans[0];
-      String rand1=ans[1];
-      String rand2=ans[2];
-      String rand3=ans[3];
+    } else if (Quiztype == 1) {
+      List<String> ans = answers[index].split('^');
+      String correctAns = ans[0];
+      String rand1 = ans[1];
+      String rand2 = ans[2];
+      String rand3 = ans[3];
 
       Map<String, dynamic> userData = {
         'Question': questions[index].toString(),
@@ -54,14 +55,14 @@ class DatabaseService {
 
       await users.doc(docRef.id).set(userData);
     }
-
   }
+
   ///GetQuizID
   Future<String> getQuizID() async {
     // get number of questions from databse
     String quizID = "";
     final CollectionReference quizzesCollection =
-    FirebaseFirestore.instance.collection('Quizzes');
+        FirebaseFirestore.instance.collection('Quizzes');
 
     String? username = await getUser();
     if (username != null) {
@@ -79,6 +80,7 @@ class DatabaseService {
 
     return quizID;
   }
+
   /// Get User Name
   Future<String?> getUser() async {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -88,7 +90,7 @@ class DatabaseService {
       String uID = user.uid;
       try {
         CollectionReference users =
-        FirebaseFirestore.instance.collection('Users');
+            FirebaseFirestore.instance.collection('Users');
         final snapshot = await users.doc(uID).get();
         final data = snapshot.data() as Map<String, dynamic>;
         // print (data['user_name']);
@@ -98,8 +100,10 @@ class DatabaseService {
       }
     }
   }
+
 //signup
-  Future<void> addSignupToFirestore(String email, password,username,name, DateTime Dateofbirth) async {
+  Future<void> addSignupToFirestore(
+      String email, password, username, name, DateTime Dateofbirth) async {
     FirebaseAuth auth = FirebaseAuth.instance;
 
     ///create a user with email and password
@@ -107,7 +111,6 @@ class DatabaseService {
       email: email,
       password: password,
     );
-
 
     ///user created successfully, now add data to Firestore
     CollectionReference users = FirebaseFirestore.instance.collection('Users');
@@ -121,57 +124,52 @@ class DatabaseService {
       'user_username': name,
     };
 
-
     await users.doc(userCredential.user!.uid).set(userData);
   }
 
-    ///add updated score to database
-    Future<void> addUpdatedScore(String quizSelected, int _currentIndex,
-        questionlength) async {
-      CollectionReference users =
-      FirebaseFirestore.instance.collection('QuizResults');
-      DocumentReference docRef = users.doc();
-      String docID = docRef.id;
-      Map<String, dynamic> userData = {
-        "Quiz_ID": quizSelected,
-        "CorrectAns": _currentIndex,
-        "TotalAns": questionlength,
-        "Date_Created": Timestamp.fromDate(DateTime.now()),
-        "UserID": await getUser(),
+  ///add updated score to database
+  Future<void> addUpdatedScore(
+      String quizSelected, int _currentIndex, questionlength) async {
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('QuizResults');
+    DocumentReference docRef = users.doc();
+    String docID = docRef.id;
+    Map<String, dynamic> userData = {
+      "Quiz_ID": quizSelected,
+      "CorrectAns": _currentIndex,
+      "TotalAns": questionlength,
+      "Date_Created": Timestamp.fromDate(DateTime.now()),
+      "UserID": await getUser(),
+    };
 
-      };
-
-      await users.doc(docRef.id).set(userData);
-    }
-
+    await users.doc(docRef.id).set(userData);
+  }
 
   ///get Multiple Choice questions
   Future<List<Map<String, dynamic>>> getMCQQuestionsAnswers(String x) async {
     List<Map<String, dynamic>> questionsAnswersList = [];
 
-      CollectionReference users = FirebaseFirestore.instance.collection(
-          'Questions');
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('Questions');
 
-      //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-      QuerySnapshot questionsSnapshot = await users
-          .where('QuizID', isEqualTo: x)
-          .orderBy('QuestionNo', descending: false)
-          .get();
+    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
+    QuerySnapshot questionsSnapshot = await users
+        .where('QuizID', isEqualTo: x)
+        .orderBy('QuestionNo', descending: false)
+        .get();
 
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        for (int i = 0; i < questionsSnapshot.docs.length; i++) {
-          DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
-          Map<String, dynamic> questionAnswerMap = {
-            "Question": quizDoc["Question"],
-            "Answers": quizDoc["Answers"],
-            "Option1": quizDoc["Option1"],
-            "Option2": quizDoc["Option2"],
-            "Option3": quizDoc["Option3"],
-          };
-          questionsAnswersList.add(questionAnswerMap);
-        }
-
+    if (questionsSnapshot.docs.isNotEmpty) {
+      for (int i = 0; i < questionsSnapshot.docs.length; i++) {
+        DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
+        Map<String, dynamic> questionAnswerMap = {
+          "Question": quizDoc["Question"],
+          "Answers": quizDoc["Answers"],
+          "Option1": quizDoc["Option1"],
+          "Option2": quizDoc["Option2"],
+          "Option3": quizDoc["Option3"],
+        };
+        questionsAnswersList.add(questionAnswerMap);
+      }
     }
     return questionsAnswersList;
   }
@@ -179,26 +177,24 @@ class DatabaseService {
   Future<List<Map<String, dynamic>>> getShortQuestionsAnswers(String x) async {
     List<Map<String, dynamic>> questionsAnswersList = [];
 
-      CollectionReference users = FirebaseFirestore.instance.collection(
-          'Questions');
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('Questions');
 
-      //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-      QuerySnapshot questionsSnapshot = await users
-          .where('QuizID', isEqualTo: x)
-          .orderBy('QuestionNo', descending: false)
-          .get();
+    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
+    QuerySnapshot questionsSnapshot = await users
+        .where('QuizID', isEqualTo: x)
+        .orderBy('QuestionNo', descending: false)
+        .get();
 
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        for (int i = 0; i < questionsSnapshot.docs.length; i++) {
-          DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
-          Map<String, dynamic> questionAnswerMap = {
-            "Question": quizDoc["Question"],
-            "Answers": quizDoc["Answers"],
-          };
-          questionsAnswersList.add(questionAnswerMap);
-        }
-
+    if (questionsSnapshot.docs.isNotEmpty) {
+      for (int i = 0; i < questionsSnapshot.docs.length; i++) {
+        DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
+        Map<String, dynamic> questionAnswerMap = {
+          "Question": quizDoc["Question"],
+          "Answers": quizDoc["Answers"],
+        };
+        questionsAnswersList.add(questionAnswerMap);
+      }
     }
     return questionsAnswersList;
   }
@@ -208,9 +204,10 @@ class DatabaseService {
       getQuizDescription, getQuizCategory) async {
     User? user = FirebaseAuth.instance.currentUser;
     print(getQuizType);
+
     ///Create quizzes created successfully, now add data to Firestore
     CollectionReference users =
-    FirebaseFirestore.instance.collection('Quizzes');
+        FirebaseFirestore.instance.collection('Quizzes');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
     Map<String, dynamic> userData = {
@@ -229,32 +226,36 @@ class DatabaseService {
   }
 
   /// Addnumberofquestion to quizzes
-  Future<void> addNumberOfQuestions(String quizID, int numQuestions,bool isTimed,int time) async {
+  Future<void> addNumberOfQuestions(
+      String quizID, int numQuestions, bool isTimed, int time) async {
     CollectionReference quizzesCollection =
-    FirebaseFirestore.instance.collection('Quizzes');
+        FirebaseFirestore.instance.collection('Quizzes');
 
     // Get the quiz document with the specified ID
     QuerySnapshot quizQuery =
-    await quizzesCollection.where('Quiz_ID', isEqualTo: quizID).get();
+        await quizzesCollection.where('Quiz_ID', isEqualTo: quizID).get();
 
     if (quizQuery.docs.length == 1) {
       // Update the number of questions for the quiz
       DocumentReference quizDocRef = quizQuery.docs[0].reference;
-      await quizDocRef.update({'Number_of_questions': numQuestions,'QuizTimed':isTimed,'TimerTime':time});
+      await quizDocRef.update({
+        'Number_of_questions': numQuestions,
+        'QuizTimed': isTimed,
+        'TimerTime': time
+      });
 
       print('Successfully updated the number of questions for QuizID $quizID');
     } else {
-      print('Error: Found ${quizQuery.docs.length} quizzes with QuizID $quizID');
+      print(
+          'Error: Found ${quizQuery.docs.length} quizzes with QuizID $quizID');
     }
   }
-
-
 
   Future<String> _getQuizID() async {
     // get number of questions from databse
     String quizID = "";
     final CollectionReference quizzesCollection =
-    FirebaseFirestore.instance.collection('Quizzes');
+        FirebaseFirestore.instance.collection('Quizzes');
 
     String? username = await getUser();
     if (username != null) {
@@ -272,13 +273,14 @@ class DatabaseService {
 
     return quizID;
   }
+
   /// add imageing questions
-  Future<void> addImagesToFirestore(String question, Image1url, image2url, image3url,
-      image4url, image5url, image6url, int index) async {
+  Future<void> addImagesToFirestore(String question, Image1url, image2url,
+      image3url, image4url, image5url, image6url, int index) async {
     ///Create quizzes created successfully, now add data to Firestore
     ///
     CollectionReference users =
-    FirebaseFirestore.instance.collection('Questions');
+        FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
     Map<String, dynamic> userData = {
@@ -306,25 +308,23 @@ class DatabaseService {
   }
 
   Future<List<Map<String, dynamic>>> getQuizInformation(String x) async {
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('Quizzes');
 
-    CollectionReference users = FirebaseFirestore.instance.collection(
-        'Quizzes');
-
-    String  y = 'Finished';
+    String y = 'Finished';
     QuerySnapshot questionsSnapshot;
     //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-    if(( x != "All")) {
-
+    if ((x != "All")) {
       questionsSnapshot = await users
           .where('Quiz_Category', isEqualTo: x)
           .where('Status', isEqualTo: y)
           .orderBy('Date_Created', descending: true)
           .get();
-
-    }
-    else{
-      questionsSnapshot = await users.where('Status', isEqualTo: y)
-          .orderBy('Date_Created', descending: true).get();
+    } else {
+      questionsSnapshot = await users
+          .where('Status', isEqualTo: y)
+          .orderBy('Date_Created', descending: true)
+          .get();
     }
 
     //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
@@ -335,26 +335,52 @@ class DatabaseService {
       for (int i = 0; i < questionsSnapshot.docs.length; i++) {
         DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
         Map<String, dynamic> questionAnswerMap = {
-          "Quiz_ID" : quizDoc["Quiz_ID"],
+          "Quiz_ID": quizDoc["Quiz_ID"],
           "QuizName": quizDoc["QuizName"],
           "Quiz_Description": quizDoc["Quiz_Description"],
           "Quiz_Category": quizDoc["Quiz_Category"],
-          "Quiz_Type":quizDoc["Quiz_Type"],
-          "QuizTimed":quizDoc["QuizTimed"],
-          "TimerTime":quizDoc["TimerTime"],
-          "Number_of_questions":quizDoc["Number_of_questions"].toString(),
+          "Quiz_Type": quizDoc["Quiz_Type"],
+          "QuizTimed": quizDoc["QuizTimed"],
+          "TimerTime": quizDoc["TimerTime"],
+          "Number_of_questions": quizDoc["Number_of_questions"].toString(),
         };
         questionsAnswersList.add(questionAnswerMap);
       }
     }
     return questionsAnswersList;
 
-
     // _userAnswers=List.filled(questionsAnswersList.length, '');
-
   }
 
+  Future<void> addMAQAnswers(
+      List<String> answers, String question, int expected) async {
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('Questions');
+    DocumentReference docRef = users.doc();
+    String docID = docRef.id;
+    Map<String, dynamic> userData = {
+      'Answers': answers,
+      'QuizID': await _getQuizID(),
+      'Question': question,
+      'Number Expected': expected,
+      'QuestionNo': 1,
+    };
+    await users.doc(docRef.id).set(userData);
+  }
 
+  Future<Map<String, Object>> addQuestions(String x) async {
+    List<Map<String, dynamic>> questionsAnswersList = [];
 
+    CollectionReference quizCollection =
+        FirebaseFirestore.instance.collection('Questions');
+    QuerySnapshot quizSnapshot =
+        await quizCollection.where('QuizID', isEqualTo: x).get();
 
+    DocumentSnapshot quizDoc = quizSnapshot.docs.first;
+
+    String question = quizDoc['Question'];
+    List<String> answers = List<String>.from(quizDoc['Answers']);
+
+    return {'question': question, 'answers': answers};
+  }
 }
