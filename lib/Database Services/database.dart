@@ -363,6 +363,7 @@ class DatabaseService {
       'QuizID': await _getQuizID(),
       'Question': question,
       'Number Expected': expected,
+      'Question_type': 'Multiple Answer Quiz',
       'QuestionNo': 1,
     };
     await users.doc(docRef.id).set(userData);
