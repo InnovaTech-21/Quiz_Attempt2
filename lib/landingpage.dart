@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
@@ -70,10 +71,19 @@ class _SelectaPageState extends State<SelectaPage> {
           "Quiz_Type":quizDoc["Quiz_Type"],
           "Number_of_questions":quizDoc["Number_of_questions"].toString(),
         };
+        if (quizDoc["QuizTimed"] != null) {
+          questionAnswerMap["QuizTimed"] = quizDoc["QuizTimed"];
+        } else {
+          questionAnswerMap["QuizTimed"] = false;
+        }
+        if (quizDoc["TimerTime"] != null) {
+          questionAnswerMap["TimerTime"] = quizDoc["TimerTime"];
+        } else {
+          questionAnswerMap["TimerTime"] = 0;
+        }
         questionsAnswersList.add(questionAnswerMap);
       }
     }
-
     for (var i = 0; i < questionsAnswersList.length; i++) {
 
       _Quiz_ID.add(questionsAnswersList[i]["Quiz_ID"]);
@@ -120,8 +130,8 @@ class _SelectaPageState extends State<SelectaPage> {
                 Spacer(),
                 Container(
                   //color: ColourPallete.backgroundColor,
-                  width: 260,
-                  height: 40,
+                  width: 290,
+                  height: 45,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(22),
@@ -137,7 +147,7 @@ class _SelectaPageState extends State<SelectaPage> {
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: ColourPallete.backgroundColor,
-                            hintText: 'Search for a quiz or by category',
+                            hintText: 'Search for a quiz/category',
                             hintStyle: TextStyle(color: Colors.white),
                             border: InputBorder.none,
                           ),
@@ -157,11 +167,11 @@ class _SelectaPageState extends State<SelectaPage> {
                   title: 'Create a Quiz',
                   tapEvent: () {},
                 ),
-                NavItem(
-                  key: ValueKey('Answer a Quiz'),
-                  title: 'Answer a Quiz',
-                  tapEvent: () {},
-                ),
+                //NavItem(
+                  //key: ValueKey('Answer a Quiz'),
+                  //title: 'Answer a Quiz',
+                  //tapEvent: () {},
+                //),
                 // NavItem(
                 // key: ValueKey('contactus'),
                 //title: 'Contact Us',
@@ -276,83 +286,82 @@ class _SelectaPageState extends State<SelectaPage> {
                     }
                   }
 
-                  return SingleChildScrollView(
-
-                    child: Center(
-                      child: Column(
-
-                        children: <Widget>[
-                          const SizedBox(height: 60),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              // ComboBox filter
-                              Column(
+                  return Center(
+                    child: SizedBox(
+                      height: 600,
+                      child: CarouselSlider.builder(
+                        itemCount: filteredQuizName.length,
+                        itemBuilder: (BuildContext context, int i, int realIndex) {
+                          return Container(
+                            color: ColourPallete.backgroundColor,
+                            padding: const EdgeInsets.all(10),
+                            child: SizedBox(
+                              width: 700,
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  // ComboBox filter
-                                  for (int i = 0; i < filteredQuizName.length; i++) // Use filteredQuizName.length
-                                    Container(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/InnovaTechLogo.png',
+                                    width: 300,
+                                    height: 300,
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    '${_QuizName[i].toUpperCase()}\n\nCATEGORY: ${_QuizCategory[i]}\n\nTYPE: ${_QuizType[i]}\n\n ${_NumberofQuestions[i]} Questions\n',
+                                  ),
+                                  SizedBox(height: 10),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (_QuizType[i] == "Short-Answer") {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i])),
+                                        );
+                                      }
+                                      if (_QuizType[i] == "Multiple Choice") {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => mcqQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i])),
+                                        );
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
 
-                                      color: ColourPallete.backgroundColor,
-                                      padding: const EdgeInsets.all(10),
-                                      child: SizedBox(
-                                        width: 700,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            ///goes to relevant answer quiz page
-                                            if (_QuizType[i] == "Short-Answer" ) {
-                                              print(_Quiz_ID[i]);
-                                              Navigator.push(
-                                                context,
-
-                                                MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
-                                              );
-                                            }
-                                            if (_QuizType[i] == "Multiple Choice" ) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => mcqQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i]   )),
-                                              );
-                                            }
-                                            // Add your onPressed logic here
-                                          },
-
-                                          style: ElevatedButton.styleFrom(
-
-                                            padding: const EdgeInsets.all(27), backgroundColor: ColourPallete.backgroundColor,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                              side: BorderSide(
-                                                color: ColourPallete.gradient2,
-                                                width: 2,
-                                              ),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Image.asset(
-                                                'assets/images/InnovaTechLogo.png',
-                                                width: 100,
-                                                height: 100,
-                                              ),
-                                              SizedBox(width: 10),
-                                              Text(
-                                                  'Quiz Name: ${_QuizName[i]}\nQuiz Category: ${_QuizCategory[i]}\nQuiz Type: ${_QuizType[i]}\nNumber of Questions: ${_NumberofQuestions[i]}'),
-                                            ],
-                                          ),
+                                      padding: const EdgeInsets.all(27),
+                                      backgroundColor: ColourPallete.backgroundColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(21),
+                                        side: BorderSide(
+                                          color: ColourPallete.gradient2,
+                                          width: 2,
                                         ),
                                       ),
                                     ),
-                                  SizedBox(height: 30),
+                                    child: Text('Start Quiz'),
+                                  ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          );
+                        },
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          autoPlayInterval: Duration(seconds: 5),
+                          autoPlayCurve: Curves.easeInOut,
+                          enlargeCenterPage: true,
+                          enableInfiniteScroll: true,
+                          viewportFraction: 0.8,
+                        ),
                       ),
+                    ),
+                  );
 
-                    ), );
+
+
+
+
+
+
 
                 }
             )
