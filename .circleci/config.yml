@@ -7,7 +7,7 @@ jobs:
     environment:
       CODECOV_TOKEN: "ad91dc9f-f0c6-464c-bd8c-09369006c858"
     docker:
-      - image: cirruslabs/flutter:3.10.0
+      - image: cirrusci/flutter:latest
     steps:
       - checkout
       - run: flutter doctor
