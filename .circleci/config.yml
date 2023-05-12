@@ -10,7 +10,7 @@ jobs:
       - image: cirrusci/flutter
     steps:
       - checkout
-      - run: flutter doctor
+      - run: flutter upgrade
       - run: flutter test --coverage
       - run: flutter pub get
       - run: flutter build web
