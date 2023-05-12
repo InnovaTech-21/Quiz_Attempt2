@@ -70,7 +70,7 @@ class _SelectPageState extends State<SelectPage> {
             Navigator.push(
               ///goes to welcome page
               context,
-              MaterialPageRoute(builder: (context) => MenuPage()),
+              MaterialPageRoute(builder: (context) => MenuPage(testFlag: false,)),
             );
           },
         ),

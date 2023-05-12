@@ -207,7 +207,7 @@ class _imageBasedState extends State<imageBased> {
       } finally {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const MenuPage()),
+          MaterialPageRoute(builder: (context) => const MenuPage(testFlag: false,)),
         );
       }
     }).catchError((error) {

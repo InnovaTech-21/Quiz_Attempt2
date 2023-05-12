@@ -20,7 +20,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  AuthService service =AuthService();
+  //AuthService service =AuthService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -36,7 +36,7 @@ class LoginPageState extends State<LoginPage> {
     if (form!.validate()) {
 
       clearInputs();
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
       //print('All fields entered, please check corresponding details');
     }
   }
@@ -198,8 +198,8 @@ class LoginPageState extends State<LoginPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    // usernameController.text='shakeel@gmail.com';
-                                    // passwordController.text='\$Hak3l';
+                                    usernameController.text='shakeel@gmail.com';
+                                    passwordController.text='\$Hak3l';
                                     user = await AuthService.loginUsingEmailPassword( email: usernameController.text, password: passwordController.text);
                                     validateAndSave();
                                   },

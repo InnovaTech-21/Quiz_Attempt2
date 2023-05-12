@@ -72,7 +72,7 @@ class SignupState extends State<Signup> {
       showDialog1("Account created");
 
       ///go to welcome page
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
 
     }
     // else {
