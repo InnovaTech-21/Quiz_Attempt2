@@ -7,11 +7,10 @@ jobs:
     environment:
       CODECOV_TOKEN: "ad91dc9f-f0c6-464c-bd8c-09369006c858"
     docker:
-      - image: cirrusci/flutter
+      - image: cirruslabs/flutter:3.10.0
     steps:
       - checkout
-      - run: flutter channel main
-      - run: flutter upgrade
+      - run: flutter doctor
       - run: flutter test --coverage
       - run: flutter pub get
       - run: flutter build web
