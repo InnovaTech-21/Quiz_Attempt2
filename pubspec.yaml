@@ -18,8 +18,9 @@ description: A new Flutter project.
 # of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
+
 environment:
-  sdk: ">=3.0.0 <3.3.0"
+  sdk: '^3.0.0'
 
 
 
