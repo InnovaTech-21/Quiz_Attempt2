@@ -10,7 +10,7 @@ jobs:
       - image: cirrusci/flutter
     steps:
       - checkout
-      - run: flutter channel master
+      - run: flutter channel main
       - run: flutter upgrade
       - run: flutter test --coverage
       - run: flutter pub get
