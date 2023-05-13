@@ -59,6 +59,50 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   }
   }
 
+    Future<String?> getUser() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = FirebaseAuth.instance.currentUser;
+    String? nameuser = '';
+    if (user != null) {
+      String uID = user.uid;
+      try {
+        CollectionReference users =
+            FirebaseFirestore.instance.collection('Users');
+        final snapshot = await users.doc(uID).get();
+        final data = snapshot.data() as Map<String, dynamic>;
+        // print (data['user_name']);
+        return data['user_name'];
+      } catch (e) {
+        return 'Error fetching user';
+      }
+    }
+  }
+
+
+    Future<String> _getQuizID() async {
+    // get number of questions from databse
+    String quizID = "";
+    final CollectionReference quizzesCollection =
+        FirebaseFirestore.instance.collection('Quizzes');
+
+    String? username = await getUser();
+    if (username != null) {
+      QuerySnapshot questionsSnapshot = await quizzesCollection
+          .where('Username', isEqualTo: username)
+          .orderBy('Date_Created', descending: true)
+          .limit(1)
+          .get();
+
+      if (questionsSnapshot.docs.isNotEmpty) {
+        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
+        quizID = mostRecentQuestion['Quiz_ID'].toString();
+      }
+    }
+
+    return quizID; 
+  }
+
+
   ///add data of quiz to be made to database
   void addDataToFirestore(String getQuizName, getQuizType, getQuizDescription,
       getQuizCategory) async {
