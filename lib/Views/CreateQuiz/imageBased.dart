@@ -1,111 +1,163 @@
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
-import 'package:path/path.dart' as Path;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import '../../menu.dart';
 
 class imageBased extends StatefulWidget {
-  const imageBased({Key? key, required int numQuest});
+  const imageBased({Key? key});
 
   @override
   _imageBasedState createState() => _imageBasedState();
 }
 
 class _imageBasedState extends State<imageBased> {
-  List<File?> imageFiles = List.filled(6, null);
-  List<String?> imageUrls = List.filled(6, null);
-  final _picker = ImagePicker();
+  String? _imageUrl = '';
+  PlatformFile? pickedFile1;
+  PlatformFile? pickedFile2;
+  PlatformFile? pickedFile3;
+  PlatformFile? pickedFile4;
+  PlatformFile? pickedFile5;
+  PlatformFile? pickedFile6;
+  List<String> imageUrls = [];
+
   final TextEditingController questionController = TextEditingController();
-  final FirebaseStorage storage = FirebaseStorage.instance;
 
-  Future<void> _pickImage(ImageSource source, int index) async {
-    final pickedFile = await _picker.getImage(source: source);
+  List<String> quests = [];
+  List<String> answers = [];
 
-    if (pickedFile != null) {
-      File imageFile = File(pickedFile.path);
+  int currentQuestionIndex = 0;
+  List<Question> questions = [];
+
+  Future selectFile(int buttonIndex) async {
+    final result = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: false);
+    String? abc = await _getQuizID();
+
+    if (result != null && result.files.isNotEmpty) {
+      final pickedFile = result.files.first;
+      final fileBytes = pickedFile.bytes;
+      final fileName = pickedFile.name;
+
+      // Upload file
+      final storageRef =
+          FirebaseStorage.instance.ref('$abc/$currentQuestionIndex/$fileName');
+      final uploadTask = storageRef.putData(fileBytes!);
+      await uploadTask.whenComplete(() {});
+
+      // Retrieve download URL
+      final downloadURL = await storageRef.getDownloadURL();
+
       setState(() {
-        imageFiles[index] = imageFile;
-        print(imageFile.toString());
+        if (buttonIndex == 1) {
+          pickedFile1 = pickedFile;
+        } else if (buttonIndex == 2) {
+          pickedFile2 = pickedFile;
+        } else if (buttonIndex == 3) {
+          pickedFile3 = pickedFile;
+        } else if (buttonIndex == 4) {
+          pickedFile4 = pickedFile;
+        } else if (buttonIndex == 5) {
+          pickedFile5 = pickedFile;
+        } else if (buttonIndex == 6) {
+          pickedFile6 = pickedFile;
+        }
+        imageUrls.add(downloadURL); // Assign the download URL to _imageUrl
       });
     }
   }
 
-  Future<void> _uploadImages() async {
-    for (int i = 0; i < imageFiles.length; i++) {
-      if (imageFiles[i] != null) {
-        String downloadUrl = await _uploadImageAndGetUrl(imageFiles[i]!);
-        print(downloadUrl);
-        imageUrls[i] = downloadUrl;
+  Future<String?> getUser() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = FirebaseAuth.instance.currentUser;
+    String? nameuser = '';
+    if (user != null) {
+      String uID = user.uid;
+      try {
+        CollectionReference users =
+            FirebaseFirestore.instance.collection('Users');
+        final snapshot = await users.doc(uID).get();
+        final data = snapshot.data() as Map<String, dynamic>;
+        // print (data['user_name']);
+        return data['user_name'];
+      } catch (e) {
+        return 'Error fetching user';
       }
     }
   }
 
-  Future<String> _uploadImageAndGetUrl(File file) async {
-    String fileName = Path.basename(file.path);
-    Reference reference = storage.ref().child("images/$fileName");
-    UploadTask uploadTask = reference.putFile(file);
-    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
-    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-    return downloadUrl;
-  }
+  Future<String> _getQuizID() async {
+    // get number of questions from databse
+    String quizID = "";
+    final CollectionReference quizzesCollection =
+        FirebaseFirestore.instance.collection('Quizzes');
 
-  Future<void> _submitQuestion(String questionText) async {
-    _uploadImages();
-    try {
-      await _uploadImages();
+    String? username = await getUser();
+    if (username != null) {
+      QuerySnapshot questionsSnapshot = await quizzesCollection
+          .where('Username', isEqualTo: username)
+          .orderBy('Date_Created', descending: true)
+          .limit(1)
+          .get();
 
-      final DocumentReference docRef = FirebaseFirestore.instance.collection('Questions').doc();
-      await docRef.set({
-        'question': questionText,
-        'images': imageUrls,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Success'),
-            content: const Text('Question submitted successfully.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } catch (error) {
-      print(error.toString());
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: const Text('Failed to submit the question.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        },
-      );
+      if (questionsSnapshot.docs.isNotEmpty) {
+        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
+        quizID = mostRecentQuestion['Quiz_ID'].toString();
+      }
     }
+
+    return quizID;
   }
 
+  void addDataToFirestore(int index) async {
+    ///Create quizzes created successfully, now add data to Firestore
+    ///
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('Questions');
+    DocumentReference docRef = users.doc();
+    String docID = docRef.id;
+    Map<String, dynamic> userData = {
+      'Question': questionController.text,
+      'Answer': imageUrls[0],
+      'Option1': imageUrls[1],
+      'Option2': imageUrls[2],
+      'Option3': imageUrls[3],
+      'Option4': imageUrls[4],
+      'Option5': imageUrls[5],
+      'QuizID': await _getQuizID(),
+      'Question_type': "Image-Based",
+      'QuestionNo': index,
+    };
 
-@override
+    await users.doc(docRef.id).set(userData);
+  }
+
+  void updateQuizzesStattus() async {
+    DocumentReference docRef = FirebaseFirestore.instance
+        .collection('Quizzes')
+        .doc(await _getQuizID());
+
+    // Update the document
+    docRef.update({
+      'Status': 'Finished',
+    }).then((value) async {
+      try {
+        await _showDialog("Quiz Created");
+      } finally {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const MenuPage()),
+        );
+      }
+    }).catchError((error) {
+      _showDialog("Error creating quiz");
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -141,7 +193,6 @@ class _imageBasedState extends State<imageBased> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
-
                       children: <Widget>[
                         Text(
                           'Enter quiz question here:',
@@ -180,7 +231,6 @@ class _imageBasedState extends State<imageBased> {
                             return null;
                           },
                         ),
-                        
                         const SizedBox(height: 50),
                         Text(
                           'Upload images for question below\n(1st image being the correct image)',
@@ -199,23 +249,24 @@ class _imageBasedState extends State<imageBased> {
                                 child: Stack(
                                   children: [
                                     Center(
-
                                       child: FloatingActionButton(
                                         heroTag: "image1",
                                         onPressed: () {
-                                          _pickImage(ImageSource.gallery,0);
+                                          selectFile(1);
+                                          //_pickImage(ImageSource.gallery);
                                         },
-                                        child: const Icon(Icons.add_photo_alternate),
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (imageFiles[0]!= null)
+                                    if (pickedFile1 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          imageFiles[0]!.path,
+                                        child: Image.memory(
+                                          pickedFile1!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -229,23 +280,24 @@ class _imageBasedState extends State<imageBased> {
                                 child: Stack(
                                   children: [
                                     Center(
-
                                       child: FloatingActionButton(
                                         heroTag: "image2",
                                         onPressed: () {
-                                          _pickImage(ImageSource.gallery,1);
+                                          selectFile(2);
+                                          //_pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_photo_alternate),
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (imageFiles[1] != null)
+                                    if (pickedFile2 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          imageFiles[1]!.path,
+                                        child: Image.memory(
+                                          pickedFile2!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -262,19 +314,21 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image3",
                                         onPressed: () {
-                                          _pickImage(ImageSource.gallery,2);
+                                          selectFile(3);
+                                          //_pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_photo_alternate),
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (imageFiles[2]!= null)
+                                    if (pickedFile3 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          imageFiles[2]!.path,
+                                        child: Image.memory(
+                                          pickedFile3!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -296,19 +350,21 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image4",
                                         onPressed: () {
-                                          _pickImage(ImageSource.gallery,3);
+                                          selectFile(4);
+                                          //_pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_photo_alternate),
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (imageFiles[3] != null)
+                                    if (pickedFile4 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          imageFiles[3]!.path,
+                                        child: Image.memory(
+                                          pickedFile4!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -325,19 +381,21 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image5",
                                         onPressed: () {
-                                          _pickImage(ImageSource.gallery,4);
+                                          selectFile(5);
+                                          //_pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_photo_alternate),
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (imageFiles[4] != null)
+                                    if (pickedFile5 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          imageFiles[4]!.path,
+                                        child: Image.memory(
+                                          pickedFile5!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -351,23 +409,24 @@ class _imageBasedState extends State<imageBased> {
                                 child: Stack(
                                   children: [
                                     Center(
-
                                       child: FloatingActionButton(
                                         heroTag: "image6",
                                         onPressed: () {
-                                          _pickImage(ImageSource.gallery,5);
+                                          selectFile(6);
+                                          //_pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(Icons.add_photo_alternate),
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (imageFiles[5] != null)
+                                    if (pickedFile6 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          imageFiles[5]!.path,
+                                        child: Image.memory(
+                                          pickedFile6!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -394,15 +453,9 @@ class _imageBasedState extends State<imageBased> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: ElevatedButton(
-                              onPressed: () async {
-                                _submitQuestion(questionController.text);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const CreateQuizPage(),
-                                  ),
-                                );
+                              onPressed: () {
+                                //addDataToFirestore(currentQuestionIndex);
+                                //updateQuizzesStattus();
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
@@ -419,8 +472,49 @@ class _imageBasedState extends State<imageBased> {
                           ),
                         ),
                         const SizedBox(height: 50),
+                        SizedBox(
+                          height: 65,
+                          width: 450,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  ColourPallete.gradient1,
+                                  ColourPallete.gradient2,
+                                ],
+                                begin: Alignment.bottomLeft,
+                                end: Alignment.topRight,
+                              ),
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                //addDataToFirestore(currentQuestionIndex);
+                                //Navigator.push(
+                                //  context,
+                                //  MaterialPageRoute(
+                                //    builder: (context) => publishPage(
+                                //        questions: quests,
+                                //        answers: answers,
+                                //        quizType: 3),
+                                //  ),
+                                //);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                              ),
+                              child: const Text(
+                                'Publish',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 19,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
-                      
                     ),
                   ],
                 )),
@@ -429,4 +523,44 @@ class _imageBasedState extends State<imageBased> {
       ),
     );
   }
+
+  Future<void> _showDialog(String message) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Message'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+///QUESTION CLASS
+class Question {
+  String question;
+  String answer;
+  String randoption1;
+  String randoption2;
+  String randoption3;
+  String randoption4;
+  String randoption5;
+
+  Question(
+      {required this.question,
+      required this.answer,
+      required this.randoption1,
+      required this.randoption2,
+      required this.randoption3,
+      required this.randoption4,
+      required this.randoption5});
 }

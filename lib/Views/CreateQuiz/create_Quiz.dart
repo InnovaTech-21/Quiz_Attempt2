@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 
@@ -25,6 +27,32 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   String? username;
   String? quizType;
   String? quizCategory;
+
+  PlatformFile? pickedFile1;
+  String? _imageUrl = '';
+
+  //selecting image
+  Future selectFile() async {
+  final result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
+  String? abc = await _getQuizID();
+
+  if (result != null && result.files.isNotEmpty) {
+    final fileBytes = result.files.first.bytes;
+    final fileName = result.files.first.name;
+
+    // Upload file
+    final storageRef = FirebaseStorage.instance.ref('$abc/$fileName');
+    final uploadTask = storageRef.putData(fileBytes!);
+    await uploadTask.whenComplete(() {});
+
+    // Retrieve download URL
+    final downloadURL = await storageRef.getDownloadURL();
+
+    setState(() {
+      _imageUrl = downloadURL; // Assign the download URL to _imageUrl
+    });
+  }
+  }
 
   ///add data of quiz to be made to database
   void addDataToFirestore() async {
@@ -77,6 +105,30 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     await users.doc(docRef.id).set(userData);
     clearInputs();
   }
+
+  Future<String> _getQuizID() async {
+    // get number of questions from databse
+    String quizID = "";
+    final CollectionReference quizzesCollection =
+    FirebaseFirestore.instance.collection('Quizzes');
+
+    String? username = await getUser();
+    if (username != null) {
+      QuerySnapshot questionsSnapshot = await quizzesCollection
+          .where('Username', isEqualTo: username)
+          .orderBy('Date_Created', descending: true)
+          .limit(1)
+          .get();
+
+      if (questionsSnapshot.docs.isNotEmpty) {
+        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
+        quizID = mostRecentQuestion['Quiz_ID'].toString();
+      }
+    }
+
+    return quizID;
+  }
+
 
   Future<String?> getUser() async {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -151,7 +203,8 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       } else if (getQuizType() == 'Image-Based') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>  imageBased(numQuest: 2)),
+          ///MaterialPageRoute(builder: (context) =>  imageBased(numQuest: 2)),
+          MaterialPageRoute(builder: (context) =>  imageBased()),
         );
       } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
