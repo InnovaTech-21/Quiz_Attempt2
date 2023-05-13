@@ -140,7 +140,6 @@ class _SelectaPageState extends State<SelectaPage> {
                     border: Border.all(color: ColourPallete.gradient1, width: 2),
                     color: ColourPallete.backgroundColor,
                   ),
-
                   child: Row(
                     children: [
                       Icon(Icons.search, color: Colors.white),
@@ -306,14 +305,24 @@ class _SelectaPageState extends State<SelectaPage> {
                       }
                     }
                   }
-
-                  return Center(
-                    child: SizedBox(
-                      height: 350,
-                      width: 580,
-                      child: CarouselSlider.builder(
-                        itemCount: filteredQuizName.length,
-                        itemBuilder: (BuildContext context, int i, int realIndex) {
+                  return Column(
+                    children: [
+                      SizedBox(height: 50),
+                    Text(
+                    'Trending Quizzes',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                      SizedBox(height: 50),
+                  Center(
+                  child: SizedBox(
+                  height: 350,
+                  width: 580,
+                  child: CarouselSlider.builder(
+                  itemCount: filteredQuizName.length,
+                  itemBuilder: (BuildContext context, int i, int realIndex) {
                           return Card(
                             elevation: 2,
                             shape: RoundedRectangleBorder(
@@ -445,17 +454,19 @@ class _SelectaPageState extends State<SelectaPage> {
                               ),
                             ),
                           );
-                        },
-                        options: CarouselOptions(
-                          autoPlay: true,
-                          autoPlayInterval: Duration(seconds: 5),
-                          autoPlayCurve: Curves.easeInOut,
-                          enlargeCenterPage: true,
-                          enableInfiniteScroll: true,
-                          viewportFraction: 0.8,
-                        ),
-                      ),
+                  },
+                    options: CarouselOptions(
+                      autoPlay: true,
+                      autoPlayInterval: Duration(seconds: 5),
+                      autoPlayCurve: Curves.easeInOut,
+                      enlargeCenterPage: true,
+                      enableInfiniteScroll: true,
+                      viewportFraction: 0.8,
                     ),
+                  ),
+                  ),
+                  ),
+                    ],
                   );
 
 
