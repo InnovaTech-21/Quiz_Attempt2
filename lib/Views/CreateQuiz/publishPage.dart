@@ -24,6 +24,16 @@ class _publishPageState extends State<publishPage> {
   int timeLimit = 0;
   final TextEditingController timeLimitController = TextEditingController();
 
+  int type=0;
+
+  @override
+  ///sets up page to load the selected quiz
+  void initState() {
+    super.initState();
+    type=widget.quizType;
+
+  }
+
   Future<void> _showDialog(String message) async {
     await showDialog(
       context: context,
@@ -51,7 +61,7 @@ class _publishPageState extends State<publishPage> {
     FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
-    if(widget.quizType==1) {
+    if(type==1) {
       Map<String, dynamic> userData = {
         'Question': widget.questions[index].toString(),
         'Answers': widget.answers[index].toString(),
@@ -60,7 +70,7 @@ class _publishPageState extends State<publishPage> {
         'QuestionNo': index,
       };
       await users.doc(docRef.id).set(userData);
-    }else if(widget.quizType==2){
+    }else if(type==2){
       List <String> ans=widget.answers[index].split('^');
       String correctAns=ans[0];
       String rand1=ans[1];
@@ -121,7 +131,7 @@ class _publishPageState extends State<publishPage> {
       _showDialog("Quiz Created");
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const MenuPage()),
+        MaterialPageRoute(builder: (context) => const MenuPage(testFlag: false,)),
       );
     }
 
@@ -166,11 +176,11 @@ class _publishPageState extends State<publishPage> {
                         ),
                       ),
                       SizedBox(height: 8.0),
-                      if(widget.quizType==1)
+                      if(type==1)
                       Text(
                         widget.answers[index],
                       )
-                      else if(widget.quizType==2)
+                      else if(type==2)
                         Text(
                           mcqDisplay(widget.answers)[index],
                         )

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import '../../Database Services/database.dart';
 import '../../main.dart';
+import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
+import 'package:quiz_website/landingpage.dart';
+import 'package:quiz_website/selectAQuiz.dart';
 import '../../menu.dart';
 import '../Login/login_view.dart';
 
@@ -72,7 +75,7 @@ class SignupState extends State<Signup> {
       showDialog1("Account created");
 
       ///go to welcome page
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
 
     }
     // else {
@@ -103,20 +106,77 @@ class SignupState extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: ColourPallete.backgroundColor,
         appBar: AppBar(
+          toolbarHeight: 100,
           backgroundColor: ColourPallete.backgroundColor,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.push(
-                ///goes to sign in screen
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>  MyApp()),
-              );
-            },
+          title: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+            child: Row(
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/InnovaTechLogo.png',
+                  width: 110,
+                ),
+                SizedBox(width: 10),
+                Text(
+                  "InnovaTech Quiz Platform",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 25,
+                  ),
+                ),
+                Spacer(),
+                NavItem(
+                  key: ValueKey('home'),
+                  title: 'Home',
+                  tapEvent: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SelectaPage()),
+                    );
+                  },
+                ),
+                SizedBox(width: 11),
+
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        ColourPallete.gradient1,
+                        ColourPallete.gradient2,
+                      ],
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                    ),
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: ()  {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(80,35), backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
           ),
         ),
+
         body: Material(
             color: ColourPallete.backgroundColor,
             child: Center(
@@ -561,4 +621,34 @@ class SignupState extends State<Signup> {
     return null;
   }
 
+}
+class NavItem extends StatelessWidget {
+  const NavItem({
+    required Key key,
+    required this.title,
+    required this.tapEvent
+  }) : super(key: key);
+
+  final String title;
+  final GestureTapCallback tapEvent;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: tapEvent,
+      hoverColor: Colors.transparent,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        child: Text(
+          title,
+          style: TextStyle(
+              color: ColourPallete.whiteColor,
+              fontWeight: FontWeight.w300,
+              fontSize: 18
+
+          ),
+        ),
+      ),
+    );
+  }
 }

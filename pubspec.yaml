@@ -18,8 +18,12 @@ description: A new Flutter project.
 # of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
+
 environment:
-  sdk: '>=2.19.4 <3.0.0'
+  sdk: '^3.0.0'
+
+
+
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,9 +34,12 @@ environment:
 dependencies:
 
   flutter:
-    sdk: flutter
+    sdk:  flutter
+  carousel_slider: ^4.0.0
+
   mockito: ^5.0.0
   firebase_auth_mocks: ^0.11.0
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -45,15 +52,10 @@ dependencies:
   email_validator: ^2.0.1
   image_picker: ^0.8.0+2
   firebase_storage: ^11.1.1
-  file_picker: ^5.3.0
+  file_picker: ^4.5.1
+  firebase: ^9.0.0
   fake_cloud_firestore: ^2.4.1+1
   provider: ^6.0.5
-
-
-
-
-
-
 
 dev_dependencies:
   build_runner: ^2.4.2

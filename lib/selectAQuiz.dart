@@ -8,6 +8,8 @@ import 'package:quiz_website/menu.dart';
 
 import 'Database Services/database.dart';
 
+import 'Views/AnswerQuiz/answerImageBased.dart';
+
 
 class SelectPage extends StatefulWidget {
   const SelectPage({Key? key}) : super(key: key);
@@ -70,7 +72,7 @@ class _SelectPageState extends State<SelectPage> {
             Navigator.push(
               ///goes to welcome page
               context,
-              MaterialPageRoute(builder: (context) => MenuPage()),
+              MaterialPageRoute(builder: (context) => MenuPage(testFlag: false,)),
             );
           },
         ),
@@ -192,6 +194,12 @@ class _SelectPageState extends State<SelectPage> {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(builder: (context) => mcqQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
+                                            );
+                                          }
+                                          if (_QuizType[i] == "Image-Based" ) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => imageBasedAnswers(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
                                             );
                                           }
                                           // Add your onPressed logic here

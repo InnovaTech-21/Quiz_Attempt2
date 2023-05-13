@@ -11,7 +11,8 @@ import '../../main.dart';
 import 'Database Services/database.dart';
 
 class MenuPage extends StatefulWidget {
-  const MenuPage({Key? key}) : super(key: key);
+  final bool testFlag;
+  const MenuPage({Key? key,required this.testFlag}) : super(key: key);
 
   @override
   State<MenuPage> createState() => MenuPageState();
@@ -19,21 +20,29 @@ class MenuPage extends StatefulWidget {
 class MenuPageState extends State<MenuPage> {
   String? username;
   DatabaseService service = DatabaseService();
-
+  bool flag= false;
 
 
 
   Future<String> getUsername() async {
-  final user = await service.getUser();
-  setState(() {
-  username = "Welcome ${user ?? ''}";
-  });
+    if(!flag) {
+      final user = await service.getUser();
+      setState(() {
+        username = "Welcome ${user ?? ''}";
+      });
+    }
+    else{
+      setState(() {
+        username = "Welcome Bob";
+      });
+    }
   return username!;
   }
 
   @override
   void initState() {
   super.initState();
+  flag=widget.testFlag;
   getUsername();
   }
 

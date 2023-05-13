@@ -155,7 +155,7 @@ void main() {
   testWidgets('Test sign out button', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: MenuPage(),
+        home: MenuPage(testFlag: true,),
       ),
     );
 
@@ -170,7 +170,7 @@ void main() {
   testWidgets('Goes to create a quiz page', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: MenuPage(),
+        home: MenuPage(testFlag: true,),
       ),
     );
 
@@ -495,7 +495,7 @@ void main() {
     testWidgets('select a quiz to answer button goes to select quiz page', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: MenuPage(),
+          home: MenuPage(testFlag: true,),
         ),
       );
 

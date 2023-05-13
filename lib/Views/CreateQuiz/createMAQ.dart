@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
+import 'package:quiz_website/Database%20Services/database.dart';
+import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
+import 'package:quiz_website/menu.dart';
 
 class CreateMAQ extends StatefulWidget {
   const CreateMAQ({super.key});
@@ -15,6 +18,28 @@ class _CreateMAQState extends State<CreateMAQ> {
   final TextEditingController questionController = TextEditingController();
   final TextEditingController NumberExpectedController =
       TextEditingController();
+
+  DatabaseService service = DatabaseService();
+
+  Future<void> _showDialog(String message) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Message'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   ///validation checks
   String? validateQuestion(String? value) {
@@ -202,16 +227,25 @@ class _CreateMAQState extends State<CreateMAQ> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              // If the form is valid, display a snackbar. In the real world,
-                              // you'd often call a server or save the information in a database.
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Processing Data')),
-                              );
+                              List<String> answers = [];
+                              for (int i = 0; i < listController.length; i++) {
+                                answers.add(listController[i].text);
+                              }
+                              service.addMAQAnswers(
+                                  answers,
+                                  questionController.text,
+                                  int.parse(NumberExpectedController.text));
                             }
-                            print(questionController);
-                            print(listController);
-                            print(listController.length);
+                            service.updateQuizzesStattus();
+                            _showDialog("Quiz Created");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MenuPage(testFlag: false,)),
+                            );
+                            //print(questionController);
+                            //print(listController);
+                            //print(listController.length);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 40, 148, 248),

@@ -1,19 +1,14 @@
-import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../menu.dart';
+import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
-
-//final storage = firebase_storage.FirebaseStorage.instance;
-//final firestore = FirebaseFirestore.instance;
+import '../../menu.dart';
 
 class imageBased extends StatefulWidget {
+  const imageBased({Key? key});
   const imageBased({Key? key});
 
   @override
@@ -21,112 +16,60 @@ class imageBased extends StatefulWidget {
 }
 
 class _imageBasedState extends State<imageBased> {
+  String? _imageUrl = '';
   PlatformFile? pickedFile1;
   PlatformFile? pickedFile2;
   PlatformFile? pickedFile3;
   PlatformFile? pickedFile4;
   PlatformFile? pickedFile5;
   PlatformFile? pickedFile6;
-
-  String? _imageUrl = '';
-
-  Future<void> uploadFile2() async {
-    if (_imageFile1 == null) {
-      // no image selected
-      return;
-    }
-
-    // create a reference to the file in Firebase Storage
-    final path = 'files/${_imageFile1!.path}';
-    final ref = FirebaseStorage.instance.ref().child(path);
-
-    // upload the file to Firebase Storage
-    try {
-      await ref.putFile(_imageFile1!);
-      final url = await ref.getDownloadURL();
-      setState(() {
-        _imageUrl = url;
-      });
-    } catch (e) {
-      // handle the error
-      print('Error uploading file: $e');
-    }
-  }
-
-  Future selectFile() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
-    String? abc = await _getQuizID();
-
-    if (result != null && result.files.isNotEmpty) {
-      final fileBytes = result.files.first.bytes;
-      final fileName = result.files.first.name;
-      String x = result.files.first.name;
-
-      // upload file
-      await FirebaseStorage.instance.ref('$abc/$fileName').putData(fileBytes!);
-    }
-  }
-
-  Future uploadFile() async {
-    final path = 'files/${_imageFile1!.path}';
-    final file = File(_imageFile1!.path);
-
-    final ref = FirebaseStorage.instance.ref().child(path);
-    await ref.putFile(file);
-    final url = await ref.getDownloadURL();
-    setState(() {
-      _imageUrl = url;
-    });
-  }
+  List<String> imageUrls = [];
 
   final TextEditingController questionController = TextEditingController();
 
-  File? _imageFile1;
-  File? _imageFile2;
-  File? _imageFile3;
-  File? _imageFile4;
-  File? _imageFile5;
-  File? _imageFile6;
-  final _picker = ImagePicker();
+  List<String> quests = [];
+  List<String> answers = [];
 
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
+  int currentQuestionIndex = 0;
+  List<Question> questions = [];
 
-    if (pickedFile != null) {
+  Future selectFile(int buttonIndex) async {
+    final result = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: false);
+    String? abc = await _getQuizID();
+
+    if (result != null && result.files.isNotEmpty) {
+      final pickedFile = result.files.first;
+      final fileBytes = pickedFile.bytes;
+      final fileName = pickedFile.name;
+
+      // Upload file
+      final storageRef =
+          FirebaseStorage.instance.ref('$abc/$currentQuestionIndex/$fileName');
+      final uploadTask = storageRef.putData(fileBytes!);
+      await uploadTask.whenComplete(() {});
+
+      // Retrieve download URL
+      final downloadURL = await storageRef.getDownloadURL();
+
       setState(() {
-        if (_imageFile1 == null) {
-          _imageFile1 = File(pickedFile.path);
-        } else if (_imageFile2 == null) {
-          _imageFile2 = File(pickedFile.path);
-        } else if (_imageFile3 == null) {
-          _imageFile3 = File(pickedFile.path);
-        } else if (_imageFile4 == null) {
-          _imageFile4 = File(pickedFile.path);
-        } else if (_imageFile5 == null) {
-          _imageFile5 = File(pickedFile.path);
-        } else if (_imageFile6 == null) {
-          _imageFile6 = File(pickedFile.path);
+        if (buttonIndex == 1) {
+          pickedFile1 = pickedFile;
+        } else if (buttonIndex == 2) {
+          pickedFile2 = pickedFile;
+        } else if (buttonIndex == 3) {
+          pickedFile3 = pickedFile;
+        } else if (buttonIndex == 4) {
+          pickedFile4 = pickedFile;
+        } else if (buttonIndex == 5) {
+          pickedFile5 = pickedFile;
+        } else if (buttonIndex == 6) {
+          pickedFile6 = pickedFile;
         }
+        imageUrls.add(downloadURL); // Assign the download URL to _imageUrl
       });
     }
   }
-
-  ///change this to get number of questions from database
-  int numberOfQuestions = 5;
-  int currentQuestionIndex = 0;
-
-  ///list of question class
- // List<Question> questions = [];
-  int? numberofQuestions = 0;
-
-  ///controllers to get the values from the text boxes
-  List<TextEditingController> questionControllers = [];
-  List<TextEditingController> correctanswerControllers = [];
-  List<TextEditingController> randomAnswerControllers1 = [];
-  List<TextEditingController> randomAnswerControllers2 = [];
-  List<TextEditingController> randomAnswerControllers3 = [];
-  List<TextEditingController> randomAnswerControllers4 = [];
-  List<TextEditingController> randomAnswerControllers5 = [];
 
   Future<String?> getUser() async {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -136,7 +79,7 @@ class _imageBasedState extends State<imageBased> {
       String uID = user.uid;
       try {
         CollectionReference users =
-        FirebaseFirestore.instance.collection('Users');
+            FirebaseFirestore.instance.collection('Users');
         final snapshot = await users.doc(uID).get();
         final data = snapshot.data() as Map<String, dynamic>;
         // print (data['user_name']);
@@ -147,34 +90,11 @@ class _imageBasedState extends State<imageBased> {
     }
   }
 
-  Future<int> _getNumberOfQuestions() async {
-    // get number of questions from databse
-    int numberOfQuestions = 0;
-    final CollectionReference quizzesCollection =
-    FirebaseFirestore.instance.collection('Quizzes');
-
-    String? username = await getUser();
-    if (username != null) {
-      QuerySnapshot questionsSnapshot = await quizzesCollection
-          .where('Username', isEqualTo: username)
-          .orderBy('Date_Created', descending: true)
-          .limit(1)
-          .get();
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
-        numberOfQuestions = mostRecentQuestion['Number_of_questions'];
-      }
-    }
-    numberofQuestions = numberOfQuestions;
-    return numberOfQuestions;
-  }
-
   Future<String> _getQuizID() async {
     // get number of questions from databse
     String quizID = "";
     final CollectionReference quizzesCollection =
-    FirebaseFirestore.instance.collection('Quizzes');
+        FirebaseFirestore.instance.collection('Quizzes');
 
     String? username = await getUser();
     if (username != null) {
@@ -191,6 +111,29 @@ class _imageBasedState extends State<imageBased> {
     }
 
     return quizID;
+  }
+
+  void addDataToFirestore(int index) async {
+    ///Create quizzes created successfully, now add data to Firestore
+    ///
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('Questions');
+    DocumentReference docRef = users.doc();
+    String docID = docRef.id;
+    Map<String, dynamic> userData = {
+      'Question': questionController.text,
+      'Answer': imageUrls[0],
+      'Option1': imageUrls[1],
+      'Option2': imageUrls[2],
+      'Option3': imageUrls[3],
+      'Option4': imageUrls[4],
+      'Option5': imageUrls[5],
+      'QuizID': await _getQuizID(),
+      'Question_type': "Image-Based",
+      'QuestionNo': index,
+    };
+
+    await users.doc(docRef.id).set(userData);
   }
 
   void updateQuizzesStattus() async {
@@ -214,27 +157,6 @@ class _imageBasedState extends State<imageBased> {
       _showDialog("Error creating quiz");
     });
   }
-
-  void addDataToFirestore(int index, File _imageFile1) async {
-    ///Create quizzes created successfully, now add data to Firestore
-    ///
-    CollectionReference users =
-    FirebaseFirestore.instance.collection('Questions');
-    DocumentReference docRef = users.doc();
-    String docID = docRef.id;
-    Map<String, dynamic> userData = {
-      'Question': questionController.text,
-      //'Answers': Image1url;
-     // 'Option1': image2url,
-      //'Option2':image3url,
-
-      'QuestionNo': index,
-      //"URL": imageUrl,
-    };
-
-    await users.doc(docRef.id).set(userData);
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -358,21 +280,23 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image1",
                                         onPressed: () {
-                                          selectFile();
-                                          _pickImage(ImageSource.gallery);
+                                          selectFile(1);
+                                          //_pickImage(ImageSource.gallery);
                                         },
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                         child: const Icon(
                                             Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (_imageFile1 != null)
+                                    if (pickedFile1 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          _imageUrl!,
+                                        child: Image.memory(
+                                          pickedFile1!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -389,21 +313,23 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image2",
                                         onPressed: () {
-                                          selectFile();
-                                          _pickImage(ImageSource.camera);
+                                          selectFile(2);
+                                          //_pickImage(ImageSource.camera);
                                         },
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                         child: const Icon(
                                             Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (_imageFile2 != null)
+                                    if (pickedFile2 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          _imageFile2!.path,
+                                        child: Image.memory(
+                                          pickedFile2!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -420,21 +346,23 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image3",
                                         onPressed: () {
-                                          selectFile();
-                                          _pickImage(ImageSource.camera);
+                                          selectFile(3);
+                                          //_pickImage(ImageSource.camera);
                                         },
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                         child: const Icon(
                                             Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (_imageFile3 != null)
+                                    if (pickedFile3 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          _imageFile3!.path,
+                                        child: Image.memory(
+                                          pickedFile3!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -456,21 +384,23 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image4",
                                         onPressed: () {
-                                          selectFile();
-                                          _pickImage(ImageSource.camera);
+                                          selectFile(4);
+                                          //_pickImage(ImageSource.camera);
                                         },
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                         child: const Icon(
                                             Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (_imageFile4 != null)
+                                    if (pickedFile4 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          _imageFile4!.path,
+                                        child: Image.memory(
+                                          pickedFile4!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -487,21 +417,23 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image5",
                                         onPressed: () {
-                                          selectFile();
-                                          _pickImage(ImageSource.camera);
+                                          selectFile(5);
+                                          //_pickImage(ImageSource.camera);
                                         },
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                         child: const Icon(
                                             Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (_imageFile5 != null)
+                                    if (pickedFile5 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          _imageFile5!.path,
+                                        child: Image.memory(
+                                          pickedFile5!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -518,21 +450,23 @@ class _imageBasedState extends State<imageBased> {
                                       child: FloatingActionButton(
                                         heroTag: "image6",
                                         onPressed: () {
-                                          selectFile();
-                                          _pickImage(ImageSource.camera);
+                                          selectFile(6);
+                                          //_pickImage(ImageSource.camera);
                                         },
+                                        child: const Icon(
+                                            Icons.add_photo_alternate),
                                         child: const Icon(
                                             Icons.add_photo_alternate),
                                       ),
                                     ),
-                                    if (_imageFile6 != null)
+                                    if (pickedFile6 != null)
                                       Positioned(
                                         top: 0,
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        child: Image.network(
-                                          _imageFile6!.path,
+                                        child: Image.memory(
+                                          pickedFile6!.bytes!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -560,14 +494,8 @@ class _imageBasedState extends State<imageBased> {
                             ),
                             child: ElevatedButton(
                               onPressed: () {
-                                ///addDataToFirestore(currentQuestionIndex, _imageFile1);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                    const CreateQuizPage(),
-                                  ),
-                                );
+                                //addDataToFirestore(currentQuestionIndex);
+                                //updateQuizzesStattus();
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
@@ -584,6 +512,48 @@ class _imageBasedState extends State<imageBased> {
                           ),
                         ),
                         const SizedBox(height: 50),
+                        SizedBox(
+                          height: 65,
+                          width: 450,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  ColourPallete.gradient1,
+                                  ColourPallete.gradient2,
+                                ],
+                                begin: Alignment.bottomLeft,
+                                end: Alignment.topRight,
+                              ),
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                //addDataToFirestore(currentQuestionIndex);
+                                //Navigator.push(
+                                //  context,
+                                //  MaterialPageRoute(
+                                //    builder: (context) => publishPage(
+                                //        questions: quests,
+                                //        answers: answers,
+                                //        quizType: 3),
+                                //  ),
+                                //);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                              ),
+                              child: const Text(
+                                'Publish',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 19,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -613,4 +583,24 @@ class _imageBasedState extends State<imageBased> {
       },
     );
   }
+}
+
+///QUESTION CLASS
+class Question {
+  String question;
+  String answer;
+  String randoption1;
+  String randoption2;
+  String randoption3;
+  String randoption4;
+  String randoption5;
+
+  Question(
+      {required this.question,
+      required this.answer,
+      required this.randoption1,
+      required this.randoption2,
+      required this.randoption3,
+      required this.randoption4,
+      required this.randoption5});
 }
