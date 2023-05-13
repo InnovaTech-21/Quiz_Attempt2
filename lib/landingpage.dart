@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
 import 'package:flutter/material.dart';
+import 'package:quiz_website/Views/Login/login_view.dart';
+import 'package:quiz_website/Views/sign%20up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
+import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
 
@@ -138,6 +140,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     border: Border.all(color: ColourPallete.gradient1, width: 2),
                     color: ColourPallete.backgroundColor,
                   ),
+
                   child: Row(
                     children: [
                       Icon(Icons.search, color: Colors.white),
@@ -160,12 +163,22 @@ class _SelectaPageState extends State<SelectaPage> {
                 NavItem(
                   key: ValueKey('home'),
                   title: 'Home',
-                  tapEvent: () {},
+                  tapEvent: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SelectaPage()),
+                    );
+                  },
                 ),
                 NavItem(
                   key: ValueKey('Create a Quiz'),
                   title: 'Create a Quiz',
-                  tapEvent: () {},
+                  tapEvent: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CreateQuizPage()),
+                    );
+                  },
                 ),
                 //NavItem(
                   //key: ValueKey('Answer a Quiz'),
@@ -191,6 +204,10 @@ class _SelectaPageState extends State<SelectaPage> {
                   ),
                   child: ElevatedButton(
                     onPressed: ()  {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       fixedSize: const Size(80,35), backgroundColor: Colors.transparent,
@@ -221,6 +238,10 @@ class _SelectaPageState extends State<SelectaPage> {
                   ),
                   child: ElevatedButton(
                     onPressed: ()  {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>Signup() ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       fixedSize: const Size(95,35), backgroundColor: Colors.transparent,
@@ -288,56 +309,137 @@ class _SelectaPageState extends State<SelectaPage> {
 
                   return Center(
                     child: SizedBox(
-                      height: 600,
+                      height: 350,
+                      width: 580,
                       child: CarouselSlider.builder(
                         itemCount: filteredQuizName.length,
                         itemBuilder: (BuildContext context, int i, int realIndex) {
-                          return Container(
-                            color: ColourPallete.backgroundColor,
-                            padding: const EdgeInsets.all(10),
-                            child: SizedBox(
-                              width: 700,
+                          return Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: ColourPallete.borderColor.withOpacity(0.5),
+                                width: 3,
+                              ),
+                            ),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              color: ColourPallete.backgroundColor,
+                              padding: const EdgeInsets.all(10),
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Image.asset(
-                                    'assets/images/InnovaTechLogo.png',
-                                    width: 300,
-                                    height: 300,
+                                  Expanded(
+                                    flex: 2,
+                                    child: Image.asset(
+                                      'assets/images/InnovaTechLogo.png',
+                                      width: 300,
+                                      height: 300,
+                                    ),
                                   ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    '${_QuizName[i].toUpperCase()}\n\nCATEGORY: ${_QuizCategory[i]}\n\nTYPE: ${_QuizType[i]}\n\n ${_NumberofQuestions[i]} Questions\n',
-                                  ),
-                                  SizedBox(height: 10),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      if (_QuizType[i] == "Short-Answer") {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i])),
-                                        );
-                                      }
-                                      if (_QuizType[i] == "Multiple Choice") {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => mcqQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i])),
-                                        );
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-
-                                      padding: const EdgeInsets.all(27),
-                                      backgroundColor: ColourPallete.backgroundColor,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(21),
-                                        side: BorderSide(
-                                          color: ColourPallete.gradient2,
-                                          width: 2,
-                                        ),
+                                  SizedBox(height: 20),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Center(
+                                            child: Text(
+                                              '${_QuizName[i].toUpperCase()}',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 15),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'CATEGORY:',
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                              Spacer(),
+                                              Text(
+                                                '${_QuizCategory[i]}',
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'TYPE:',
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                              Spacer(),
+                                              Text(
+                                                '${_QuizType[i]}',
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                '${_NumberofQuestions[i]} Questions',
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                              Spacer(),
+                                            ],
+                                          ),
+                                          SizedBox(height: 20),
+                                          Center(
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                if (_QuizType[i] == "Short-Answer") {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => ShortQuizAnswer(
+                                                        quizID: _Quiz_ID[i],
+                                                        bTimed: _QuizTimed[i],
+                                                        iTime: _TimerTime[i],
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                                if (_QuizType[i] == "Multiple Choice") {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => mcqQuizAnswer(
+                                                        quizID: _Quiz_ID[i],
+                                                        bTimed: _QuizTimed[i],
+                                                        iTime: _TimerTime[i],
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                padding: const EdgeInsets.all(15),
+                                                backgroundColor: ColourPallete.backgroundColor,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(21),
+                                                  side: BorderSide(
+                                                    color: ColourPallete.gradient2,
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                              ),
+                                              child: Text('Start Quiz'),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    child: Text('Start Quiz'),
                                   ),
                                 ],
                               ),
@@ -355,12 +457,6 @@ class _SelectaPageState extends State<SelectaPage> {
                       ),
                     ),
                   );
-
-
-
-
-
-
 
 
                 }
