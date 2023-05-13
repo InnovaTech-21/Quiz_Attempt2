@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../Database Services/database.dart';
+
 class mcqQuizAnswer extends StatefulWidget {
   mcqQuizAnswer({Key? key, required this.quizID, required this.bTimed, required this.iTime}) : super(key: key);
   String quizID;
@@ -26,6 +28,7 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
 
   late ValueNotifier<int> timeRemaining=ValueNotifier<int>(0);
   late Timer timer=Timer(Duration.zero, () {});
+  DatabaseService service = DatabaseService();
 
   @override
   ///sets up page to load the selected quiz
@@ -78,49 +81,23 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
     String score = '$count/${_questions.length}';
     return score;
   }
-  Future<String?> getUser() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = FirebaseAuth.instance.currentUser;
-    String? nameuser = '';
-    if (user != null) {
-      String uID = user.uid;
-      try {
-        CollectionReference users =
-        FirebaseFirestore.instance.collection('Users');
-        final snapshot = await users.doc(uID).get();
-        final data = snapshot.data() as Map<String, dynamic>;
-        // print (data['user_name']);
-        return data['user_name'];
-      } catch (e) {
-        return 'Error fetching user';
-      }
-    }
-  }
-  void addtoCompletedQuiz() async {
-    CollectionReference users =
-    FirebaseFirestore.instance.collection('QuizResults');
-    DocumentReference docRef = users.doc();
-    String docID = docRef.id;
-    Map<String, dynamic> userData = {
-      "Quiz_ID": quizSelected,
-      "CorrectAns":_currentIndex,
-      "TotalAns": _questions.length,
-      "Date_Created": Timestamp.fromDate(DateTime.now()),
-      "UserID": await getUser(),
 
-    };
 
-    await users.doc(docRef.id).set(userData);
-  }
 
   ///saves the users answers to a list as they answer the questions
-  void _submitAnswer() {
-    setState(() {
-//      _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
-      addtoCompletedQuiz();
-      _showDialog("Your Score: ${getScore()}");
-      isSubmited = true;
+  void _submitAnswer() async {
+
+    setState(() async {
+      _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
+      try {
+        await _showDialog("Your Score: ${getScore()}");
+      }finally {
+        service.addUpdatedScore(quizSelected, _currentIndex, _questions.length);
+
+        isSubmited = true;
+      }
     });
+
   }
 
   ///allows user to go back to a previous question and reanswer it
@@ -148,32 +125,9 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
   bool isShuffled=false;
   ///loads the quiz questions and answers for use throughout page
   Future<void> getQuestionsAnswers(String x) async {
+
+    List<Map<String, dynamic>> questionsAnswersList = await  service.getMCQQuestionsAnswers(x);
     if (_questions.isEmpty) {
-      CollectionReference users =
-      FirebaseFirestore.instance.collection('Questions');
-
-      //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-      QuerySnapshot questionsSnapshot = await users
-          .where('QuizID', isEqualTo: x)
-          .orderBy('QuestionNo', descending: false)
-          .get();
-
-      List<Map<String, dynamic>> questionsAnswersList = [];
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        for (int i = 0; i < questionsSnapshot.docs.length; i++) {
-          DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
-          Map<String, dynamic> questionAnswerMap = {
-            "Question": quizDoc["Question"],
-            "Answers": quizDoc["Answers"],
-            "Option1": quizDoc["Option1"],
-            "Option2": quizDoc["Option2"],
-            "Option3": quizDoc["Option3"],
-          };
-          questionsAnswersList.add(questionAnswerMap);
-        }
-      }
-
       for (var i = 0; i < questionsAnswersList.length; i++) {
         _questions.add(questionsAnswersList[i]["Question"]);
         _correctAns.add(questionsAnswersList[i]["Answers"]);
@@ -182,10 +136,12 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
         _randoption3.add(questionsAnswersList[i]["Option3"]);
       }
       _userAnswers = List.filled(questionsAnswersList.length, '');
+      //x=11
     }
+
     if(isShuffled==false) {
       optionsShuffled = shuffleOptions();
-    }
+     }
 
   }
 

@@ -2,7 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
+import '../../Database Services/database.dart';
 import '../../main.dart';
+import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
+import 'package:quiz_website/landingpage.dart';
+import 'package:quiz_website/selectAQuiz.dart';
 import '../../menu.dart';
 import '../Login/login_view.dart';
 
@@ -19,6 +23,7 @@ class Signup extends StatefulWidget {
 
 class SignupState extends State<Signup> {
   ///sets up form state watcher
+  DatabaseService service = DatabaseService();
   final _formKey = GlobalKey<FormState>();
 
   ///values to populate date dropdown
@@ -46,31 +51,7 @@ class SignupState extends State<Signup> {
 
 
   ///adds users to database
-  void addDataToFirestore() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
 
-    ///create a user with email and password
-    UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-      email: getEmail(),
-      password:getPassword(),
-    );
-
-    ///user created successfully, now add data to Firestore
-    CollectionReference users = FirebaseFirestore.instance.collection('Users');
-
-    Map<String, dynamic> userData = {
-      'date_of_birth': getDate(),
-      'levels': 0,
-      'total_score': 0,
-      'user_email': getEmail(),
-      'user_name': getUsername(),
-      'user_username': getName(),
-    };
-
-    await users.doc(userCredential.user!.uid).set(userData);
-    clearInputs();
-
-  }
 
   void clearInputs(){
     usernameController.clear();
@@ -89,12 +70,12 @@ class SignupState extends State<Signup> {
   Future<void> _submit() async {
     if (_formKey.currentState!.validate() && check) {
       ///write to database
-      addDataToFirestore();
-
-      _showDialog("Account created");
+      service.addSignupToFirestore(emailController.text, passwordController.text,usernameController.text,nameController.text,getDate());
+      clearInputs();
+      showDialog1("Account created");
 
       ///go to welcome page
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
 
     }
     // else {
@@ -103,21 +84,13 @@ class SignupState extends State<Signup> {
   }
 
   ///code to get values from input boxes
-  String getUsername() {
-    return usernameController.text;
-  }
 
-  String getName() {
-    return nameController.text;
-  }
 
-  String getEmail() {
-    return emailController.text;
-  }
 
-  String getPassword() {
-    return passwordController.text;
-  }
+
+
+
+
 
   String getConfirmPassword() {
     return confirmPasswordController.text;
@@ -133,20 +106,77 @@ class SignupState extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: ColourPallete.backgroundColor,
         appBar: AppBar(
+          toolbarHeight: 100,
           backgroundColor: ColourPallete.backgroundColor,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.push(
-                ///goes to sign in screen
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>  MyApp()),
-              );
-            },
+          title: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+            child: Row(
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/InnovaTechLogo.png',
+                  width: 110,
+                ),
+                SizedBox(width: 10),
+                Text(
+                  "InnovaTech Quiz Platform",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 25,
+                  ),
+                ),
+                Spacer(),
+                NavItem(
+                  key: ValueKey('home'),
+                  title: 'Home',
+                  tapEvent: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SelectaPage()),
+                    );
+                  },
+                ),
+                SizedBox(width: 11),
+
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        ColourPallete.gradient1,
+                        ColourPallete.gradient2,
+                      ],
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                    ),
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: ()  {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(80,35), backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
           ),
         ),
+
         body: Material(
             color: ColourPallete.backgroundColor,
             child: Center(
@@ -420,10 +450,10 @@ class SignupState extends State<Signup> {
                             onPressed: () {
 
                               /// Check that date is valid
-                              if (_validateDay(_selectedDay) != null ||
-                                  _validateMonth(_selectedMonth) != null ||
-                                  _validateYear(_selectedYear) != null) {
-                                _showDialog("Enter valid date of birth");
+                              if (validateDay(_selectedDay) != null ||
+                                  validateMonth(_selectedMonth) != null ||
+                                  validateYear(_selectedYear) != null) {
+                                showDialog1("Enter valid date of birth");
 
                                 setState(() {
                                   check = false;
@@ -488,7 +518,7 @@ class SignupState extends State<Signup> {
             )));
   }
 
-  void _showDialog(String message) {
+  void showDialog1(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -563,36 +593,62 @@ class SignupState extends State<Signup> {
     if (value == null) {
       return 'Enter password';
     } else {
-      if (value != getPassword()) {
+      if (value != passwordController.text) {
         return 'Passwords do not match';
       }
     }
     return null;
   }
 
-  String? _validateMonth(String? value) {
+  String? validateMonth(String? value) {
     if (value == null) {
       return 'Please select a month';
     }
     return null;
   }
 
-  String? _validateDay(String? value) {
+  String? validateDay(String? value) {
     if (value == null) {
       return 'Please select a day';
     }
     return null;
   }
 
-  String? _validateYear(int? value) {
+  String? validateYear(int? value) {
     if (value == null) {
       return 'Please select a year';
     }
     return null;
   }
 
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
+}
+class NavItem extends StatelessWidget {
+  const NavItem({
+    required Key key,
+    required this.title,
+    required this.tapEvent
+  }) : super(key: key);
+
+  final String title;
+  final GestureTapCallback tapEvent;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: tapEvent,
+      hoverColor: Colors.transparent,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        child: Text(
+          title,
+          style: TextStyle(
+              color: ColourPallete.whiteColor,
+              fontWeight: FontWeight.w300,
+              fontSize: 18
+
+          ),
+        ),
+      ),
+    );
   }
 }

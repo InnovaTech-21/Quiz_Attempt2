@@ -155,7 +155,7 @@ void main() {
   testWidgets('Test sign out button', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: MenuPage(),
+        home: MenuPage(testFlag: true,),
       ),
     );
 
@@ -170,7 +170,7 @@ void main() {
   testWidgets('Goes to create a quiz page', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: MenuPage(),
+        home: MenuPage(testFlag: true,),
       ),
     );
 
@@ -229,7 +229,7 @@ void main() {
 
   testWidgets('create a short answer quiz requires input of both question and answer', (WidgetTester tester) async {
     await tester.pumpWidget(
-       MaterialApp(
+      MaterialApp(
         home: ShortAnswerQuestionPage(),
       ),
     );
@@ -475,39 +475,39 @@ void main() {
           result, 'Must contain mix of lowercase, uppercase, digits, symbols.');
     });
 
-  testWidgets('valid email required to reset password', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: ForgotPasswordPage(),
-      ),
-    );
+    testWidgets('valid email required to reset password', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: ForgotPasswordPage(),
+        ),
+      );
 
 
-    final resetButton = find.widgetWithText(ElevatedButton, 'Reset Password');
+      final resetButton = find.widgetWithText(ElevatedButton, 'Reset Password');
 
-    // Tap create quiz button and verify navigation
-    await tester.tap(resetButton);
-    await tester.pumpAndSettle();
-    expect(find.text("Enter Valid Email"), findsOneWidget);
+      // Tap create quiz button and verify navigation
+      await tester.tap(resetButton);
+      await tester.pumpAndSettle();
+      expect(find.text("Enter Valid Email"), findsOneWidget);
 
-  });
+    });
 
-  testWidgets('select a quiz to answer button goes to select quiz page', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: MenuPage(),
-      ),
-    );
+    testWidgets('select a quiz to answer button goes to select quiz page', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MenuPage(testFlag: true,),
+        ),
+      );
 
 
-    final doQuizButton = find.widgetWithText(ElevatedButton, 'Answer a Quiz');
+      final doQuizButton = find.widgetWithText(ElevatedButton, 'Answer a Quiz');
 
-    // Tap create quiz button and verify navigation
-    await tester.tap(doQuizButton);
-    await tester.pumpAndSettle();
-    expect(find.byType(SelectPage), findsOneWidget);
+      // Tap create quiz button and verify navigation
+      await tester.tap(doQuizButton);
+      await tester.pumpAndSettle();
+      expect(find.byType(SelectPage), findsOneWidget);
 
-  });
+    });
     test('Strong password should return null', () {
       final result = instance.validatePassword('Abcd1234@');
       expect(result, null);
@@ -550,7 +550,6 @@ void main() {
 
 
 }
-
 
 
 

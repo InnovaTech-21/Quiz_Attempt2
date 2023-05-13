@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_website/Database%20Services/auth.dart';
 import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
+import 'package:quiz_website/landingpage.dart';
+import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../main.dart';
 import '../../menu.dart';
@@ -19,6 +22,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  //AuthService service =AuthService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -34,65 +38,89 @@ class LoginPageState extends State<LoginPage> {
     if (form!.validate()) {
 
       clearInputs();
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
       //print('All fields entered, please check corresponding details');
     }
   }
-  // int _success = 1;
-  // String _userEmail = "";
 
-  // void _singIn() async {
-  //   final User? user = (await _auth.signInWithEmailAndPassword(email: usernameController.text, password: passwordController.text)).user;
-  //
-  //   if(user != null) {
-  //     setState(() {
-  //       _success = 2;
-  //       //_userEmail = user.email;
-  //     });
-  //   } else {
-  //     setState(() {
-  //       _success = 3;
-  //     });
-  //   }
-  // }
 
-  static Future<User?>loginUsingEmailPassword({required String email, required String password  }) async{
-    User? user;
-    try{
-
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      user =userCredential.user;
-
-    }  on FirebaseAuthException catch(e){
-      if(e.code =="user-not-found"){
-        print("No user with that email");
-      }
-      else{
-
-      }
-    }
-    return user;
-  }
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-        appBar: AppBar(
         backgroundColor: ColourPallete.backgroundColor,
-        leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.push(
-              ///goes to welcome page
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>  MyApp()),
-            );
-          },
-    ),
-    ),
-    body: Material(
+        appBar: AppBar(
+          toolbarHeight: 100,
+          backgroundColor: ColourPallete.backgroundColor,
+          title: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+            child: Row(
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/InnovaTechLogo.png',
+                  width: 110,
+                ),
+                SizedBox(width: 10),
+                Text(
+                  "InnovaTech Quiz Platform",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 25,
+                  ),
+                ),
+                Spacer(),
+                NavItem(
+                  key: ValueKey('home'),
+                  title: 'Home',
+                  tapEvent: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SelectaPage()),
+                    );
+                  },
+                ),
+
+                SizedBox(width: 11),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        ColourPallete.gradient2,
+                        ColourPallete.gradient1,
+
+                      ],
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                    ),
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: ()  {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>Signup() ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(95,35), backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        body: Material(
         color: ColourPallete.backgroundColor,
         child: Center(
             child: SingleChildScrollView(
@@ -229,9 +257,9 @@ class LoginPageState extends State<LoginPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    // usernameController.text='shakeel@gmail.com';
-                                    // passwordController.text='\$Hak3l';
-                                    user = await loginUsingEmailPassword(email: usernameController.text, password: passwordController.text);
+                                    usernameController.text='shakeel@gmail.com';
+                                    passwordController.text='\$Hak3l';
+                                    user = await AuthService.loginUsingEmailPassword( email: usernameController.text, password: passwordController.text);
                                     validateAndSave();
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -288,4 +316,34 @@ class LoginPageState extends State<LoginPage> {
   }
 
 
+}
+class NavItem extends StatelessWidget {
+  const NavItem({
+    required Key key,
+    required this.title,
+    required this.tapEvent
+  }) : super(key: key);
+
+  final String title;
+  final GestureTapCallback tapEvent;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: tapEvent,
+      hoverColor: Colors.transparent,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        child: Text(
+          title,
+          style: TextStyle(
+              color: ColourPallete.whiteColor,
+              fontWeight: FontWeight.w300,
+              fontSize: 18
+
+          ),
+        ),
+      ),
+    );
+  }
 }

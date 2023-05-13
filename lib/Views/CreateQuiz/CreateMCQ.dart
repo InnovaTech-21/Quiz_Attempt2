@@ -41,18 +41,20 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
         questions[index].answer = correctanswerControllers[index].text;
       });
       randomAnswerControllers1[index].addListener(() {
-        questions[index].answer = randomAnswerControllers1[index].text;
+        questions[index].randoption1 = randomAnswerControllers1[index].text;
       });
       randomAnswerControllers2[index].addListener(() {
-        questions[index].answer = randomAnswerControllers1[index].text;
+        questions[index].randoption2 = randomAnswerControllers2[index].text;
       });
       randomAnswerControllers3[index].addListener(() {
-        questions[index].answer = randomAnswerControllers1[index].text;
+        questions[index].randoption3 = randomAnswerControllers3[index].text;
       });
     }
   }
 
   void convertLists(){
+    quests=[];
+    answers=[];
     for(int i=0;i<questions.length;i++){
       quests.add(questions[i].question);
       answers.add(questions[i].answer+'^'+questions[i].randoption1+'^'+questions[i].randoption2+'^'+questions[i].randoption3);
@@ -262,18 +264,40 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              questions.add(Question(
-                                question: questionControllers[currentQuestionIndex]
-                                    .text,
-                                answer: correctanswerControllers[currentQuestionIndex]
-                                    .text,
-                                randoption1: randomAnswerControllers1[currentQuestionIndex]
-                                    .text,
-                                randoption2: randomAnswerControllers2[currentQuestionIndex]
-                                    .text,
-                                randoption3: randomAnswerControllers3[currentQuestionIndex]
-                                    .text,
-                              ));
+                              if(currentQuestionIndex+1>questions.length) {
+                                questions.add(Question(
+                                  question: questionControllers[currentQuestionIndex]
+                                      .text,
+                                  answer: correctanswerControllers[currentQuestionIndex]
+                                      .text,
+                                  randoption1: randomAnswerControllers1[currentQuestionIndex]
+                                      .text,
+                                  randoption2: randomAnswerControllers2[currentQuestionIndex]
+                                      .text,
+                                  randoption3: randomAnswerControllers3[currentQuestionIndex]
+                                      .text,
+                                ));
+                                questionControllers[currentQuestionIndex].addListener(() {
+                                  questions[currentQuestionIndex].question =
+                                      questionControllers[currentQuestionIndex].text;
+                                });
+                                correctanswerControllers[currentQuestionIndex].addListener(() {
+                                  questions[currentQuestionIndex].answer =
+                                      correctanswerControllers[currentQuestionIndex].text;
+                                });
+                                randomAnswerControllers1[currentQuestionIndex].addListener(() {
+                                  questions[currentQuestionIndex].randoption1 =
+                                      randomAnswerControllers1[currentQuestionIndex].text;
+                                });
+                                randomAnswerControllers2[currentQuestionIndex].addListener(() {
+                                  questions[currentQuestionIndex].randoption2 =
+                                      randomAnswerControllers2[currentQuestionIndex].text;
+                                });
+                                randomAnswerControllers3[currentQuestionIndex].addListener(() {
+                                  questions[currentQuestionIndex].randoption3 =
+                                      randomAnswerControllers3[currentQuestionIndex].text;
+                                });
+                              }
                               convertLists();
                               Navigator.push(
                                 context,
@@ -285,7 +309,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
                               );
                             }
                           },
-                          child: Text('Publish'),
+                          child: Text('Done'),
                         ),
                       ),
                   ],

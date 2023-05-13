@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:quiz_website/Views/Home/homePage.dart';
+import 'package:quiz_website/landingpage.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -14,6 +14,7 @@ void main() async{
   runApp(const MyApp());
 }
 
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key});
 
@@ -24,12 +25,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: ColourPallete.backgroundColor,
       ),
-      home: LayoutBuilder(
-        builder: (context, constraints) => ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 1000, minHeight: 1000),
-          child: HomePage(),
-        ),
-      ),
+      home:  SelectaPage()
+       // builder: (context, constraints) => ConstrainedBox(
+          //constraints: const BoxConstraints(minWidth: 1000, minHeight: 1000),
+        //),
+      //),
     );
   }
 }
