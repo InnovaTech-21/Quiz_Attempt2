@@ -30,7 +30,7 @@ class DatabaseService {
       Map<String, dynamic> userData = {
         'Question': questions[index].toString(),
         'Answers': answers[index].toString(),
-        'QuizID': await _getQuizID(),
+        'QuizID': await getQuizID(),
         'Question_type': "Short Answer",
         'QuestionNo': index,
       };
@@ -48,7 +48,7 @@ class DatabaseService {
         'Option1': rand1,
         'Option2': rand2,
         'Option3': rand3,
-        'QuizID': await _getQuizID(),
+        'QuizID': await getQuizID(),
         'Question_type': "MCQ",
         'QuestionNo': index,
       };
@@ -251,28 +251,6 @@ class DatabaseService {
     }
   }
 
-  Future<String> _getQuizID() async {
-    // get number of questions from databse
-    String quizID = "";
-    final CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
-
-    String? username = await getUser();
-    if (username != null) {
-      QuerySnapshot questionsSnapshot = await quizzesCollection
-          .where('Username', isEqualTo: username)
-          .orderBy('Date_Created', descending: true)
-          .limit(1)
-          .get();
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
-        quizID = mostRecentQuestion['Quiz_ID'].toString();
-      }
-    }
-
-    return quizID;
-  }
 
   /// add imageing questions
   Future<void> addImagesToFirestore(String question, Image1url, image2url,
@@ -360,7 +338,7 @@ class DatabaseService {
     String docID = docRef.id;
     Map<String, dynamic> userData = {
       'Answers': answers,
-      'QuizID': await _getQuizID(),
+      'QuizID': await getQuizID(),
       'Question': question,
       'Number Expected': expected,
       'Question_type': 'Multiple Answer Quiz',
@@ -369,7 +347,7 @@ class DatabaseService {
     await users.doc(docRef.id).set(userData);
   }
 
-  Future<Map<String, Object>> addQuestions(String x) async {
+  Future<Map<String, Object>> getMAQQuestions(String x) async {
     List<Map<String, dynamic>> questionsAnswersList = [];
 
     CollectionReference quizCollection =
