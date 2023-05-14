@@ -183,20 +183,7 @@ class SignupState extends State<Signup> {
                       },
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    flex: 3,
-                    child: NavItem(
-                      key: ValueKey('Create a Quiz'),
-                      title: 'Create a Quiz',
-                      tapEvent: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => CreateQuizPage()),
-                        );
-                      },
-                    ),
-                  ),
+
                   SizedBox(width: 10),
 
                   DecoratedBox(
@@ -234,44 +221,7 @@ class SignupState extends State<Signup> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 25),
 
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          ColourPallete.gradient2,
-                          ColourPallete.gradient1,
-
-                        ],
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                      ),
-                      borderRadius: BorderRadius.circular(22),
-                    ),
-                    child: Expanded(
-                      flex: 2,
-                      child: ElevatedButton(
-                        onPressed: ()  {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) =>Signup() ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(95,35), backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                        ),
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),

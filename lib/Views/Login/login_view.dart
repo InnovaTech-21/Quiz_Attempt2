@@ -126,58 +126,8 @@ class LoginPageState extends State<LoginPage> {
                       },
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    flex: 3,
-                    child: NavItem(
-                      key: ValueKey('Create a Quiz'),
-                      title: 'Create a Quiz',
-                      tapEvent: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => CreateQuizPage()),
-                        );
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 10),
 
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          ColourPallete.gradient1,
-                          ColourPallete.gradient2,
-                        ],
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                      ),
-                      borderRadius: BorderRadius.circular(22),
-                    ),
-                    child: Expanded(
-                      flex: 2,
-                      child: ElevatedButton(
-                        onPressed: ()  {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginPage()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(80,35), backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                        ),
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 25),
+                  SizedBox(width: 10),
 
                   DecoratedBox(
                     decoration: BoxDecoration(
