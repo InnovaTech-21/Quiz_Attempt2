@@ -7,7 +7,8 @@ import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../../Database Services/database.dart';
 import '../../menu.dart';
-import '../Home/homePage.dart';
+import 'package:quiz_website/landingpage.dart';
+
 
 class imageBased extends StatefulWidget {
   const imageBased({Key? key});
@@ -152,7 +153,7 @@ class _imageBasedState extends State<imageBased> {
       } finally {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const SelectaPage()),
         );
       }
     }).catchError((error) {
