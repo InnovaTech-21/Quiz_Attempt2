@@ -7,9 +7,8 @@ import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
+import '../../Database Services/database.dart';
 
-
-import 'Database Services/database.dart';
 
 
 class SelectaPage extends StatefulWidget {
@@ -20,10 +19,11 @@ class SelectaPage extends StatefulWidget {
 }
 
 class _SelectaPageState extends State<SelectaPage> {
+  DatabaseService service = DatabaseService();
   final List<String> _QuizName = [];
   final List<int> _TimerTime = [];
   final List<bool> _QuizTimed = [];// load in the questions
-  DatabaseService service = DatabaseService();
+
   ///List of correct answers
   final List <String> _QuizType=[];
   final List<String> _QuizDesc = []; // load in the questions
@@ -36,73 +36,29 @@ class _SelectaPageState extends State<SelectaPage> {
 
   String _selectedFilter = 'All'; // Variable to store selected filter, set initial value to 'All'
   ///method to load completed quiz's from database
-  Future<void> getQuizInformation(String x) async {
+    Future<void> getQuizInformation(String x) async {
 
-    CollectionReference users = FirebaseFirestore.instance.collection(
-        'Quizzes');
-    x = _selectedFilter;
-    String  y = 'Finished';
-    QuerySnapshot questionsSnapshot;
-    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-    if(( x != "All")) {
 
-      questionsSnapshot = await users
-          .where('Quiz_Category', isEqualTo: x)
-          .where('Status', isEqualTo: y)
-          .orderBy('Date_Created', descending: true)
-          .get();
+      List<Map<String, dynamic>> questionsAnswersList = await service.getQuizInformation(x);
+      for (var i = 0; i < questionsAnswersList.length; i++) {
 
-    }
-    else{
-      questionsSnapshot = await users.where('Status', isEqualTo: y)
-          .orderBy('Date_Created', descending: true).get();
-    }
+        _Quiz_ID.add(questionsAnswersList[i]["Quiz_ID"]);
+        _QuizTimed.add(questionsAnswersList[i]["QuizTimed"]);
+        _TimerTime.add(questionsAnswersList[i]["TimerTime"]);
+        _QuizName.add(questionsAnswersList[i]["QuizName"]);
+        _QuizDesc.add(questionsAnswersList[i]["Quiz_Description"]);
+        _QuizCategory.add(questionsAnswersList[i]["Quiz_Category"]);
+        _QuizType.add(questionsAnswersList[i]["Quiz_Type"]);
+        _NumberofQuestions.add(questionsAnswersList[i]["Number_of_questions"]);
 
-    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-    // String x = "2";
-    List<Map<String, dynamic>> questionsAnswersList = [];
-
-    if (questionsSnapshot.docs.isNotEmpty) {
-      for (int i = 0; i < questionsSnapshot.docs.length; i++) {
-        DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
-        Map<String, dynamic> questionAnswerMap = {
-          "Quiz_ID" : quizDoc["Quiz_ID"],
-          "QuizName": quizDoc["QuizName"],
-          "Quiz_Description": quizDoc["Quiz_Description"],
-          "Quiz_Category": quizDoc["Quiz_Category"],
-          "Quiz_Type":quizDoc["Quiz_Type"],
-          "Number_of_questions":quizDoc["Number_of_questions"].toString(),
-        };
-        if (quizDoc["QuizTimed"] != null) {
-          questionAnswerMap["QuizTimed"] = quizDoc["QuizTimed"];
-        } else {
-          questionAnswerMap["QuizTimed"] = false;
-        }
-        if (quizDoc["TimerTime"] != null) {
-          questionAnswerMap["TimerTime"] = quizDoc["TimerTime"];
-        } else {
-          questionAnswerMap["TimerTime"] = 0;
-        }
-        questionsAnswersList.add(questionAnswerMap);
       }
+     // _userAnswers=List.filled(questionsAnswersList.length, '');
     }
-    for (var i = 0; i < questionsAnswersList.length; i++) {
 
-      _Quiz_ID.add(questionsAnswersList[i]["Quiz_ID"]);
-      _QuizTimed.add(questionsAnswersList[i]["QuizTimed"]);
-      _TimerTime.add(questionsAnswersList[i]["TimerTime"]);
-      _QuizName.add(questionsAnswersList[i]["QuizName"]);
-      _QuizDesc.add(questionsAnswersList[i]["Quiz_Description"]);
-      _QuizCategory.add(questionsAnswersList[i]["Quiz_Category"]);
-      _QuizType.add(questionsAnswersList[i]["Quiz_Type"]);
-      _NumberofQuestions.add(questionsAnswersList[i]["Number_of_questions"]);
-
-
-    }
-    // _userAnswers=List.filled(questionsAnswersList.length, '');
-
+ void initState() {
+    super.initState();
+    getQuizInformation("All");
   }
-
 
 
   @override
@@ -266,7 +222,6 @@ class _SelectaPageState extends State<SelectaPage> {
             color: ColourPallete.backgroundColor,
             ///builds widget when quiz details are retrieved
             child: FutureBuilder(
-                future: getQuizInformation("Anime"),
                 builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -275,36 +230,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
 
-                  // Filter quiz data based on selected category
-                  List<String> filteredQuiz_ID = [];
-                  List<String> filteredQuizName = [];
-                  List<String> filteredQuizDesc = [];
-                  List<String> filteredQuizCategory = [];
-                  List<String> filteredQuizType = [];
-                  List<String> filteredNumberofQuestions = [];
-
-                  if (_selectedFilter == 'All') {
-                    // Show all quizzes
-                    filteredQuiz_ID = List.from(_Quiz_ID);
-                    filteredQuizName = List.from(_QuizName);
-                    filteredQuizDesc = List.from(_QuizDesc);
-                    filteredQuizCategory = List.from(_QuizCategory);
-                    filteredQuizType = List.from(_QuizType);
-                    filteredNumberofQuestions = List.from(_NumberofQuestions);
-                  } else {
-                    // Show quizzes with selected category
-                    for (int i = 0; i < _QuizCategory.length; i++) {
-                      if (_QuizCategory[i] == _selectedFilter) {
-                        filteredQuiz_ID.add(_Quiz_ID[i]);
-
-                        filteredQuizName.add(_QuizName[i]);
-                        filteredQuizDesc.add(_QuizDesc[i]);
-                        filteredQuizCategory.add(_QuizCategory[i]);
-                        filteredQuizType.add(_QuizType[i]);
-                        filteredNumberofQuestions.add(_NumberofQuestions[i]);
-                      }
-                    }
-                  }
+                 
                   return Column(
                     children: [
                       SizedBox(height: 50),
@@ -321,7 +247,7 @@ class _SelectaPageState extends State<SelectaPage> {
                   height: 350,
                   width: 580,
                   child: CarouselSlider.builder(
-                  itemCount: filteredQuizName.length,
+                  itemCount: _QuizName.length,
                   itemBuilder: (BuildContext context, int i, int realIndex) {
                           return Card(
                             elevation: 2,

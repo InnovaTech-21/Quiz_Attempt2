@@ -17,6 +17,29 @@ class DatabaseService {
       'Status': 'Finished',
     });
   }
+  Future<List<String>> getAllUniqueQuizIds(String userId) async {
+  final CollectionReference collectionRef = FirebaseFirestore.instance.collection('QuizResults');
+  
+  try {
+    final QuerySnapshot querySnapshot = await collectionRef.where('UserID', isEqualTo: userId).get();
+    final List<String> quizIds = [];
+      
+
+    for (final QueryDocumentSnapshot doc in querySnapshot.docs) {
+      
+      final String? abc = doc["QuizID"];
+      
+      if (!quizIds.contains(abc)) {
+        quizIds.add(abc!);
+      }
+    }
+
+    return quizIds;
+  } catch (error) {
+    print('Error retrieving quiz IDs: $error');
+    return [];
+  }
+}
 
   Future<void> PublishDataToFirestore(int index, int Quiztype,
       List<String> questions, List<String> answers) async {
@@ -139,7 +162,7 @@ class DatabaseService {
       "CorrectAns": _currentIndex,
       "TotalAns": questionlength,
       "Date_Created": Timestamp.fromDate(DateTime.now()),
-      "UserID": await getUser(),
+      "UserID":  getQuizID(),
     };
 
     await users.doc(docRef.id).set(userData);
@@ -201,7 +224,7 @@ class DatabaseService {
 
   ///add data to create a quiz
   Future<void> addDataToCreateaQuizFirestore(String getQuizName, getQuizType,
-      getQuizDescription, getQuizCategory) async {
+      getQuizDescription, getQuizCategory, String s) async {
     User? user = FirebaseAuth.instance.currentUser;
     print(getQuizType);
 
@@ -249,6 +272,43 @@ class DatabaseService {
       print(
           'Error: Found ${quizQuery.docs.length} quizzes with QuizID $quizID');
     }
+  }
+  Future<Map<String, Map<String, double>>> getQuizStats() async {
+    final querySnapshot =
+    await FirebaseFirestore.instance.collection('QuizResults').get();
+    final quizData = <String, List<double>>{};
+
+    for (final doc in querySnapshot.docs) {
+      final quizId = doc.get('Quiz_ID') as String;
+      final totalAns = doc.get('TotalAns') as int;
+      final correctAns = doc.get('CorrectAns') as int;
+
+      if (!quizData.containsKey(quizId)) {
+        quizData[quizId] = [totalAns.toDouble(), correctAns.toDouble()];
+      } else {
+        quizData[quizId]![0] += totalAns;
+        quizData[quizId]![1] += correctAns;
+      }
+    }
+
+    final quizStats = <String, Map<String, double>>{};
+
+    quizData.forEach((key, value) {
+      final totalAns = value[0];
+      final correctAns = value[1];
+      final average = correctAns / totalAns;
+      final min = querySnapshot.docs
+          .where((doc) => doc.get('Quiz_ID') == key)
+          .map<double>((doc) => (doc.get('CorrectAns') as int) / (doc.get('TotalAns') as int))
+          .reduce((value, element) => value < element ? value : element);
+      final max = querySnapshot.docs
+          .where((doc) => doc.get('Quiz_ID') == key)
+          .map<double>((doc) => (doc.get('CorrectAns') as int) / (doc.get('TotalAns') as int))
+          .reduce((value, element) => value > element ? value : element);
+      quizStats[key] = {'average': average, 'min': min, 'max': max};
+    });
+
+    return quizStats;
   }
 
 

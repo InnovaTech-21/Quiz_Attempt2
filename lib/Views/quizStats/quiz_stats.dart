@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'dart:math';
 
+import 'package:quiz_website/Database%20Services/database.dart';
+
 class QuizStatsPage extends StatefulWidget {
   const QuizStatsPage({Key? key}) : super(key: key);
 
@@ -16,20 +18,46 @@ class QuizStatsPageState extends State<QuizStatsPage> {
 final List<String> _QuizName = [];
 final List<int> _QuizScores = [];
 final List<String> _Username = [];
+final int max =0;
+final int min = 0;
+final  avg = 0;
+
+DatabaseService service = DatabaseService();
 
 int? maxScore;
 int? minScore;
 double averageScore = 0.0;
 
+ void extractQuizStats() async {
+  
+   
+
+    // extract values from quizStats map
+    
+  }
 //method to get the highest score for the quiz
+  Future<Map<String, Map<String, double>>> getQuizStats()async{
+     final quizStats = await getQuizStats();
+    final quizIds = quizStats.keys.toList();
+    for (final quizId in quizIds) {
+     final average = quizStats[quizId]!['average'];
+      final min = quizStats[quizId]!['min'];
+     final  max = quizStats[quizId]!['max'];
+
+      // do something with the values
+      print('Quiz $quizId: average=$average, min=$min, max=$max');
+    }
+    print(service.getQuizStats());
+    return service.getQuizStats();
+  }
 int? getMaxScore() {
-    maxScore = _QuizScores.reduce(max);
-    return maxScore;
+
+    //return getQuizStats()["max"];
 }
 
 //method to get the lowest score for the quiz
 int? getMinScore() {
-    minScore = _QuizScores.reduce(min);
+    //minScore = _QuizScores.reduce(min);
     return minScore;
 }
 
@@ -47,6 +75,7 @@ double getAverageScore() {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
+            getQuizStats();
             Navigator.pop(context);
           },
         ),
@@ -60,7 +89,8 @@ double getAverageScore() {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Average Score: ${averageScore.toStringAsFixed(2) ?? 'N/A'}'),
+                  
+                  Text('Average Score: ${getQuizStats() ?? 'N/A'}'),
                   const SizedBox(height: 16),
                   Text('Max Score: ${maxScore?.toString() ?? 'N/A'}'),
                   const SizedBox(height: 16),

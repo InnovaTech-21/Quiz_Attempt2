@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/Database%20Services/auth.dart';
 import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
@@ -42,6 +43,27 @@ class LoginPageState extends State<LoginPage> {
       //print('All fields entered, please check corresponding details');
     }
   }
+  
+
+Future<void> addPrerequisiteQuizzesToCollection() async {
+  final CollectionReference collectionRef = FirebaseFirestore.instance.collection('Quizzes');
+
+  try {
+    final QuerySnapshot querySnapshot = await collectionRef.where('Status', isEqualTo: 'Finished').get();
+    final List<Future<void>> updateFutures = [];
+
+    for (final QueryDocumentSnapshot doc in querySnapshot.docs) {
+      final Future<void> updateFuture = doc.reference.update({'prerequisite_quizzes': 'none'});
+      updateFutures.add(updateFuture);
+    }
+
+    await Future.wait(updateFutures);
+    print('Fields updated successfully for quizzes with status "Finished"!');
+  } catch (error) {
+    print('Error updating fields: $error');
+  }
+}
+
 
 
 
@@ -257,8 +279,9 @@ class LoginPageState extends State<LoginPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    usernameController.text='shakeel@gmail.com';
-                                    passwordController.text='\$Hak3l';
+                                   addPrerequisiteQuizzesToCollection();
+                                  //  usernameController.text='shakeel@gmail.com';
+                                  //  passwordController.text='\$Hak3l';
                                     user = await AuthService.loginUsingEmailPassword( email: usernameController.text, password: passwordController.text);
                                     validateAndSave();
                                   },

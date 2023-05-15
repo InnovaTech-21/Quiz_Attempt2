@@ -39,8 +39,6 @@ class _SelectPageState extends State<SelectPage> {
 
 
       List<Map<String, dynamic>> questionsAnswersList = await service.getQuizInformation(x);
-
-
       for (var i = 0; i < questionsAnswersList.length; i++) {
 
         _Quiz_ID.add(questionsAnswersList[i]["Quiz_ID"]);
@@ -54,7 +52,6 @@ class _SelectPageState extends State<SelectPage> {
 
       }
      // _userAnswers=List.filled(questionsAnswersList.length, '');
-
     }
 
 
@@ -229,7 +226,6 @@ class _SelectPageState extends State<SelectPage> {
                     ),
                   ),
                 );
-
   }
   )
       )

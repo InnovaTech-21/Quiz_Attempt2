@@ -133,66 +133,7 @@ class MockDataService extends Mock implements DatabaseService {
     return userData;
   }
     @override
-  Future<Map<String, dynamic>> getQuizInformation1(String x) async {
-   
-   final firestore = FakeFirebaseFirestore();
-    CollectionReference users = firestore.collection('Quizzes');
-    DocumentReference docRef = users.doc();
-    String docID = docRef.id;
-    Map<String, dynamic> questionAnswerMap1 = {
-          "Quiz_ID": '2EQTWRjpKEybsApneeBM',
-          "QuizName":'ABC',
-          "Quiz_Description":'123',
-          "Quiz_Category": "Anime",
-          "Quiz_Type": 'Short Answer',
-          "QuizTimed": false,
-          "TimerTime": 5,
-          "Number_of_questions": '5',
-          "Status": "Finished",
-          "Date_Created":Timestamp.fromDate(DateTime.now())
-        };
-         await users.doc(docRef.id).set(questionAnswerMap1);
-    String y = 'Finished';
-    QuerySnapshot questionsSnapshot;
 
-    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-    if ((x != "All")) {
-      questionsSnapshot = await users
-          .where('Quiz_Category', isEqualTo: x)
-          .where('Status', isEqualTo: y)
-          .orderBy('Date_Created', descending: true)
-          .get();
-    } else {
-      questionsSnapshot = await users
-          .where('Status', isEqualTo: y)
-          .orderBy('Date_Created', descending: true)
-          .get();
-    }
-
-    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
-    // String x = "2";
-   // Map<String, dynamic> questionsAnswersList = [];
-
-    if (questionsSnapshot.docs.isNotEmpty) {
-      for (int i = 0; i < questionsSnapshot.docs.length; i++) {
-        DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
-        Map<String, dynamic> questionAnswerMap = {
-          "Quiz_ID": quizDoc["Quiz_ID"],
-          "QuizName": quizDoc["QuizName"],
-          "Quiz_Description": quizDoc["Quiz_Description"],
-          "Quiz_Category": quizDoc["Quiz_Category"],
-          "Quiz_Type": quizDoc["Quiz_Type"],
-          "QuizTimed": quizDoc["QuizTimed"],
-          "TimerTime": quizDoc["TimerTime"],
-          "Number_of_questions": quizDoc["Number_of_questions"].toString(),
-        };
-        
-      }
-    }
-    return questionAnswerMap1;
-
-    // _userAnswers=List.filled(questionsAnswersList.length, '');
-  }
     Future<Map<String, dynamic>> addMAQAnswers(List<String> answers, String question, int expected) async {
     final firestore = FakeFirebaseFirestore();
     CollectionReference users =
@@ -225,9 +166,6 @@ class MockDataService extends Mock implements DatabaseService {
     return userData1;
 
   }
-
-
- 
 }
 
 

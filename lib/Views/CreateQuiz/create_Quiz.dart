@@ -11,6 +11,9 @@ import 'package:quiz_website/Views/CreateQuiz/createMAQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
 
 import '../../Database Services/database.dart';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
+import 'package:http/browser_client.dart' as http_browser;
 
 class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({Key? key}) : super(key: key);
@@ -35,31 +38,54 @@ class CreateQuizPageState extends State<CreateQuizPage> {
 
   PlatformFile? pickedFile1;
   String? _imageUrl = '';
+  Uint8List? _imageBytes;
+  http_browser.BrowserClient _httpClient = http_browser.BrowserClient();
 
   //selecting image
   Future selectFile() async {
-  final result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
-  String? abc = await _getQuizID();
+    final result = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: false);
+    String? abc = await service.getUser();
+    String? def = quizNameController.text;
 
-  if (result != null && result.files.isNotEmpty) {
-    final fileBytes = result.files.first.bytes;
-    final fileName = result.files.first.name;
+    if (result != null && result.files.isNotEmpty) {
+      final pickedFile = result.files.first;
+      final fileBytes = pickedFile.bytes;
+      final fileName = pickedFile.name;
 
-    // Upload file
-    final storageRef = FirebaseStorage.instance.ref('$abc/$fileName');
-    final uploadTask = storageRef.putData(fileBytes!);
-    await uploadTask.whenComplete(() {});
+      // Upload file
+      final storageRef = FirebaseStorage.instance.ref('$abc/$def/$fileName');
+      final uploadTask = storageRef.putData(fileBytes!);
+      await uploadTask.whenComplete(() {});
 
-    // Retrieve download URL
-    final downloadURL = await storageRef.getDownloadURL();
+      // Retrieve download URL
+      final downloadURL = await storageRef.getDownloadURL();
 
-    setState(() {
-      _imageUrl = downloadURL; // Assign the download URL to _imageUrl
-    });
+      setState(() {
+        _imageUrl = downloadURL; // Assign the download URL to _imageUrl
+        loadImageFromUrl(_imageUrl!);
+        //print(_imageUrl);
+        pickedFile1 = pickedFile;
+      });
+    }
   }
+
+  Future<void> loadImageFromUrl(String imageUrl) async {
+    final response = await _httpClient.get(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
+      setState(() {
+        _imageBytes = response.bodyBytes;
+      });
+    }
   }
 
-    Future<String?> getUser() async {
+  @override
+  void dispose() {
+    _httpClient.close(); // Close the HTTP client when no longer needed
+    super.dispose();
+  }
+
+  Future<String?> getUser() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = FirebaseAuth.instance.currentUser;
     String? nameuser = '';
@@ -78,36 +104,11 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     }
   }
 
-
-    Future<String> _getQuizID() async {
-    // get number of questions from databse
-    String quizID = "";
-    final CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
-
-    String? username = await getUser();
-    if (username != null) {
-      QuerySnapshot questionsSnapshot = await quizzesCollection
-          .where('Username', isEqualTo: username)
-          .orderBy('Date_Created', descending: true)
-          .limit(1)
-          .get();
-
-      if (questionsSnapshot.docs.isNotEmpty) {
-        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
-        quizID = mostRecentQuestion['Quiz_ID'].toString();
-      }
-    }
-
-    return quizID; 
-  }
-
-
   ///add data of quiz to be made to database
   void addDataToFirestore(String getQuizName, getQuizType, getQuizDescription,
       getQuizCategory) async {
-    service.addDataToCreateaQuizFirestore(
-        getQuizName, getQuizType, getQuizDescription, getQuizCategory);
+    service.addDataToCreateaQuizFirestore(getQuizName, getQuizType,
+        getQuizDescription, getQuizCategory, _imageUrl!);
     // clearInputs();
   }
 
@@ -124,8 +125,12 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       ///write to database
-      service.addDataToCreateaQuizFirestore(quizNameController.text,
-          getQuizType(), quizDescriptionController.text, getQuizCategory());
+      service.addDataToCreateaQuizFirestore(
+          quizNameController.text,
+          getQuizType(),
+          quizDescriptionController.text,
+          getQuizCategory(),
+          _imageUrl!);
 
       ///go to welcome page
       if (getQuizType() == 'Short-Answer') {
@@ -136,7 +141,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       } else if (getQuizType() == 'Image-Based') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>  imageBased()),
+          MaterialPageRoute(builder: (context) => imageBased()),
         );
       } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
@@ -173,237 +178,275 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                 child: Form(
               key: _formKey,
               child: Center(
-                child: Column(children: <Widget>[
-                  SizedBox(height: 50),
-                  SizedBox(width: 150),
-                  Text(
-                    'Create a Quiz',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 50,
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: SizedBox(
-                      width: 600,
-
-                      ///sets up text boxes
-                      ///quiz name box
-                      child: TextFormField(
-                        controller: quizNameController,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(27),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.borderColor,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.gradient2,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          hintText: 'Enter Quiz Name',
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: 50),
+                      SizedBox(width: 150),
+                      Text(
+                        'Create a Quiz',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 50,
                         ),
-                        validator: validateName,
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: SizedBox(
-                      width: 600,
+                      const SizedBox(height: 50),
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: SizedBox(
+                          width: 600,
 
-                      ///quiz description box
-                      child: TextFormField(
-                        controller: quizDescriptionController,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(27),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.borderColor,
-                              width: 3,
+                          ///sets up text boxes
+                          ///quiz name box
+                          child: TextFormField(
+                            controller: quizNameController,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(27),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: ColourPallete.borderColor,
+                                  width: 3,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: ColourPallete.gradient2,
+                                  width: 3,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              hintText: 'Enter Quiz Name',
                             ),
-                            borderRadius: BorderRadius.circular(10),
+                            validator: validateName,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.gradient2,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          hintText: 'Enter Quiz Description',
                         ),
-                        validator: validateDescription,
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: SizedBox(
-                      width: 600,
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: SizedBox(
+                          width: 600,
 
-                      /// sets up dropdown box for quiz category
-                      child: DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(27),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.borderColor,
-                              width: 3,
+                          ///quiz description box
+                          child: TextFormField(
+                            controller: quizDescriptionController,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(27),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: ColourPallete.borderColor,
+                                  width: 3,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: ColourPallete.gradient2,
+                                  width: 3,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              hintText: 'Enter Quiz Description',
                             ),
-                            borderRadius: BorderRadius.circular(10),
+                            validator: validateDescription,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.gradient2,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          hintText:
-                              'Select Quiz Category', // updated hint text for combo box
                         ),
-                        value: quizCategory,
-                        items: <String>[
-                          'Movies',
-                          'Sports',
-                          'Celeb',
-                          'Music',
-                          'Books',
-                          'TV Shows',
-                          'Word Games',
-                          'General Knowledge',
-                          'Food',
-                          'Kdrama',
-                          'Anime',
-                          'Kpop'
-                        ].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: TextStyle(fontSize: 17),
-                            ),
-                          );
-                        }).toList(), // replace with items for the combo box
-                        onChanged: (value) {
-                          setState(() {
-                            quizCategory = value;
-                          });
-                          ;
-                        },
-                        validator: (value) {
-                          if (value == null) {
-                            return "Select Quiz Category";
-                          }
-                          return null;
-                        },
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: SizedBox(
-                      width: 600,
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: SizedBox(
+                          width: 600,
 
-                      /// sets up dropdown box for quiz type
-                      child: DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(27),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.borderColor,
-                              width: 3,
+                          /// sets up dropdown box for quiz category
+                          child: DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(27),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: ColourPallete.borderColor,
+                                  width: 3,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: ColourPallete.gradient2,
+                                  width: 3,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              hintText:
+                                  'Select Quiz Category', // updated hint text for combo box
                             ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ColourPallete.gradient2,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          hintText:
-                              'Select Quiz Type', // updated hint text for combo box
-                        ),
-
-                        ///choices
-                        value: quizType,
-                        items: <String>[
-                          'Multiple Choice',
-                          'Image-Based',
-                          'Short-Answer',
-                          'Multiple Answer Quiz'
-                        ].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: const TextStyle(fontSize: 17),
-                            ),
-                          );
-                        }).toList(), // replace with items for the combo box
-                        onChanged: (value) {
-                          // handle onChanged event for combo box
-                          setState(() {
-                            quizType = value;
-                          });
-                          ;
-                        },
-                        validator: (value) {
-                          if (value == null) {
-                            return "Select Quiz Type";
-                          }
-                          return null;
-                        }, // replace with default value for the combo box
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                ColourPallete.gradient1,
-                                ColourPallete.gradient2,
-                              ],
-                              begin: Alignment.bottomLeft,
-                              end: Alignment.topRight,
-                            ),
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _submit();
+                            value: quizCategory,
+                            items: <String>[
+                              'Movies',
+                              'Sports',
+                              'Celeb',
+                              'Music',
+                              'Books',
+                              'TV Shows',
+                              'Word Games',
+                              'General Knowledge',
+                              'Food',
+                              'Kdrama',
+                              'Anime',
+                              'Kpop'
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                              );
+                            }).toList(), // replace with items for the combo box
+                            onChanged: (value) {
+                              setState(() {
+                                quizCategory = value;
+                              });
+                              ;
                             },
-                            style: ElevatedButton.styleFrom(
-                              fixedSize: const Size(395, 55),
-                              backgroundColor: Colors.transparent,
-                              shadowColor: Colors.transparent,
+                            validator: (value) {
+                              if (value == null) {
+                                return "Select Quiz Category";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: SizedBox(
+                          width: 600,
+
+                          /// sets up dropdown box for quiz type
+                          child: DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(27),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: ColourPallete.borderColor,
+                                  width: 3,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: ColourPallete.gradient2,
+                                  width: 3,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              hintText:
+                                  'Select Quiz Type', // updated hint text for combo box
                             ),
-                            child: const Text(
-                              'Next',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 19,
+
+                            ///choices
+                            value: quizType,
+                            items: <String>[
+                              'Multiple Choice',
+                              'Image-Based',
+                              'Short-Answer',
+                              'Multiple Answer Quiz'
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
+                                  style: const TextStyle(fontSize: 17),
+                                ),
+                              );
+                            }).toList(), // replace with items for the combo box
+                            onChanged: (value) {
+                              // handle onChanged event for combo box
+                              setState(() {
+                                quizType = value;
+                              });
+                              ;
+                            },
+                            validator: (value) {
+                              if (value == null) {
+                                return "Select Quiz Type";
+                              }
+                              return null;
+                            }, // replace with default value for the combo box
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Text(
+                        'Select image for quiz:',
+                        style: const TextStyle(
+                          //fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+                      Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            SizedBox(height: 50),
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                FloatingActionButton(
+                                  heroTag: "image1",
+                                  onPressed: () {
+                                    selectFile();
+                                  },
+                                  child: const Icon(Icons.add_photo_alternate),
+                                ),
+                              ],
+                            ),
+                            if (_imageBytes != null)
+                              Positioned.fill(
+                                child: Transform.scale(
+                                  scale: 4.5,
+                                  child: Image.memory(
+                                    _imageBytes!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(height: 115),
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    ColourPallete.gradient1,
+                                    ColourPallete.gradient2,
+                                  ],
+                                  begin: Alignment.bottomLeft,
+                                  end: Alignment.topRight,
+                                ),
+                                borderRadius: BorderRadius.circular(7),
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _submit();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  fixedSize: const Size(395, 55),
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                ),
+                                child: const Text(
+                                  'Next',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 19,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ]),
-                ]),
+                          ]),
+
+                      //const SizedBox(height: 20),
+                    ]),
               ),
             ))));
   }
