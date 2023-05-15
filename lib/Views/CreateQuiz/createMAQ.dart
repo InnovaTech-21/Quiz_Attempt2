@@ -231,21 +231,18 @@ class _CreateMAQState extends State<CreateMAQ> {
                               for (int i = 0; i < listController.length; i++) {
                                 answers.add(listController[i].text);
                               }
-                              service.addMAQAnswers(
-                                  answers,
-                                  questionController.text,
-                                  int.parse(NumberExpectedController.text));
+                              List<String> questions = [];
+                              questions.add(questionController.text);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => publishPage(
+                                          questions: questions,
+                                          answers: answers,
+                                          quizType: 3,
+                                        )),
+                              );
                             }
-                            service.updateQuizzesStattus();
-                            _showDialog("Quiz Created");
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MenuPage(testFlag: false,)),
-                            );
-                            //print(questionController);
-                            //print(listController);
-                            //print(listController.length);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 40, 148, 248),
