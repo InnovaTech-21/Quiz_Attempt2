@@ -39,7 +39,7 @@ class LoginPageState extends State<LoginPage> {
     final FormState? form = _formKey.currentState;
     if (form!.validate()) {
       await service.setUserID();
-      print(service.userID);
+
       clearInputs();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
       //print('All fields entered, please check corresponding details');
@@ -312,8 +312,8 @@ class LoginPageState extends State<LoginPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    usernameController.text='shakeel@gmail.com';
-                                    passwordController.text='\$Hak3l';
+                                    // usernameController.text='shakeel@gmail.com';
+                                    // passwordController.text='\$Hak3l';
                                     user = await AuthService.loginUsingEmailPassword( email: usernameController.text, password: passwordController.text);
                                     validateAndSave();
                                   },

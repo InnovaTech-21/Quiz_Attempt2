@@ -1,13 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import '../../Database Services/database.dart';
-
 import 'package:quiz_website/landingpage.dart';
-
 import '../../menu.dart';
 import '../Login/login_view.dart';
-
 
 
 class Signup extends StatefulWidget {

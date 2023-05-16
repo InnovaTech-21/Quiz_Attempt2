@@ -33,26 +33,7 @@ class _SelectaPageState extends State<SelectaPage> {
 
     print('Pending quizzes deleted successfully');
   }
-  void deleteQuestionFields() async {
-    final questionCollection = FirebaseFirestore.instance.collection('Questions');
-    final quizzesCollection = FirebaseFirestore.instance.collection('Quizzes');
 
-    final querySnapshot = await questionCollection.get();
-
-    final quizIDs = await quizzesCollection.get().then(
-          (snapshot) => snapshot.docs.map((doc) => doc['Quiz_ID']).toList(),
-    );
-
-    for (final documentSnapshot in querySnapshot.docs) {
-      final quizID = documentSnapshot.data()['QuizID'];
-
-      if (!quizIDs.contains(quizID)) {
-        await documentSnapshot.reference.delete();
-      }
-    }
-
-    print('Question fields deleted successfully');
-  }
   DatabaseService service = DatabaseService();
   final List<String> _QuizName = [];
   final List<int> _TimerTime = [];
@@ -203,7 +184,6 @@ class _SelectaPageState extends State<SelectaPage> {
                   ),
                   child: ElevatedButton(
                     onPressed: ()  {
-                      deleteQuestionFields();
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => LoginPage()),

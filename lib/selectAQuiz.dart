@@ -31,6 +31,41 @@ class _SelectPageState extends State<SelectPage> {
   final List<String> _Quiz_ID = [];
 
 
+  void _showDialog(String quizName, int i){
+    showDialog(
+        context: context,
+        builder: (
+            BuildContext context) {
+          return AlertDialog(
+            title: Text(
+                'Prerequisite not done'),
+            content:  Text('This quiz requires you to have done: $quizName. Would you like to do it now?'),
+            actions: [
+              TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(
+                      context)
+                      .pop();
+                  return; // Close the dialog
+                },
+              ),
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  Navigator.of(
+                      context)
+                      .pop(); // Close the dialog
+                  // Navigate to a new page
+                  goToQuiz(_QuizPrereq,i);
+
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
   Future<void> getAllUniqueQuizIds(String userId) async {
     final CollectionReference collectionRef = FirebaseFirestore.instance.collection('QuizResults');
 
@@ -191,10 +226,10 @@ class _SelectPageState extends State<SelectPage> {
                   child: Center(
                     child: Column(
                       children: <Widget>[
-                        SizedBox(height: 50),
-                        Text(
+                        const SizedBox(height: 50),
+                        const Text(
                           "Select a Quiz",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 50,
                           ),
@@ -238,57 +273,21 @@ class _SelectPageState extends State<SelectPage> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 30), // Add some spacing
+                                const SizedBox(height: 30), // Add some spacing
                                 for (int i = 0; i < filteredQuizName.length; i++) // Use filteredQuizName.length
                                   Container(
-                                    padding: const EdgeInsets.all(10),
+                                    padding:  EdgeInsets.all(10),
                                     child: SizedBox(
                                       width: 400,
                                       child: ElevatedButton(
                                         onPressed: () async {
-
                                           await getAllUniqueQuizIds( service.userID);
 
                                           if(_QuizPrereq[i]!='none'){
 
                                             if(_QuizzesDone.isEmpty || !_QuizzesDone.contains(_QuizPrereq[i])) {
-                                              //get prereq quiz name
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (
-                                                      BuildContext context) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          'Prerequisite not done'),
-                                                      content: const Text(
-                                                          'This quiz requires you to have done' +
-                                                              'Quiz Name' +
-                                                              '. Would you like to do it now?'),
-                                                      actions: [
-                                                        TextButton(
-                                                          child: Text('No'),
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                context)
-                                                                .pop();
-                                                            return; // Close the dialog
-                                                          },
-                                                        ),
-                                                        TextButton(
-                                                          child: Text('Yes'),
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                context)
-                                                                .pop(); // Close the dialog
-                                                            // Navigate to a new page
-                                                            goToQuiz(_QuizPrereq,i);
-
-                                                          },
-                                                        ),
-                                                      ],
-                                                    );
-                                                  }
-                                              );
+                                              String quizName= await service.getQuizName(_QuizPrereq[i]);
+                                              _showDialog(quizName, i);
                                             }else{
                                               goToQuiz(_Quiz_ID,i);
                                             }

@@ -343,6 +343,19 @@ class DatabaseService {
 
     // _userAnswers=List.filled(questionsAnswersList.length, '');
   }
+  Future<String> getQuizName(String quizId) async {
+    final quizDoc = await FirebaseFirestore.instance
+        .collection('Quizzes')
+        .doc(quizId)
+        .get();
+
+    if (quizDoc.exists) {
+      final quizName = quizDoc.data()?['QuizName'];
+      return quizName;
+    } else {
+      throw Exception('Quiz not found');
+    }
+  }
 
   Future<void> addMAQAnswers(
       List<String> answers, String question, int expected) async {

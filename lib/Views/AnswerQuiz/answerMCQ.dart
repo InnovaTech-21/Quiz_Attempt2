@@ -85,10 +85,10 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
   ///saves the users answers to a list as they answer the questions
   void _submitAnswer() async {
 
-    setState(() async {
+    setState(()  {
       _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       try {
-        await _showDialog("Your Score: ${getScore()}");
+         _showDialog("Your Score: ${getScore()}");
       }finally {
         service.addUpdatedScore(quizSelected, _currentIndex, _questions.length);
 
