@@ -5,10 +5,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import '../../Database Services/database.dart';
 import '../../menu.dart';
+import 'package:quiz_website/landingpage.dart';
+
 
 class imageBased extends StatefulWidget {
-  const imageBased({Key? key});
   const imageBased({Key? key});
 
   @override
@@ -16,6 +18,7 @@ class imageBased extends StatefulWidget {
 }
 
 class _imageBasedState extends State<imageBased> {
+  DatabaseService service = DatabaseService();
   String? _imageUrl = '';
   PlatformFile? pickedFile1;
   PlatformFile? pickedFile2;
@@ -150,7 +153,7 @@ class _imageBasedState extends State<imageBased> {
       } finally {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const MenuPage()),
+          MaterialPageRoute(builder: (context) => const SelectaPage()),
         );
       }
     }).catchError((error) {
@@ -241,33 +244,6 @@ class _imageBasedState extends State<imageBased> {
                           ),
                         ),
                         const SizedBox(height: 50),
-                        if (pickedFile1 != null)
-                        //Expanded(
-                       // child: Container(
-                        //  color: Colors.blue[100],
-                       // child: Center(
-                       //   child: Image.file(File(pickedFile1!.path!),
-                        //   width: double.infinity,
-                       //   fit: BoxFit.cover))),
-                      // ),
-                        const SizedBox(height: 50),
-                        ElevatedButton(
-                          child: const Text("Select File"),
-                          onPressed: selectFile,
-
-                        ),
-                        //if (pickedFile1 != null)
-                        //Positioned(
-                        //top: 0,
-                        //bottom: 0,
-                        //left: 0,
-                        //right: 0,
-                        //child: Image.network(
-                        //pickedFile1!.path!,
-                        //fit: BoxFit.cover,
-                        //),
-                        //),
-                        const SizedBox(height: 50),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
@@ -283,8 +259,6 @@ class _imageBasedState extends State<imageBased> {
                                           selectFile(1);
                                           //_pickImage(ImageSource.gallery);
                                         },
-                                        child: const Icon(
-                                            Icons.add_photo_alternate),
                                         child: const Icon(
                                             Icons.add_photo_alternate),
                                       ),
@@ -318,8 +292,6 @@ class _imageBasedState extends State<imageBased> {
                                         },
                                         child: const Icon(
                                             Icons.add_photo_alternate),
-                                        child: const Icon(
-                                            Icons.add_photo_alternate),
                                       ),
                                     ),
                                     if (pickedFile2 != null)
@@ -349,8 +321,6 @@ class _imageBasedState extends State<imageBased> {
                                           selectFile(3);
                                           //_pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(
-                                            Icons.add_photo_alternate),
                                         child: const Icon(
                                             Icons.add_photo_alternate),
                                       ),
@@ -389,8 +359,6 @@ class _imageBasedState extends State<imageBased> {
                                         },
                                         child: const Icon(
                                             Icons.add_photo_alternate),
-                                        child: const Icon(
-                                            Icons.add_photo_alternate),
                                       ),
                                     ),
                                     if (pickedFile4 != null)
@@ -422,8 +390,6 @@ class _imageBasedState extends State<imageBased> {
                                         },
                                         child: const Icon(
                                             Icons.add_photo_alternate),
-                                        child: const Icon(
-                                            Icons.add_photo_alternate),
                                       ),
                                     ),
                                     if (pickedFile5 != null)
@@ -453,8 +419,6 @@ class _imageBasedState extends State<imageBased> {
                                           selectFile(6);
                                           //_pickImage(ImageSource.camera);
                                         },
-                                        child: const Icon(
-                                            Icons.add_photo_alternate),
                                         child: const Icon(
                                             Icons.add_photo_alternate),
                                       ),
@@ -495,6 +459,8 @@ class _imageBasedState extends State<imageBased> {
                             child: ElevatedButton(
                               onPressed: () {
                                 //addDataToFirestore(currentQuestionIndex);
+                                //service.updateQuizzesStattus();
+                                //service.addNumberOfQuestions(await service.getQuizID(), widget.questions.length, isTimed, timeLimit)
                                 //updateQuizzesStattus();
                               },
                               style: ElevatedButton.styleFrom(

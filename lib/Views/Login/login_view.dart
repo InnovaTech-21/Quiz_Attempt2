@@ -4,9 +4,10 @@ import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/landingpage.dart';
-import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../main.dart';
+import '../../Database Services/database.dart';
+
 import '../../menu.dart';
 
 
@@ -28,14 +29,16 @@ class LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   bool passwordVisible = false;
   User? user;
+  DatabaseService service = DatabaseService();
 
   void clearInputs(){
     usernameController.clear();
     passwordController.clear();
   }
-  void validateAndSave() {
+  Future<void> validateAndSave() async {
     final FormState? form = _formKey.currentState;
     if (form!.validate()) {
+      await service.setUserID();
 
       clearInputs();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
@@ -55,70 +58,122 @@ class LoginPageState extends State<LoginPage> {
           backgroundColor: ColourPallete.backgroundColor,
           title: Padding(
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-            child: Row(
-              children: <Widget>[
-                Image.asset(
-                  'assets/images/InnovaTechLogo.png',
-                  width: 110,
-                ),
-                SizedBox(width: 10),
-                Text(
-                  "InnovaTech Quiz Platform",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 25,
+            child: Expanded(
+              flex: 3,
+              child: Row(
+                children: <Widget>[
+                  Image.asset(
+                    'assets/images/InnovaTechLogo.png',
+                    width: 110,
                   ),
-                ),
-                Spacer(),
-                NavItem(
-                  key: ValueKey('home'),
-                  title: 'Home',
-                  tapEvent: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SelectaPage()),
-                    );
-                  },
-                ),
-
-                SizedBox(width: 11),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        ColourPallete.gradient2,
-                        ColourPallete.gradient1,
-
-                      ],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: ()  {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) =>Signup() ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(95,35), backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: const Text(
-                      'Sign Up',
+                  SizedBox(width: 10),
+                  Expanded(
+                    flex: 5,
+                    child: Text(
+                      "InnovaTech Quiz Platform",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 18,
+                        fontSize: 25,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Spacer(),
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      //color: ColourPallete.backgroundColor,
+                      width: 290,
+                      height: 45,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(color: ColourPallete.gradient1, width: 2),
+                        color: ColourPallete.backgroundColor,
+                      ),
+                      child: Expanded(
+                        flex: 2,
+                        child: Row(
+                          children: [
+                            Icon(Icons.search, color: Colors.white),
+                            SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: ColourPallete.backgroundColor,
+                                  hintText: 'Search for a quiz/category',
+                                  hintStyle: TextStyle(color: Colors.white),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+
+
+                  Expanded(
+                    flex: 2,
+                    child: NavItem(
+                      key: ValueKey('home'),
+                      title: 'Home',
+                      tapEvent: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SelectaPage()),
+                        );
+                      },
+                    ),
+                  ),
+
+                  SizedBox(width: 10),
+
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          ColourPallete.gradient2,
+                          ColourPallete.gradient1,
+
+                        ],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                      ),
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                    child: Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: ()  {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>Signup() ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(95,35), backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                        ),
+                        child: const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
+
 
         body: Material(
         color: ColourPallete.backgroundColor,
@@ -257,8 +312,8 @@ class LoginPageState extends State<LoginPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    usernameController.text='shakeel@gmail.com';
-                                    passwordController.text='\$Hak3l';
+                                    // usernameController.text='shakeel@gmail.com';
+                                    // passwordController.text='\$Hak3l';
                                     user = await AuthService.loginUsingEmailPassword( email: usernameController.text, password: passwordController.text);
                                     validateAndSave();
                                   },

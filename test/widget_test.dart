@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mockito/mockito.dart';
+import 'package:quiz_website/Database%20Services/Mock_Database.dart';
 import 'package:quiz_website/Views/Login/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -67,6 +68,118 @@ class MockFirebaseAuthFunctions {
 
 
 void main() {
+    test('Get categories', () async {
+    final service = MockDataService();
+    final String? testCategories = await service.getUser();
+
+    expect(testCategories, "Shak");
+  });
+  test('Get Userid', () async {
+    final service = MockDataService();
+    final String? testCategories = await service.getUserID();
+
+    expect(testCategories, "9eMkcVepH2tE66t3fICp");
+  });
+  test('Update Status', () async {
+    final service = MockDataService();
+    final String? testCategories = await service.updateQuizzesStattus();
+
+    expect(testCategories, "Finished");
+  });
+   test('add user', () async {
+    final service = MockDataService();
+     Map<String, dynamic> userData = {
+      "Quiz_ID": '9eMkcVepH2tE66t3fICp',
+      "CorrectAns": 2,
+      "TotalAns": 5,
+      "Date_Created": Timestamp.fromDate(DateTime.now()),
+      "UserID": await service.getUser(),
+    };
+
+     Map<String, dynamic> userData1 = await service.addUpdatedScore('9eMkcVepH2tE66t3fICp', 2, 5 );
+
+    expect(userData1['Quiz_ID'], "9eMkcVepH2tE66t3fICp");
+    expect(userData1['CorrectAns'], 2);
+    expect(userData1['TotalAns'], 5);
+ //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
+    expect(userData1['UserID'], "Shak");
+  });
+    test('add user data', () async {
+    final service = MockDataService();
+     Map<String, dynamic> userData = {
+     // 'date_of_birth': DateTime.friday,
+      'levels': 0,
+      'total_score': 0,
+      'user_email': '11aa@gmail.com',
+      'user_name': 'Test',
+      'user_username': 'TestName',
+    };
+
+     Map<String, dynamic> userData1 = await service.addSignupToFirestore
+     ('11aa@gmail.com','a,', 'TestName', 'Test', DateTime.now() );
+
+    expect(userData1['levels'], 0);
+    expect(userData1['total_score'], 0);
+    expect(userData1['user_email'], '11aa@gmail.com');
+ //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
+    expect(userData1['user_name'], "TestName");
+     expect(userData1['user_username'], "Test");
+  });
+    test('get all quizzes', () async {
+    final service = MockDataService();
+       Map<String, dynamic> questionAnswerMap1 = {
+          "Quiz_ID": '2EQTWRjpKEybsApneeBM',
+          "QuizName":'ABC',
+          "Quiz_Description":'123',
+          "Quiz_Category": "Anime",
+          "Quiz_Type": 'Short Answer',
+          "QuizTimed": false,
+          "TimerTime": 5,
+          "Number_of_questions": '5',
+          "Status": "Finished",
+          "Date_Created":Timestamp.fromDate(DateTime.now())
+        };
+
+     Map<String, dynamic> userData1 = await service.getQuizInformation1('Short Answer');
+
+    expect(userData1['Quiz_ID'], '2EQTWRjpKEybsApneeBM');
+    expect(userData1['QuizName'], 'ABC');
+    expect(userData1['Quiz_Description'], '123');
+ //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
+    expect(userData1['Quiz_Category'], "Anime");
+     expect(userData1['Quiz_Type'], "Short Answer");
+     expect(userData1['QuizTimed'], false);
+     expect(userData1['TimerTime'], 5);
+     expect(userData1['Number_of_questions'], '5');
+     
+     
+  });
+   test('get MAQ questions', () async {
+    final service = MockDataService();
+    List<String> answers = ["a","b"];
+      Map<String, dynamic> userData = {
+      'Answers': answers,
+      'QuizID': '123',
+      'Question': 'question',
+      'Number Expected':1,
+      'Question_type': 'Multiple Answer Quiz',
+      'QuestionNo': 1,
+    };
+     Map<String, dynamic> userData1 = await service.addMAQAnswers(answers, ' question', 1);
+
+    expect(userData1['Answers'], answers);
+    expect(userData1['QuizID'], '123');
+    expect(userData1['Question'], 'question');
+ //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
+    expect(userData1['Number Expected'], 1);
+     expect(userData1['Question_type'], "Multiple Answer Quiz");
+     expect(userData1['QuestionNo'], 1);
+    
+     
+     
+  });
+
+
   testWidgets('Test welcome page loads', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());

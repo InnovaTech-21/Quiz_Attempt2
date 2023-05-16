@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../../../menu.dart';
 import '../../Database Services/database.dart';
 
@@ -18,10 +18,16 @@ class publishPage extends StatefulWidget {
 
 class _publishPageState extends State<publishPage> {
   final _formKey = GlobalKey<FormState>();
+  final List<String> _QuizDetails = [];
+  final List<String> _QuizName = [];
+  final List<String> _QuizID = [];
+  String x = 'All';
   DatabaseService service = DatabaseService();
   bool isTimed = false;
   bool hasPrerequisites = false;
   int timeLimit = 0;
+  String ID="none";
+  String quizID='';
   final TextEditingController timeLimitController = TextEditingController();
 
   int type=0;
@@ -54,28 +60,38 @@ class _publishPageState extends State<publishPage> {
     );
   }
 
- void addDataToFirestore(int index)async {
+  Future<void> getQuizInformation(String x) async {
+    List<Map<String, dynamic>> questionsAnswersList = await service.getQuizInformation(x);
+    for (var i = 0; i < questionsAnswersList.length; i++) {
+      _QuizDetails.add("Quiz Name: "+questionsAnswersList[i]["QuizName"]);
+      _QuizID.add(questionsAnswersList[i]["Quiz_ID"]);
+      _QuizName.add(questionsAnswersList[i]["QuizName"]);
+
+    }
+    quizID=await service.getQuizID();
+  }
+  void addDataToFirestore(int index) async {
     ///Create quizzes created successfully, now add data to Firestore
 
     CollectionReference users =
-    FirebaseFirestore.instance.collection('Questions');
+        FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
-    if(type==1) {
+    if (type == 1) {
       Map<String, dynamic> userData = {
         'Question': widget.questions[index].toString(),
         'Answers': widget.answers[index].toString(),
-        'QuizID': await service.getQuizID(),
+        'QuizID': quizID,
         'Question_type': "Short Answer",
         'QuestionNo': index,
       };
       await users.doc(docRef.id).set(userData);
-    }else if(type==2){
-      List <String> ans=widget.answers[index].split('^');
-      String correctAns=ans[0];
-      String rand1=ans[1];
-      String rand2=ans[2];
-      String rand3=ans[3];
+    } else if (type == 2) {
+      List<String> ans = widget.answers[index].split('^');
+      String correctAns = ans[0];
+      String rand1 = ans[1];
+      String rand2 = ans[2];
+      String rand3 = ans[3];
 
       Map<String, dynamic> userData = {
         'Question': widget.questions[index].toString(),
@@ -83,29 +99,47 @@ class _publishPageState extends State<publishPage> {
         'Option1': rand1,
         'Option2': rand2,
         'Option3': rand3,
-        'QuizID': await service.getQuizID(),
+        'QuizID': quizID,
         'Question_type': "MCQ",
         'QuestionNo': index,
       };
 
       await users.doc(docRef.id).set(userData);
+    } else if (type == 3) {
+      Map<String, dynamic> userData = {
+        'Answers': widget.answers,
+        'QuizID': quizID,
+        'Question': widget.questions,
+        //'Number Expected': expected,
+        'Question_type': 'Multiple Answer Quiz',
+        'QuestionNo': 1,
+      };
+      await users.doc(docRef.id).set(userData);
     }
 
   }
 
-  List<String> mcqDisplay(List<String> ans){
+  List<String> mcqDisplay(List<String> ans) {
+    List<String> output = [];
+    for (int i = 0; i < ans.length; i++) {
+      List<String> splitAnswers = ans[i].split('^');
+      output.add(
+          'Correct option: ${splitAnswers[0]}\nRandom option: ${splitAnswers[1]}\nRandom option: ${splitAnswers[2]}\nRandom option: ${splitAnswers[3]}');
+    }
+    return output;
+  }
 
-    List <String> output=[];
-    for(int i=0;i<ans.length;i++){
-      List <String> splitAnswers=ans[i].split('^');
-      output.add('Correct option: ${splitAnswers[0]}\nRandom option: ${splitAnswers[1]}\nRandom option: ${splitAnswers[2]}\nRandom option: ${splitAnswers[3]}');
+  String maqDisplay(List<String> ans) {
+    String output = '';
+    for (int i = 0; i < ans.length; i++) {
+      output = output + ('${ans[i]}\n');
     }
     return output;
   }
 
 
-  void addNumberOfQuestions(String quizID, int numQuestions,bool isTimed,int time) async {
-   service.addNumberOfQuestions(quizID, numQuestions, isTimed, time);
+  void addExtraDetails(String quizID, int numQuestions,bool isTimed,int time, String ID) async {
+   service.addNumberOfQuestions(quizID, numQuestions, isTimed, time,ID);
   }
 
   Future<void> _publish() async {
@@ -120,8 +154,14 @@ class _publishPageState extends State<publishPage> {
           timeLimit = 60 * int.parse(hour) + int.parse(minute);
         });
       }
-      addNumberOfQuestions(
-          await service.getQuizID(), widget.questions.length, isTimed, timeLimit);
+      if(hasPrerequisites){
+        if(ID=="none"){
+          _showDialog("Please select a prerequisite quiz");
+          return;
+        }
+      }
+      addExtraDetails(
+          quizID, widget.questions.length, isTimed, timeLimit,ID);
 
       /// write to database
       for (int i = 0; i < widget.questions.length; i++) {
@@ -139,119 +179,136 @@ class _publishPageState extends State<publishPage> {
 
   @override
   Widget build(BuildContext context) {
+    getQuizInformation(x);
     return Scaffold(
       appBar: AppBar(
         title: Text("Quiz review"),
       ),
       body: Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
               child: ListView.builder(
-              itemCount: widget.questions.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  padding: EdgeInsets.all(16.0),
-                  color: index % 2 == 0 ? Colors.black54 : Colors.black,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Question ${index + 1}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8.0),
-                      Text(
-                        widget.questions[index],
-                      ),
-                      SizedBox(height: 16.0),
-                      Text(
-                        "Answer:",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8.0),
-                      if(type==1)
-                      Text(
-                        widget.answers[index],
-                      )
-                      else if(type==2)
+                itemCount: widget.questions.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    padding: EdgeInsets.all(16.0),
+                    color: index % 2 == 0 ? Colors.black54 : Colors.black,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          mcqDisplay(widget.answers)[index],
-                        )
-
-
-                    ],
-
-                  ),
-                );
+                          "Question ${index + 1}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        Text(
+                          widget.questions[index],
+                        ),
+                        SizedBox(height: 16.0),
+                        Text(
+                          "Answer:",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        if (type == 1)
+                          Text(
+                            widget.answers[index],
+                          )
+                        else if (type == 2)
+                          Text(
+                            mcqDisplay(widget.answers)[index],
+                          )
+                        else if (type == 3)
+                          Text(
+                            maqDisplay(widget.answers),
+                          )
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            CheckboxListTile(
+              title: Text("Timed quiz"),
+              value: isTimed,
+              onChanged: (newValue) {
+                setState(() {
+                  isTimed = newValue!;
+                });
               },
             ),
-
-          ),
-          CheckboxListTile(
-            title: Text("Timed quiz"),
-            value: isTimed,
-            onChanged: (newValue) {
-              setState(() {
-                isTimed = newValue!;
-              });
-            },
-          ),
-
-          if (isTimed)
-            TextFormField(
-              controller: timeLimitController,
-              keyboardType: TextInputType.number,
-              validator: validateTime,
-              decoration: InputDecoration(
-                labelText: "Time limit (in format min:sec)",
+            if (isTimed)
+              TextFormField(
+                controller: timeLimitController,
+                keyboardType: TextInputType.number,
+                validator: validateTime,
+                decoration: InputDecoration(
+                  labelText: "Time limit (in format min:sec)",
+                ),
               ),
-
+            CheckboxListTile(
+              title: Text("Quiz has prerequisites"),
+              value: hasPrerequisites,
+              onChanged: (newValue) {
+                setState(() {
+                  hasPrerequisites = newValue!;
+                });
+              },
             ),
-          CheckboxListTile(
-            title: Text("Quiz has prerequisites"),
-            value: hasPrerequisites,
-            onChanged: (newValue) {
-              setState(() {
-                hasPrerequisites = newValue!;
-              });
-            },
-          ),
-          SizedBox(height: 16.0),
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    // Add your code to submit the quiz
+            if (hasPrerequisites)
+              SizedBox(
+                height: 200, // Set a fixed height
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _QuizDetails.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      title: Text(_QuizDetails[index]),
+                      onTap: () {
+                        ID=_QuizID[index];
+                        _showDialog("Quiz prerequisite set to: "+_QuizName[index]);
+                        // Handle quiz selection here
+                      },
+                    );
                   },
-                  child: Text("Edit questions"),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    _publish();
-
-                  },
-                  child: Text("Publish quiz"),
-                ),
-              ],
+              ),
+            SizedBox(height: 16.0),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // Add your code to submit the quiz
+                    },
+                    child: Text("Edit questions"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _publish();
+                    },
+                    child: Text("Publish quiz"),
+                  ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: 16.0),
-        ],
-      ),
+            SizedBox(height: 16.0),
+          ],
+        ),
       ),
 
     );
   }
+
   String? validateTime(String? value) {
     if (value == null || value.isEmpty) {
       return 'Enter an time limit';

@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../Database Services/database.dart';
@@ -85,10 +84,10 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   ///saves the users answers to a list as they answer the questions
   void _submitAnswer() async {
 
-    setState(() async {
+    setState(() {
       _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       try {
-        await _showDialog("Your Score: ${getScore()}");
+         _showDialog("Your Score: ${getScore()}");
       }finally {
         service.addUpdatedScore(quizSelected, _currentIndex, _questions.length);
 
@@ -127,8 +126,9 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
 
   ///loads the quiz questions and answers for use throughout page
   Future<void> getQuestionsAnswers(String x) async {
-    List<Map<String, dynamic>> questionsAnswersList = await  service.getShortQuestionsAnswers(x);
+
     if (_questions.isEmpty) {
+      List<Map<String, dynamic>> questionsAnswersList = await  service.getShortQuestionsAnswers(x);
       for (var i = 0; i < questionsAnswersList.length; i++) {
         _questions.add(questionsAnswersList[i]["Question"]);
         _correctAns.add(questionsAnswersList[i]["Answers"]);
@@ -136,6 +136,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       _userAnswers=List.filled(questionsAnswersList.length, '');
     }
   }
+
 
 
   ///sets up the timer widget

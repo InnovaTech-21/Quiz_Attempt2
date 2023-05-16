@@ -102,163 +102,164 @@ class _SelectaPageState extends State<SelectaPage> {
     // _userAnswers=List.filled(questionsAnswersList.length, '');
 
   }
-
-
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
+      backgroundColor: ColourPallete.backgroundColor,
+      appBar: AppBar(
+        toolbarHeight: 100,
         backgroundColor: ColourPallete.backgroundColor,
-        appBar: AppBar(
-          toolbarHeight: 100,
-          backgroundColor: ColourPallete.backgroundColor,
-          title: Padding(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-            child: Row(
-              children: <Widget>[
-                Image.asset(
-                  'assets/images/InnovaTechLogo.png',
-                  width: 110,
-                ),
-                SizedBox(width: 10),
-                Text(
-                  "InnovaTech Quiz Platform",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 25,
+        title: Padding(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+          child: Row(
+            children: <Widget>[
+          Image.asset(
+          'assets/images/InnovaTechLogo.png',
+            width: 110,
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            flex: 5,
+            child: Text(
+              "InnovaTech Quiz Platform",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 25,
+              ),
+            ),
+          ),
+          Spacer(),
+          Expanded(
+            flex: 5,
+            child: Container(
+              width: 290,
+              height: 45,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: ColourPallete.gradient1, width: 2),
+                color: ColourPallete.backgroundColor,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.search, color: Colors.white),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: ColourPallete.backgroundColor,
+                        hintText: 'Search for a quiz/category',
+                        hintStyle: TextStyle(color: Colors.white),
+                        border: InputBorder.none,
+                      ),
+                    ),
                   ),
+                ],
+              ),
+            ),
+          ),
+          Spacer(),
+          Expanded(
+            flex: 2,
+            child: NavItem(
+              key: ValueKey('home'),
+              title: 'Home',
+              tapEvent: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SelectaPage()),
+                );
+              },
+            ),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            flex: 2,
+            child: NavItem(
+              key: ValueKey('Create a Quiz'),
+              title: 'Create a Quiz',
+              tapEvent: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreateQuizPage()),
+                );
+              },
+            ),
+          ),
+          SizedBox(width: 10),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  ColourPallete.gradient1,
+                  ColourPallete.gradient2,
+                ],
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+              ),
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                fixedSize: const Size(80, 35),
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+              ),
+              child: const Text(
+                'Login',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
                 ),
-                Spacer(),
-                Container(
-                  //color: ColourPallete.backgroundColor,
-                  width: 290,
-                  height: 45,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: ColourPallete.gradient1, width: 2),
-                    color: ColourPallete.backgroundColor,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.search, color: Colors.white),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: ColourPallete.backgroundColor,
-                            hintText: 'Search for a quiz/category',
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: InputBorder.none,
+              ),
+            ),
+          ),
+          SizedBox(width: 25),
+          DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    ColourPallete.gradient2,
+                    ColourPallete.gradient1,
+                  ],
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topRight,
+                ),
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: ElevatedButton(
+
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Signup()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(95,35),
+                      backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                        ),
+                        child: const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Spacer(),
-                NavItem(
-                  key: ValueKey('home'),
-                  title: 'Home',
-                  tapEvent: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SelectaPage()),
-                    );
-                  },
-                ),
-                NavItem(
-                  key: ValueKey('Create a Quiz'),
-                  title: 'Create a Quiz',
-                  tapEvent: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CreateQuizPage()),
-                    );
-                  },
-                ),
-                //NavItem(
-                  //key: ValueKey('Answer a Quiz'),
-                  //title: 'Answer a Quiz',
-                  //tapEvent: () {},
-                //),
-                // NavItem(
-                // key: ValueKey('contactus'),
-                //title: 'Contact Us',
-                //tapEvent: () {},
-                //),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        ColourPallete.gradient1,
-                        ColourPallete.gradient2,
-                      ],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
                     ),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: ()  {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(80,35), backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 11),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        ColourPallete.gradient2,
-                        ColourPallete.gradient1,
-
-                      ],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: ()  {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) =>Signup() ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(95,35), backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
 
 
         body: Material(
@@ -366,42 +367,51 @@ class _SelectaPageState extends State<SelectaPage> {
                                             ),
                                           ),
                                           SizedBox(height: 15),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'CATEGORY:',
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                              Spacer(),
-                                              Text(
-                                                '${_QuizCategory[i]}',
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                            ],
+                                          Expanded(
+                                            flex: 2,
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'CATEGORY:',
+                                                  style: TextStyle(fontSize: 18),
+                                                ),
+                                                Spacer(),
+                                                Text(
+                                                  '${_QuizCategory[i]}',
+                                                  style: TextStyle(fontSize: 18),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                           SizedBox(height: 10),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'TYPE:',
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                              Spacer(),
-                                              Text(
-                                                '${_QuizType[i]}',
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                            ],
+                                          Expanded(
+                                            flex: 2,
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'TYPE:',
+                                                  style: TextStyle(fontSize: 18),
+                                                ),
+                                                Spacer(),
+                                                Text(
+                                                  '${_QuizType[i]}',
+                                                  style: TextStyle(fontSize: 18),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                           SizedBox(height: 10),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '${_NumberofQuestions[i]} Questions',
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                              Spacer(),
-                                            ],
+                                          Expanded(
+                                            flex: 2,
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  '${_NumberofQuestions[i]} Questions',
+                                                  style: TextStyle(fontSize: 18),
+                                                ),
+                                                Spacer(),
+                                              ],
+                                            ),
                                           ),
                                           SizedBox(height: 20),
                                           Center(
