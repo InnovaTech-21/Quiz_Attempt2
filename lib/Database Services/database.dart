@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class DatabaseService {
   static DatabaseService? _instance;
   factory DatabaseService() {
@@ -12,7 +11,7 @@ class DatabaseService {
   }
   DatabaseService._internal();
 
-  String userID='';
+  String userID = '';
   Future<void> setUserID() async {
     String? result = await getUser();
     if (result != null) {
@@ -210,6 +209,32 @@ class DatabaseService {
     return questionsAnswersList;
   }
 
+  ///get Multiple Answer Question
+  Future<List<Map<String, dynamic>>> getMAQQuestionsAnswers(String x) async {
+    List<Map<String, dynamic>> questionsAnswersList = [];
+
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('Questions');
+
+    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
+    QuerySnapshot questionsSnapshot = await users
+        .where('QuizID', isEqualTo: x)
+        .orderBy('QuestionNo', descending: false)
+        .get();
+
+    if (questionsSnapshot.docs.isNotEmpty) {
+      for (int i = 0; i < questionsSnapshot.docs.length; i++) {
+        DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
+        Map<String, dynamic> questionAnswerMap = {
+          "Question": quizDoc["Question"],
+          "Answers": quizDoc["Answers"],
+        };
+        questionsAnswersList.add(questionAnswerMap);
+      }
+    }
+    return questionsAnswersList;
+  }
+
   ///add data to create a quiz
   Future<void> addDataToCreateaQuizFirestore(String getQuizName, getQuizType,
       getQuizDescription, getQuizCategory) async {
@@ -237,8 +262,8 @@ class DatabaseService {
   }
 
   /// Addnumberofquestion to quizzes
-  Future<void> addNumberOfQuestions(
-      String quizID, int numQuestions, bool isTimed, int time, String id) async {
+  Future<void> addNumberOfQuestions(String quizID, int numQuestions,
+      bool isTimed, int time, String id) async {
     CollectionReference quizzesCollection =
         FirebaseFirestore.instance.collection('Quizzes');
 
@@ -262,7 +287,6 @@ class DatabaseService {
           'Error: Found ${quizQuery.docs.length} quizzes with QuizID $quizID');
     }
   }
-
 
   /// add imageing questions
   Future<void> addImagesToFirestore(String question, Image1url, image2url,
@@ -326,7 +350,7 @@ class DatabaseService {
         DocumentSnapshot quizDoc = questionsSnapshot.docs[i];
         Map<String, dynamic> questionAnswerMap = {
           "Quiz_ID": quizDoc["Quiz_ID"],
-          "prerequisite_quizzes":quizDoc["prerequisite_quizzes"],
+          "prerequisite_quizzes": quizDoc["prerequisite_quizzes"],
           "Username": quizDoc["Username"],
           "QuizName": quizDoc["QuizName"],
           "Quiz_Description": quizDoc["Quiz_Description"],
@@ -343,6 +367,7 @@ class DatabaseService {
 
     // _userAnswers=List.filled(questionsAnswersList.length, '');
   }
+
   Future<String> getQuizName(String quizId) async {
     final quizDoc = await FirebaseFirestore.instance
         .collection('Quizzes')
@@ -355,38 +380,5 @@ class DatabaseService {
     } else {
       throw Exception('Quiz not found');
     }
-  }
-
-  Future<void> addMAQAnswers(
-      List<String> answers, String question, int expected) async {
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
-    DocumentReference docRef = users.doc();
-    String docID = docRef.id;
-    Map<String, dynamic> userData = {
-      'Answers': answers,
-      'QuizID': await getQuizID(),
-      'Question': question,
-      'Number Expected': expected,
-      'Question_type': 'Multiple Answer Quiz',
-      'QuestionNo': 1,
-    };
-    await users.doc(docRef.id).set(userData);
-  }
-
-  Future<Map<String, Object>> getMAQQuestions(String x) async {
-    List<Map<String, dynamic>> questionsAnswersList = [];
-
-    CollectionReference quizCollection =
-        FirebaseFirestore.instance.collection('Questions');
-    QuerySnapshot quizSnapshot =
-        await quizCollection.where('QuizID', isEqualTo: x).get();
-
-    DocumentSnapshot quizDoc = quizSnapshot.docs.first;
-
-    String question = quizDoc['Question'];
-    List<String> answers = List<String>.from(quizDoc['Answers']);
-
-    return {'question': question, 'answers': answers};
   }
 }

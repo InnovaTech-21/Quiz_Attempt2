@@ -19,7 +19,7 @@ class _CreateMAQState extends State<CreateMAQ> {
   final TextEditingController NumberExpectedController =
       TextEditingController();
 
-  DatabaseService service = DatabaseService();
+  //DatabaseService service = DatabaseService();
 
   Future<void> _showDialog(String message) async {
     await showDialog(
