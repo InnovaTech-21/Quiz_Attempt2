@@ -173,9 +173,9 @@ class _SelectaPageState extends State<SelectaPage> {
               },
             ),
           ),
-          SizedBox(width: 10),
+          SizedBox(width: 3),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: NavItem(
               key: ValueKey('Create a Quiz'),
               title: 'Create a Quiz',
@@ -306,17 +306,21 @@ class _SelectaPageState extends State<SelectaPage> {
                       }
                     }
                   }
-                  return Column(
-                    children: [
-                      SizedBox(height: 50),
-                    Text(
-                    'Trending Quizzes',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  body: ListView(
+                      padding: EdgeInsets.symmetric(vertical: 50),
+                      children: [
+                  Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                  children: [
+                  Text(
+                  'Trending Quizzes',
+                  style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
                   ),
-                      SizedBox(height: 50),
+                  ),
+                  SizedBox(height: 50),
                   Center(
                   child: SizedBox(
                   height: 350,
@@ -477,14 +481,14 @@ class _SelectaPageState extends State<SelectaPage> {
                   ),
                   ),
                     ],
-                  );
+                  ))]);
 
-
+                  return Container();
                 }
             )
         )
     );
-
+    return Container();
 
   }
 }
