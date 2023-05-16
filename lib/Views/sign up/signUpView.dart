@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import '../../Database Services/database.dart';
-import '../../main.dart';
-import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
+
 import 'package:quiz_website/landingpage.dart';
-import 'package:quiz_website/selectAQuiz.dart';
+
 import '../../menu.dart';
 import '../Login/login_view.dart';
 
@@ -73,7 +71,7 @@ class SignupState extends State<Signup> {
       service.addSignupToFirestore(emailController.text, passwordController.text,usernameController.text,nameController.text,getDate());
       clearInputs();
       showDialog1("Account created");
-
+      service.setUserID();
       ///go to welcome page
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
 

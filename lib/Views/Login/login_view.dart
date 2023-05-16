@@ -4,9 +4,10 @@ import 'package:quiz_website/Views/Forgot%20Password/forgotpassword.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/landingpage.dart';
-import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../main.dart';
+import '../../Database Services/database.dart';
+
 import '../../menu.dart';
 
 
@@ -28,15 +29,17 @@ class LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   bool passwordVisible = false;
   User? user;
+  DatabaseService service = DatabaseService();
 
   void clearInputs(){
     usernameController.clear();
     passwordController.clear();
   }
-  void validateAndSave() {
+  Future<void> validateAndSave() async {
     final FormState? form = _formKey.currentState;
     if (form!.validate()) {
-
+      await service.setUserID();
+      print(service.userID);
       clearInputs();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
       //print('All fields entered, please check corresponding details');

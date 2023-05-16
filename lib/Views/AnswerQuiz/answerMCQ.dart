@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../Database Services/database.dart';
@@ -125,9 +123,8 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
   bool isShuffled=false;
   ///loads the quiz questions and answers for use throughout page
   Future<void> getQuestionsAnswers(String x) async {
-
-    List<Map<String, dynamic>> questionsAnswersList = await  service.getMCQQuestionsAnswers(x);
     if (_questions.isEmpty) {
+      List<Map<String, dynamic>> questionsAnswersList = await  service.getMCQQuestionsAnswers(x);
       for (var i = 0; i < questionsAnswersList.length; i++) {
         _questions.add(questionsAnswersList[i]["Question"]);
         _correctAns.add(questionsAnswersList[i]["Answers"]);

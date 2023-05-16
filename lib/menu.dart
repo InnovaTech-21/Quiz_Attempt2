@@ -1,5 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
@@ -26,9 +25,10 @@ class MenuPageState extends State<MenuPage> {
 
   Future<String> getUsername() async {
     if(!flag) {
-      final user = await service.getUser();
+      print(service.userID);
+      String user =  service.userID;
       setState(() {
-        username = "Welcome ${user ?? ''}";
+        username = "Welcome $user";
       });
     }
     else{
@@ -76,7 +76,7 @@ class MenuPageState extends State<MenuPage> {
               SizedBox(height: 50),
               SizedBox(width: 150),
                 FutureBuilder<String>(
-                future: getUsername(), // Replace this with your function that retrieves the username
+                future: getUsername(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Text(

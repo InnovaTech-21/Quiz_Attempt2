@@ -1,13 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
 import 'package:quiz_website/menu.dart';
-
 import 'Database Services/database.dart';
-
 import 'Views/AnswerQuiz/answerImageBased.dart';
 
 
@@ -26,42 +23,110 @@ class _SelectPageState extends State<SelectPage> {
   ///List of correct answers
   final List <String> _QuizType=[];
   final List<String> _QuizDesc = []; // load in the questions
-
+  final List<String> _QuizPrereq=[];
+  late List<String> _QuizzesDone=[];
   ///List of correct answers
   final List <String> _NumberofQuestions=[];
   final List<String> _QuizCategory = []; // load in the questions
   final List<String> _Quiz_ID = [];
 
 
+  Future<void> getAllUniqueQuizIds(String userId) async {
+    final CollectionReference collectionRef = FirebaseFirestore.instance.collection('QuizResults');
+
+    try {
+      final QuerySnapshot querySnapshot = await collectionRef.where('UserID', isEqualTo: userId).get();
+      final List<String> quizIds = [];
+
+
+      for (final QueryDocumentSnapshot doc in querySnapshot.docs) {
+
+        final String? abc = doc["Quiz_ID"];
+
+        if (!quizIds.contains(abc)) {
+          quizIds.add(abc!);
+        }
+      }
+      setState(() {
+        _QuizzesDone=quizIds;
+      });
+
+
+    } catch (error) {
+      print('Error retrieving quiz IDs: $error');
+
+    }
+  }
+
+
   String x = 'All'; // Variable to store selected filter, set initial value to 'All'
   ///method to load completed quiz's from database
   Future<void> getQuizInformation(String x) async {
 
+      if(_QuizName.isEmpty) {
+        List<Map<String, dynamic>> questionsAnswersList = await service
+            .getQuizInformation(x);
 
-      List<Map<String, dynamic>> questionsAnswersList = await service.getQuizInformation(x);
 
-
-      for (var i = 0; i < questionsAnswersList.length; i++) {
-
-        _Quiz_ID.add(questionsAnswersList[i]["Quiz_ID"]);
-        _QuizTimed.add(questionsAnswersList[i]["QuizTimed"]);
-        _TimerTime.add(questionsAnswersList[i]["TimerTime"]);
-        _QuizName.add(questionsAnswersList[i]["QuizName"]);
-        _QuizDesc.add(questionsAnswersList[i]["Quiz_Description"]);
-        _QuizCategory.add(questionsAnswersList[i]["Quiz_Category"]);
-        _QuizType.add(questionsAnswersList[i]["Quiz_Type"]);
-        _NumberofQuestions.add(questionsAnswersList[i]["Number_of_questions"]);
-
+        for (var i = 0; i < questionsAnswersList.length; i++) {
+          _QuizPrereq.add(questionsAnswersList[i]["prerequisite_quizzes"]);
+          _Quiz_ID.add(questionsAnswersList[i]["Quiz_ID"]);
+          _QuizTimed.add(questionsAnswersList[i]["QuizTimed"]);
+          _TimerTime.add(questionsAnswersList[i]["TimerTime"]);
+          _QuizName.add(questionsAnswersList[i]["QuizName"]);
+          _QuizDesc.add(questionsAnswersList[i]["Quiz_Description"]);
+          _QuizCategory.add(questionsAnswersList[i]["Quiz_Category"]);
+          _QuizType.add(questionsAnswersList[i]["Quiz_Type"]);
+          _NumberofQuestions.add(
+              questionsAnswersList[i]["Number_of_questions"]);
+        }
       }
-     // _userAnswers=List.filled(questionsAnswersList.length, '');
+
+    }
+
+    void goToQuiz(List<String>quiz,int i){
+      if (_QuizType[i] ==
+          "Short-Answer") {
+        Navigator.push(
+          context,
+
+          MaterialPageRoute(
+              builder: (context) =>
+                  ShortQuizAnswer(
+                      quizID: quiz[i],
+                      bTimed: _QuizTimed[i],
+                      iTime: _TimerTime[i])),
+        );
+      }
+      if (_QuizType[i] ==
+          "Multiple Choice") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  mcqQuizAnswer(
+                      quizID: quiz[i],
+                      bTimed: _QuizTimed[i],
+                      iTime: _TimerTime[i])),
+        );
+      }
+      if (_QuizType[i] == "Image-Based") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  imageBasedAnswers(
+                      quizID: quiz[i],
+                      bTimed: _QuizTimed[i],
+                      iTime: _TimerTime[i])),
+        );
+      }
 
     }
 
 
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         backgroundColor: ColourPallete.backgroundColor,
       appBar: AppBar(
@@ -180,30 +245,61 @@ class _SelectPageState extends State<SelectPage> {
                                     child: SizedBox(
                                       width: 400,
                                       child: ElevatedButton(
-                                        onPressed: () {
-                                          ///goes to relevant answer quiz page
-                                          if (_QuizType[i] == "Short-Answer" ) {
-                                            print(_Quiz_ID[i]);
-                                            Navigator.push(
-                                              context,
+                                        onPressed: () async {
 
-                                              MaterialPageRoute(builder: (context) => ShortQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
-                                            );
-                                          }
-                                          if (_QuizType[i] == "Multiple Choice" ) {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => mcqQuizAnswer(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
-                                            );
-                                          }
-                                          if (_QuizType[i] == "Image-Based" ) {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => imageBasedAnswers(quizID: _Quiz_ID[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i] )),
-                                            );
+                                          await getAllUniqueQuizIds( service.userID);
+
+                                          if(_QuizPrereq[i]!='none'){
+
+                                            if(_QuizzesDone.isEmpty || !_QuizzesDone.contains(_QuizPrereq[i])) {
+                                              //get prereq quiz name
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (
+                                                      BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Prerequisite not done'),
+                                                      content: const Text(
+                                                          'This quiz requires you to have done' +
+                                                              'Quiz Name' +
+                                                              '. Would you like to do it now?'),
+                                                      actions: [
+                                                        TextButton(
+                                                          child: Text('No'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                context)
+                                                                .pop();
+                                                            return; // Close the dialog
+                                                          },
+                                                        ),
+                                                        TextButton(
+                                                          child: Text('Yes'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                context)
+                                                                .pop(); // Close the dialog
+                                                            // Navigate to a new page
+                                                            goToQuiz(_QuizPrereq,i);
+
+                                                          },
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }
+                                              );
+                                            }else{
+                                              goToQuiz(_Quiz_ID,i);
+                                            }
+
+                                          }else {
+                                            ///goes to relevant answer quiz page
+                                            goToQuiz(_Quiz_ID,i);
                                           }
                                           // Add your onPressed logic here
                                         },
+
 
                                         style: ElevatedButton.styleFrom(
                                           padding: const EdgeInsets.all(27), backgroundColor: ColourPallete.borderColor,
