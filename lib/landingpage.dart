@@ -19,6 +19,20 @@ class SelectaPage extends StatefulWidget {
 }
 
 class _SelectaPageState extends State<SelectaPage> {
+  
+void deletePendingQuizzes() async {
+  final collectionReference = FirebaseFirestore.instance.collection('Quizzes');
+
+  final querySnapshot = await collectionReference
+      .where('Status', isEqualTo: 'Pending')
+      .get();
+
+  for (final documentSnapshot in querySnapshot.docs) {
+    await documentSnapshot.reference.delete();
+  }
+
+  print('Pending quizzes deleted successfully');
+}
   DatabaseService service = DatabaseService();
   final List<String> _QuizName = [];
   final List<int> _TimerTime = [];
@@ -36,6 +50,15 @@ class _SelectaPageState extends State<SelectaPage> {
 
   String _selectedFilter = 'All'; // Variable to store selected filter, set initial value to 'All'
   ///method to load completed quiz's from database
+ Future<void> checkslength(){
+    int x =_Quiz_ID.length;
+     if (x>0){
+
+     }
+     else{
+
+     }
+  }
     Future<void> getQuizInformation(String x) async {
 
 
@@ -57,7 +80,7 @@ class _SelectaPageState extends State<SelectaPage> {
 
  void initState() {
     super.initState();
-    getQuizInformation("All");
+    getQuizInformation(_selectedFilter);
   }
 
 
@@ -159,6 +182,7 @@ class _SelectaPageState extends State<SelectaPage> {
                   ),
                   child: ElevatedButton(
                     onPressed: ()  {
+                      deletePendingQuizzes();
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -193,6 +217,7 @@ class _SelectaPageState extends State<SelectaPage> {
                   ),
                   child: ElevatedButton(
                     onPressed: ()  {
+                      
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) =>Signup() ),
@@ -222,6 +247,7 @@ class _SelectaPageState extends State<SelectaPage> {
             color: ColourPallete.backgroundColor,
             ///builds widget when quiz details are retrieved
             child: FutureBuilder(
+              future: getQuizInformation("All"),
                 builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -229,8 +255,6 @@ class _SelectaPageState extends State<SelectaPage> {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
-
-                 
                   return Column(
                     children: [
                       SizedBox(height: 50),
@@ -282,6 +306,8 @@ class _SelectaPageState extends State<SelectaPage> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
+                                        
+
                                           Center(
                                             child: Text(
                                               '${_QuizName[i].toUpperCase()}',

@@ -50,22 +50,40 @@ double averageScore = 0.0;
     print(service.getQuizStats());
     return service.getQuizStats();
   }
-int? getMaxScore() {
+double? getMaxScore() {
+  final quizStats = await getQuizStats();
 
-    //return getQuizStats()["max"];
+    final quizIds = quizStats.keys.toList();
+    for (final quizId in quizIds) {
+     final  max = quizStats[quizId]!['max'];
+
+    return max;
+    }
 }
 
 //method to get the lowest score for the quiz
-int? getMinScore() {
+double? getMinScore() {
     //minScore = _QuizScores.reduce(min);
-    return minScore;
+final quizStats = await getQuizStats();
+
+    final quizIds = quizStats.keys.toList();
+    for (final quizId in quizIds) {
+     final  min = quizStats[quizId]!['min'];
+
+    return min;
+    }
 }
 
 //method to gte the average score for the quiz
-double getAverageScore() {
-    double sum = _QuizScores.reduce((a, b) => a + b).toDouble();
-    averageScore = sum / _QuizScores.length;
-    return averageScore;
+double? getAverageScore() {
+  final quizStats = await getQuizStats();
+
+    final quizIds = quizStats.keys.toList();
+    for (final quizId in quizIds) {
+     final  average = quizStats[quizId]!['average'];
+
+    return average;
+    }
 }
 
 @override
