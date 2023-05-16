@@ -58,121 +58,109 @@ class LoginPageState extends State<LoginPage> {
           backgroundColor: ColourPallete.backgroundColor,
           title: Padding(
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-            child: Expanded(
-              flex: 3,
-              child: Row(
-                children: <Widget>[
-                  Image.asset(
-                    'assets/images/InnovaTechLogo.png',
-                    width: 110,
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    flex: 5,
-                    child: Text(
-                      "InnovaTech Quiz Platform",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 25,
-                      ),
+            child: Row(
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/InnovaTechLogo.png',
+                  width: 110,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  flex: 5,
+                  child: Text(
+                    "InnovaTech Quiz Platform",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 25,
                     ),
                   ),
-                  Spacer(),
-                  Expanded(
-                    flex: 5,
-                    child: Container(
-                      //color: ColourPallete.backgroundColor,
-                      width: 290,
-                      height: 45,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(22),
-                        border: Border.all(color: ColourPallete.gradient1, width: 2),
-                        color: ColourPallete.backgroundColor,
-                      ),
-                      child: Expanded(
-                        flex: 2,
-                        child: Row(
-                          children: [
-                            Icon(Icons.search, color: Colors.white),
-                            SizedBox(width: 12),
-                            Expanded(
-                              flex: 2,
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: ColourPallete.backgroundColor,
-                                  hintText: 'Search for a quiz/category',
-                                  hintStyle: TextStyle(color: Colors.white),
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Spacer(),
-
-
-                  Expanded(
-                    flex: 2,
-                    child: NavItem(
-                      key: ValueKey('home'),
-                      title: 'Home',
-                      tapEvent: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SelectaPage()),
-                        );
-                      },
-                    ),
-                  ),
-
-                  SizedBox(width: 10),
-
-                  DecoratedBox(
+                ),
+                Spacer(),
+                Expanded(
+                  flex: 5,
+                  child: Container(
+                    width: 290,
+                    height: 45,
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          ColourPallete.gradient2,
-                          ColourPallete.gradient1,
-
-                        ],
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                      ),
                       borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: ColourPallete.gradient1, width: 2),
+                      color: ColourPallete.backgroundColor,
                     ),
-                    child: Expanded(
-                      flex: 2,
-                      child: ElevatedButton(
-                        onPressed: ()  {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) =>Signup() ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(95,35), backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                        ),
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.white),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: ColourPallete.backgroundColor,
+                              hintText: 'Search for a quiz/category',
+                              hintStyle: TextStyle(color: Colors.white),
+                              border: InputBorder.none,
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                ),
+                Spacer(),
+                Expanded(
+                  flex: 2,
+                  child: NavItem(
+                    key: ValueKey('home'),
+                    title: 'Home',
+                    tapEvent: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SelectaPage()),
+                      );
+                    },
+                  ),
+                ),
+
+                SizedBox(width: 10),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        ColourPallete.gradient2,
+                        ColourPallete.gradient1,
+                      ],
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                    ),
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: ElevatedButton(
+
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Signup()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(95,35),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+
 
 
         body: Material(
