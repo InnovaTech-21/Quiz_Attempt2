@@ -4,11 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
+import 'package:quiz_website/Database%20Services/database.dart';
 
 import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/createMAQ.dart';
-import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
+
 
 class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({Key? key}) : super(key: key);
@@ -57,43 +58,25 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     }
   }
 
-  Future<String?> getUser() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = FirebaseAuth.instance.currentUser;
-    String? nameuser = '';
-    if (user != null) {
-      String uID = user.uid;
-      try {
-        CollectionReference users =
-            FirebaseFirestore.instance.collection('Users');
-        final snapshot = await users.doc(uID).get();
-        final data = snapshot.data() as Map<String, dynamic>;
-        // print (data['user_name']);
-        return data['user_name'];
-      } catch (e) {
-        return 'Error fetching user';
-      }
-    }
-  }
+
 
   Future<String> _getQuizID() async {
     // get number of questions from databse
+    DatabaseService service= DatabaseService();
     String quizID = "";
     final CollectionReference quizzesCollection =
         FirebaseFirestore.instance.collection('Quizzes');
 
-    String? username = await getUser();
-    if (username != null) {
-      QuerySnapshot questionsSnapshot = await quizzesCollection
-          .where('Username', isEqualTo: username)
-          .orderBy('Date_Created', descending: true)
-          .limit(1)
-          .get();
+    String? username = service.userID;
+    QuerySnapshot questionsSnapshot = await quizzesCollection
+        .where('Username', isEqualTo: username)
+        .orderBy('Date_Created', descending: true)
+        .limit(1)
+        .get();
 
-      if (questionsSnapshot.docs.isNotEmpty) {
-        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
-        quizID = mostRecentQuestion['Quiz_ID'].toString();
-      }
+    if (questionsSnapshot.docs.isNotEmpty) {
+      DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
+      quizID = mostRecentQuestion['Quiz_ID'].toString();
     }
 
     return quizID;
@@ -115,14 +98,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       print("User Does not exist");
     }
 
-    ///create a user with email and password
-    String? nameuser = await getUser();
-
-    String? str;
-
-    getUser().then((result) {
-      str = result;
-    });
+   DatabaseService service=DatabaseService();
 
     ///Create quizzes created successfully, now add data to Firestore
     CollectionReference users =
@@ -136,7 +112,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       'Quiz_Description': getQuizDescription(),
       'Quiz_Category': getQuizCategory(),
       'Number_of_questions': 0,
-      'Username': nameuser,
+      'Username': service.userID,
       "Date_Created": Timestamp.fromDate(DateTime.now()),
       "Quiz_ID": docRef.id.toString(),
     };
@@ -157,13 +133,9 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   }
 
   ///gets values from text boxes
-  Future<String?> getUsername() async {
-    return await getUser();
-  }
 
-  void setUsername(String username1) {
-    username = username1;
-  }
+
+
 
   String? getQuizType() {
     return quizType;
@@ -193,14 +165,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
           context,
           MaterialPageRoute(builder: (context) => ShortAnswerQuestionPage()),
         );
-      } else if (getQuizType() == 'Image-Based') {
-        Navigator.push(
-          context,
-
-          ///MaterialPageRoute(builder: (context) =>  imageBased(numQuest: 2)),
-          MaterialPageRoute(builder: (context) => imageBased()),
-        );
-      } else if (getQuizType() == 'Multiple Choice') {
+      }  else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => mCQ_Question_Page()),
@@ -402,7 +367,6 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                         value: quizType,
                         items: <String>[
                           'Multiple Choice',
-                          'Image-Based',
                           'Short-Answer',
                           'Multiple Answer Quiz'
                         ].map<DropdownMenuItem<String>>((String value) {

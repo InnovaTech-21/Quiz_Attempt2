@@ -142,10 +142,12 @@ class _publishPageState extends State<publishPage> {
    service.addNumberOfQuestions(quizID, numQuestions, isTimed, time,ID);
   }
 
-  Future<void> _publish(DatabaseService service) async {
-    String x = 'All';
-    await getQuizInformation(x,service);
+  Future<void> _publish() async {
     if (_formKey.currentState!.validate()) {
+      DatabaseService service = DatabaseService();
+      String x = 'All';
+      await getQuizInformation(x,service);
+
       if(isTimed) {
         List<String> timeList = timeLimitController.text.split(":");
         String hour = timeList[0];
@@ -297,8 +299,8 @@ class _publishPageState extends State<publishPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      DatabaseService service = DatabaseService();
-                      _publish(service);
+
+                      _publish();
                     },
                     child: Text("Publish quiz"),
                   ),
@@ -315,7 +317,7 @@ class _publishPageState extends State<publishPage> {
 
   String? validateTime(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Enter an time limit';
+      return 'Enter a time limit';
     } else if(!value.contains(':')) {
       return 'Time limit in incorrect format';
     }else {
