@@ -1,15 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import '../../Database Services/database.dart';
-import '../../main.dart';
-import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/landingpage.dart';
-import 'package:quiz_website/selectAQuiz.dart';
 import '../../menu.dart';
 import '../Login/login_view.dart';
-
 
 
 class Signup extends StatefulWidget {
@@ -73,7 +67,7 @@ class SignupState extends State<Signup> {
       service.addSignupToFirestore(emailController.text, passwordController.text,usernameController.text,nameController.text,getDate());
       clearInputs();
       showDialog1("Account created");
-
+      service.setUserID();
       ///go to welcome page
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
 
@@ -119,26 +113,63 @@ class SignupState extends State<Signup> {
                   width: 110,
                 ),
                 SizedBox(width: 10),
-                Text(
-                  "InnovaTech Quiz Platform",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 25,
+                Expanded(
+                  flex: 5,
+                  child: Text(
+                    "InnovaTech Quiz Platform",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 25,
+                    ),
                   ),
                 ),
                 Spacer(),
-                NavItem(
-                  key: ValueKey('home'),
-                  title: 'Home',
-                  tapEvent: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SelectaPage()),
-                    );
-                  },
+                Expanded(
+                  flex: 5,
+                  child: Container(
+                    width: 290,
+                    height: 45,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: ColourPallete.gradient1, width: 2),
+                      color: ColourPallete.backgroundColor,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.white),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: ColourPallete.backgroundColor,
+                              hintText: 'Search for a quiz/category',
+                              hintStyle: TextStyle(color: Colors.white),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                SizedBox(width: 11),
+                Spacer(),
+                Expanded(
+                  flex: 2,
+                  child: NavItem(
+                    key: ValueKey('home'),
+                    title: 'Home',
+                    tapEvent: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SelectaPage()),
+                      );
+                    },
+                  ),
+                ),
 
+                SizedBox(width: 10),
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
@@ -152,14 +183,15 @@ class SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(22),
                   ),
                   child: ElevatedButton(
-                    onPressed: ()  {
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => LoginPage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(80,35), backgroundColor: Colors.transparent,
+                      fixedSize: const Size(80, 35),
+                      backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                     ),
                     child: const Text(
@@ -176,6 +208,8 @@ class SignupState extends State<Signup> {
             ),
           ),
         ),
+
+
 
         body: Material(
             color: ColourPallete.backgroundColor,

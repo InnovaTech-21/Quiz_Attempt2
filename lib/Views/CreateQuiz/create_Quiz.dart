@@ -11,9 +11,6 @@ import 'package:quiz_website/Views/CreateQuiz/createMAQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
 
 import '../../Database Services/database.dart';
-import 'dart:typed_data';
-import 'package:http/http.dart' as http;
-import 'package:http/browser_client.dart' as http_browser;
 
 class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({Key? key}) : super(key: key);
@@ -24,7 +21,6 @@ class CreateQuizPage extends StatefulWidget {
 
 class CreateQuizPageState extends State<CreateQuizPage> {
   final _formKey = GlobalKey<FormState>();
-  DatabaseService service = DatabaseService();
 
   ///set text controllers
   final TextEditingController quizNameController = TextEditingController();
@@ -43,49 +39,28 @@ class CreateQuizPageState extends State<CreateQuizPage> {
 
   //selecting image
   Future selectFile() async {
-    final result = await FilePicker.platform
-        .pickFiles(type: FileType.image, allowMultiple: false);
-    String? abc = await service.getUser();
-    String? def = quizNameController.text;
+  final result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
+  String? abc = await _getQuizID();
 
-    if (result != null && result.files.isNotEmpty) {
-      final pickedFile = result.files.first;
-      final fileBytes = pickedFile.bytes;
-      final fileName = pickedFile.name;
+  if (result != null && result.files.isNotEmpty) {
+    final fileBytes = result.files.first.bytes;
+    final fileName = result.files.first.name;
 
-      // Upload file
-      final storageRef = FirebaseStorage.instance.ref('$abc/$def/$fileName');
-      final uploadTask = storageRef.putData(fileBytes!);
-      await uploadTask.whenComplete(() {});
+    // Upload file
+    final storageRef = FirebaseStorage.instance.ref('$abc/$fileName');
+    final uploadTask = storageRef.putData(fileBytes!);
+    await uploadTask.whenComplete(() {});
 
       // Retrieve download URL
       final downloadURL = await storageRef.getDownloadURL();
 
-      setState(() {
-        _imageUrl = downloadURL; // Assign the download URL to _imageUrl
-        loadImageFromUrl(_imageUrl!);
-        //print(_imageUrl);
-        pickedFile1 = pickedFile;
-      });
-    }
+    setState(() {
+      _imageUrl = downloadURL; // Assign the download URL to _imageUrl
+    });
+  }
   }
 
-  Future<void> loadImageFromUrl(String imageUrl) async {
-    final response = await _httpClient.get(Uri.parse(imageUrl));
-    if (response.statusCode == 200) {
-      setState(() {
-        _imageBytes = response.bodyBytes;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _httpClient.close(); // Close the HTTP client when no longer needed
-    super.dispose();
-  }
-
-  Future<String?> getUser() async {
+    Future<String?> getUser() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = FirebaseAuth.instance.currentUser;
     String? nameuser = '';
@@ -104,15 +79,47 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     }
   }
 
+
+    Future<String> _getQuizID() async {
+    // get number of questions from databse
+    String quizID = "";
+    final CollectionReference quizzesCollection =
+        FirebaseFirestore.instance.collection('Quizzes');
+
+    String? username = await getUser();
+    if (username != null) {
+      QuerySnapshot questionsSnapshot = await quizzesCollection
+          .where('Username', isEqualTo: username)
+          .orderBy('Date_Created', descending: true)
+          .limit(1)
+          .get();
+
+      if (questionsSnapshot.docs.isNotEmpty) {
+        DocumentSnapshot mostRecentQuestion = questionsSnapshot.docs.first;
+        quizID = mostRecentQuestion['Quiz_ID'].toString();
+      }
+    }
+
+    return quizID; 
+  }
+
+
   ///add data of quiz to be made to database
   void addDataToFirestore(String getQuizName, getQuizType, getQuizDescription,
       getQuizCategory) async {
-    service.addDataToCreateaQuizFirestore(getQuizName, getQuizType,
-        getQuizDescription, getQuizCategory, _imageUrl!);
+    service.addDataToCreateaQuizFirestore(
+        getQuizName, getQuizType, getQuizDescription, getQuizCategory);
     // clearInputs();
   }
 
   ///gets values from text boxes
+  Future<String?> getUsername() async {
+    return await getUser();
+  }
+
+  void setUsername(String username1) {
+    username = username1;
+  }
 
   String? getQuizType() {
     return quizType;
@@ -122,17 +129,22 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     return quizCategory;
   }
 
+  String getQuizName() {
+    return quizNameController.text;
+  }
+
+  String getQuizDescription() {
+    return quizDescriptionController.text;
+  }
+
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       ///write to database
-      service.addDataToCreateaQuizFirestore(
-          quizNameController.text,
-          getQuizType(),
-          quizDescriptionController.text,
-          getQuizCategory(),
-          _imageUrl!);
+      service.addDataToCreateaQuizFirestore(quizNameController.text,
+          getQuizType(), quizDescriptionController.text, getQuizCategory());
 
       ///go to welcome page
+
       if (getQuizType() == 'Short-Answer') {
         Navigator.push(
           context,
@@ -141,7 +153,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       } else if (getQuizType() == 'Image-Based') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => imageBased()),
+          MaterialPageRoute(builder: (context) =>  imageBased()),
         );
       } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(

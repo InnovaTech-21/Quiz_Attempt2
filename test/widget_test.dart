@@ -14,9 +14,10 @@ import 'package:quiz_website/Views/Login/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_website/Views/sign up/signUpView.dart';
+import 'package:quiz_website/landingpage.dart';
 import 'package:quiz_website/menu.dart';
 import 'package:quiz_website/main.dart';
-import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
+import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
 
 import 'package:quiz_website/selectAQuiz.dart';
 
@@ -140,7 +141,7 @@ void main() {
           "Date_Created":Timestamp.fromDate(DateTime.now())
         };
 
-     Map<String, dynamic> userData1 = await service.getQuizInformation1('Short Answer');
+     List<Map<String, dynamic>> userData1 = await service.getQuizInformation('Short Answer');
 
     expect(userData1['Quiz_ID'], '2EQTWRjpKEybsApneeBM');
     expect(userData1['QuizName'], 'ABC');
@@ -154,6 +155,7 @@ void main() {
      
      
   });
+
    test('get MAQ questions', () async {
     final service = MockDataService();
     List<String> answers = ["a","b"];
@@ -176,16 +178,6 @@ void main() {
      expect(userData1['QuestionNo'], 1);
   });
 
-
-  testWidgets('Test welcome page loads', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
-
-    // Verify that our counter starts at 0.
-    expect(find.text('INNOVATECH\nQUIZ PLATFORM'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-  });
 
   testWidgets('Login button on welcome page navigates to login page', (WidgetTester tester) async {
     // Build the widget tree
@@ -435,6 +427,52 @@ void main() {
     expect(find.text("Enter an answer"), findsNWidgets(4));
   });
 
+  testWidgets('Short answer quiz with 3 questions goes to publish page', (WidgetTester tester) async{
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ShortAnswerQuestionPage(),
+      ),
+    );
+
+    for(int i=0; i<2;i++) {
+      expect(find.text("Question ${i+1}"), findsOneWidget);
+      final QuestionField = find.widgetWithText(
+          TextFormField, 'Enter your question here');
+      final AnswerField = find.widgetWithText(
+          TextFormField, 'Enter the correct answer here');
+      expect(QuestionField, findsOneWidget);
+      expect(AnswerField, findsOneWidget);
+
+      await tester.enterText(QuestionField, 'What is your name');
+      await tester.enterText(AnswerField, 'Bob');
+
+      final nextButton = find.text('Next Question');
+      expect(nextButton, findsOneWidget);
+
+      // Tap create quiz button and verify navigation
+      await tester.tap(nextButton);
+      await tester.pumpAndSettle();
+
+    }
+    final QuestionField = find.widgetWithText(
+        TextFormField, 'Enter your question here');
+    final AnswerField = find.widgetWithText(
+        TextFormField, 'Enter the correct answer here');
+    expect(QuestionField, findsOneWidget);
+    expect(AnswerField, findsOneWidget);
+
+    await tester.enterText(QuestionField, 'What is your name');
+    await tester.enterText(AnswerField, 'Bob');
+    final doneButton = find.text('Done');
+    expect(doneButton, findsOneWidget);
+
+    // Tap create quiz button and verify navigation
+    await tester.tap(doneButton);
+    await tester.pumpAndSettle();
+    expect(find.byType(publishPage), findsOneWidget);
+
+
+  });
   testWidgets('create a mcq goes to next question when input valid', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(

@@ -84,9 +84,9 @@ void deletePendingQuizzes() async {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         backgroundColor: ColourPallete.backgroundColor,
         appBar: AppBar(
@@ -101,73 +101,76 @@ void deletePendingQuizzes() async {
                   width: 110,
                 ),
                 SizedBox(width: 10),
-                Text(
-                  "InnovaTech Quiz Platform",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 25,
+                Expanded(
+                  flex: 5,
+                  child: Text(
+                    "InnovaTech Quiz Platform",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 25,
+                    ),
                   ),
                 ),
                 Spacer(),
-                Container(
-                  //color: ColourPallete.backgroundColor,
-                  width: 290,
-                  height: 45,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: ColourPallete.gradient1, width: 2),
-                    color: ColourPallete.backgroundColor,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.search, color: Colors.white),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: ColourPallete.backgroundColor,
-                            hintText: 'Search for a quiz/category',
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: InputBorder.none,
+                Expanded(
+                  flex: 5,
+                  child: Container(
+                    width: 290,
+                    height: 45,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: ColourPallete.gradient1, width: 2),
+                      color: ColourPallete.backgroundColor,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.white),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: ColourPallete.backgroundColor,
+                              hintText: 'Search for a quiz/category',
+                              hintStyle: TextStyle(color: Colors.white),
+                              border: InputBorder.none,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 Spacer(),
-                NavItem(
-                  key: ValueKey('home'),
-                  title: 'Home',
-                  tapEvent: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SelectaPage()),
-                    );
-                  },
+                Expanded(
+                  flex: 2,
+                  child: NavItem(
+                    key: ValueKey('home'),
+                    title: 'Home',
+                    tapEvent: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SelectaPage()),
+                      );
+                    },
+                  ),
                 ),
-                NavItem(
-                  key: ValueKey('Create a Quiz'),
-                  title: 'Create a Quiz',
-                  tapEvent: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CreateQuizPage()),
-                    );
-                  },
+                SizedBox(width: 3),
+                Expanded(
+                  flex: 3,
+                  child: NavItem(
+                    key: ValueKey('Create a Quiz'),
+                    title: 'Create a Quiz',
+                    tapEvent: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CreateQuizPage()),
+                      );
+                    },
+                  ),
                 ),
-                //NavItem(
-                  //key: ValueKey('Answer a Quiz'),
-                  //title: 'Answer a Quiz',
-                  //tapEvent: () {},
-                //),
-                // NavItem(
-                // key: ValueKey('contactus'),
-                //title: 'Contact Us',
-                //tapEvent: () {},
-                //),
+                SizedBox(width: 10),
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
@@ -182,14 +185,14 @@ void deletePendingQuizzes() async {
                   ),
                   child: ElevatedButton(
                     onPressed: ()  {
-                      deletePendingQuizzes();
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => LoginPage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(80,35), backgroundColor: Colors.transparent,
+                      fixedSize: const Size(80, 35),
+                      backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                     ),
                     child: const Text(
@@ -201,14 +204,13 @@ void deletePendingQuizzes() async {
                     ),
                   ),
                 ),
-                SizedBox(width: 11),
+                SizedBox(width: 25),
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [
                         ColourPallete.gradient2,
                         ColourPallete.gradient1,
-
                       ],
                       begin: Alignment.bottomLeft,
                       end: Alignment.topRight,
@@ -217,14 +219,14 @@ void deletePendingQuizzes() async {
                   ),
                   child: ElevatedButton(
                     onPressed: ()  {
-                      
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) =>Signup() ),
+                        MaterialPageRoute(builder: (context) => Signup()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(95,35), backgroundColor: Colors.transparent,
+                      fixedSize: const Size(95,35),
+                      backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                     ),
                     child: const Text(
@@ -247,13 +249,44 @@ void deletePendingQuizzes() async {
             color: ColourPallete.backgroundColor,
             ///builds widget when quiz details are retrieved
             child: FutureBuilder(
-              future: getQuizInformation("All"),
+                future: getQuizInformation("Anime"),
                 builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+
+                  // Filter quiz data based on selected category
+                  List<String> filteredQuiz_ID = [];
+                  List<String> filteredQuizName = [];
+                  List<String> filteredQuizDesc = [];
+                  List<String> filteredQuizCategory = [];
+                  List<String> filteredQuizType = [];
+                  List<String> filteredNumberofQuestions = [];
+
+                  if (_selectedFilter == 'All') {
+                    // Show all quizzes
+                    filteredQuiz_ID = List.from(_Quiz_ID);
+                    filteredQuizName = List.from(_QuizName);
+                    filteredQuizDesc = List.from(_QuizDesc);
+                    filteredQuizCategory = List.from(_QuizCategory);
+                    filteredQuizType = List.from(_QuizType);
+                    filteredNumberofQuestions = List.from(_NumberofQuestions);
+                  } else {
+                    // Show quizzes with selected category
+                    for (int i = 0; i < _QuizCategory.length; i++) {
+                      if (_QuizCategory[i] == _selectedFilter) {
+                        filteredQuiz_ID.add(_Quiz_ID[i]);
+
+                        filteredQuizName.add(_QuizName[i]);
+                        filteredQuizDesc.add(_QuizDesc[i]);
+                        filteredQuizCategory.add(_QuizCategory[i]);
+                        filteredQuizType.add(_QuizType[i]);
+                        filteredNumberofQuestions.add(_NumberofQuestions[i]);
+                      }
+                    }
                   }
                   return Column(
                     children: [
@@ -271,7 +304,7 @@ void deletePendingQuizzes() async {
                   height: 350,
                   width: 580,
                   child: CarouselSlider.builder(
-                  itemCount: _QuizName.length,
+                  itemCount: filteredQuizName.length,
                   itemBuilder: (BuildContext context, int i, int realIndex) {
                           return Card(
                             elevation: 2,
@@ -306,8 +339,6 @@ void deletePendingQuizzes() async {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                        
-
                                           Center(
                                             child: Text(
                                               '${_QuizName[i].toUpperCase()}',
@@ -430,7 +461,6 @@ void deletePendingQuizzes() async {
 
   }
 }
-
 class NavItem extends StatelessWidget {
   const NavItem({
     required Key key,
