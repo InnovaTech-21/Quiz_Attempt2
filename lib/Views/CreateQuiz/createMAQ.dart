@@ -62,10 +62,10 @@ class _CreateMAQState extends State<CreateMAQ> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
+                const Center(
                     child: Text(
                   'Create Your Multiple Answer Quiz',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
@@ -193,8 +193,8 @@ class _CreateMAQState extends State<CreateMAQ> {
                             decoration: BoxDecoration(
                                 color: Color.fromARGB(255, 40, 148, 248),
                                 borderRadius: BorderRadius.circular(5)),
-                            child: Text("Add More Potential Answers",
-                                style: const TextStyle(color: Colors.white)),
+                            child: const Text("Add Another Potential Answer",
+                                style: TextStyle(color: Colors.white)),
                           ),
                         ),
                       ),
@@ -228,7 +228,7 @@ class _CreateMAQState extends State<CreateMAQ> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5)),
                           ),
-                          child: Text('Submit',
+                          child: const Text('Done',
                               style: TextStyle(color: Colors.white)),
                         ),
                       ),

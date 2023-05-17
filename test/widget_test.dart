@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mockito/mockito.dart';
 import 'package:quiz_website/Database%20Services/Mock_Database.dart';
+import 'package:quiz_website/Views/CreateQuiz/createMAQ.dart';
 import 'package:quiz_website/Views/Login/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -450,6 +451,51 @@ void main() {
 
     });
 
+    testWidgets('create a maq requires input of question, answer and number of expected answers', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: CreateMAQ(),
+        ),
+      );
+      final doneButton = find.text('Done');
+      expect(doneButton, findsOneWidget);
+      await tester.tap(doneButton);
+      await tester.pumpAndSettle();
+      expect(find.text("Enter a question"), findsOneWidget);
+      expect(find.text("Enter an answer"), findsOneWidget);
+      expect(find.text("Enter the number of expected answers"), findsOneWidget);
+
+
+    });
+
+    testWidgets('create a maq goes to publish page if valid', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: CreateMAQ(),
+        ),
+      );
+
+      final doneButton = find.text('Done');
+      expect(doneButton, findsOneWidget);
+      final QuestionField = find.widgetWithText(
+          TextFormField, 'Enter your question here');
+      final AnswerField = find.widgetWithText(
+          TextFormField, 'Enter correct possible answer here');
+      final numField = find.widgetWithText(
+          TextFormField, 'Number of answers expected');
+      expect(QuestionField, findsOneWidget);
+      expect(AnswerField, findsOneWidget);
+      expect(numField, findsOneWidget);
+
+      await tester.enterText(QuestionField, 'What is your name');
+      await tester.enterText(AnswerField, 'Bob');
+      await tester.enterText(numField, '1');
+
+      await tester.tap(doneButton);
+      await tester.pumpAndSettle();
+      expect(find.byType(publishPage), findsOneWidget);
+
+    });
 
   testWidgets('create a mcq requires input of both question and 4 answers', (WidgetTester tester) async {
     await tester.pumpWidget(

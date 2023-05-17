@@ -118,7 +118,7 @@ class _SelectaPageState extends State<SelectaPage> {
                   width: 110,
                 ),
                 SizedBox(width: 10),
-                Expanded(
+                const Expanded(
                   flex: 5,
                   child: Text(
                     "InnovaTech Quiz Platform",
@@ -128,7 +128,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     ),
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 Expanded(
                   flex: 5,
                   child: Container(
@@ -142,11 +142,11 @@ class _SelectaPageState extends State<SelectaPage> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.search, color: Colors.white),
-                        SizedBox(width: 12),
+                        const Icon(Icons.search, color: Colors.white),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: TextFormField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               filled: true,
                               fillColor: ColourPallete.backgroundColor,
                               hintText: 'Search for a quiz/category',
@@ -187,7 +187,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     },
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
@@ -273,16 +273,16 @@ class _SelectaPageState extends State<SelectaPage> {
     return Center(child: Text('Error: ${snapshot.error}'));
     }
     return ListView(
-    padding: EdgeInsets.all(16.0),
-    children: [
-    SizedBox(height: 50),
-    Text(
-    'Trending Quizzes',
-    style: TextStyle(
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-    ),
-    ),
+      padding: EdgeInsets.all(16.0),
+        children: [
+        SizedBox(height: 50),
+          Text(
+            'Trending Quizzes',
+            style: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            ),
+          ),
     SizedBox(height: 50),
     Container(
     height: MediaQuery.of(context).size.height * 0.5, // Adjust the value as needed
@@ -313,7 +313,7 @@ class _SelectaPageState extends State<SelectaPage> {
     height: 300,
     ),
     ),
-    SizedBox(height: 20),
+    const SizedBox(height: 20),
     Expanded(
     flex: 3,
     child: Padding(
@@ -335,9 +335,9 @@ class _SelectaPageState extends State<SelectaPage> {
     Expanded(
     child: Row(
     children: [
-    Text(
-    'CATEGORY:',
-    style: TextStyle(fontSize: 18),
+    const Text(
+      'CATEGORY:',
+     style: TextStyle(fontSize: 18),
     ),
     Spacer(),
     Text(
