@@ -21,8 +21,8 @@ class _publishPageState extends State<publishPage> {
   final List<String> _QuizDetails = [];
   final List<String> _QuizName = [];
   final List<String> _QuizID = [];
-  String x = 'All';
-  DatabaseService service = DatabaseService();
+
+
   bool isTimed = false;
   bool hasPrerequisites = false;
   int timeLimit = 0;
@@ -60,7 +60,7 @@ class _publishPageState extends State<publishPage> {
     );
   }
 
-  Future<void> getQuizInformation(String x) async {
+  Future<void> getQuizInformation(String x,DatabaseService service) async {
     List<Map<String, dynamic>> questionsAnswersList = await service.getQuizInformation(x);
     for (var i = 0; i < questionsAnswersList.length; i++) {
       _QuizDetails.add("Quiz Name: "+questionsAnswersList[i]["QuizName"]);
@@ -138,12 +138,13 @@ class _publishPageState extends State<publishPage> {
   }
 
 
-  void addExtraDetails(String quizID, int numQuestions,bool isTimed,int time, String ID) async {
+  void addExtraDetails(String quizID, int numQuestions,bool isTimed,int time, String ID,DatabaseService service) async {
    service.addNumberOfQuestions(quizID, numQuestions, isTimed, time,ID);
   }
 
-  Future<void> _publish() async {
-
+  Future<void> _publish(DatabaseService service) async {
+    String x = 'All';
+    await getQuizInformation(x,service);
     if (_formKey.currentState!.validate()) {
       if(isTimed) {
         List<String> timeList = timeLimitController.text.split(":");
@@ -161,7 +162,7 @@ class _publishPageState extends State<publishPage> {
         }
       }
       addExtraDetails(
-          quizID, widget.questions.length, isTimed, timeLimit,ID);
+          quizID, widget.questions.length, isTimed, timeLimit,ID,service);
 
       /// write to database
       for (int i = 0; i < widget.questions.length; i++) {
@@ -179,7 +180,7 @@ class _publishPageState extends State<publishPage> {
 
   @override
   Widget build(BuildContext context) {
-    getQuizInformation(x);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Quiz review"),
@@ -256,7 +257,9 @@ class _publishPageState extends State<publishPage> {
             CheckboxListTile(
               title: Text("Quiz has prerequisites"),
               value: hasPrerequisites,
-              onChanged: (newValue) {
+              onChanged: (newValue) async {
+                DatabaseService service = DatabaseService();
+                await getQuizInformation("All",service);
                 setState(() {
                   hasPrerequisites = newValue!;
                 });
@@ -294,7 +297,8 @@ class _publishPageState extends State<publishPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      _publish();
+                      DatabaseService service = DatabaseService();
+                      _publish(service);
                     },
                     child: Text("Publish quiz"),
                   ),
