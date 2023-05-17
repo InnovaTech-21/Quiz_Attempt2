@@ -6,7 +6,8 @@ import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
 import 'package:quiz_website/menu.dart';
 import 'Database Services/database.dart';
-import 'Views/AnswerQuiz/answerImageBased.dart';
+
+
 
 class SelectPage extends StatefulWidget {
   const SelectPage({Key? key}) : super(key: key);
@@ -124,14 +125,7 @@ class _SelectPageState extends State<SelectPage> {
                 quizID: quiz[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i])),
       );
     }
-    if (_QuizType[i] == "Image-Based") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => imageBasedAnswers(
-                quizID: quiz[i], bTimed: _QuizTimed[i], iTime: _TimerTime[i])),
-      );
-    }
+
     if (_QuizType[i] == "Multiple Answer Quiz") {
       Navigator.push(
         context,

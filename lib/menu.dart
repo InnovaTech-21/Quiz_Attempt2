@@ -1,11 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/create_Quiz.dart';
 import 'package:quiz_website/selectAQuiz.dart';
-
 import 'package:quiz_website/Views/quizStats/quiz_stats.dart';
-
 import '../../main.dart';
 import 'Database Services/database.dart';
 
@@ -25,7 +22,6 @@ class MenuPageState extends State<MenuPage> {
 
   Future<String> getUsername() async {
     if(!flag) {
-      print(service.userID);
       String user =  service.userID;
       setState(() {
         username = "Welcome $user";
