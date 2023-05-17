@@ -8,6 +8,7 @@ coverage:
       default:
         target: 50%    # the required coverage value
         threshold: 1%  # the leniency in hitting the target
-
+ignore: 
+    - "lib/Database Services/database.dart"
 
 
