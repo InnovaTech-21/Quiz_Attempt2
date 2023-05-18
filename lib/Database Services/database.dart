@@ -237,7 +237,7 @@ class DatabaseService {
 
   ///add data to create a quiz
   Future<void> addDataToCreateaQuizFirestore(String getQuizName, getQuizType,
-      getQuizDescription, getQuizCategory) async {
+      getQuizDescription, getQuizCategory, String imageURL) async {
     User? user = FirebaseAuth.instance.currentUser;
     print(getQuizType);
 
@@ -256,6 +256,7 @@ class DatabaseService {
       'Username': userID,
       "Date_Created": Timestamp.fromDate(DateTime.now()),
       "Quiz_ID": docRef.id.toString(),
+      "Quiz_URL": imageURL, 
     };
 
     await users.doc(docRef.id).set(userData);

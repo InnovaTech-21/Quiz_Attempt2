@@ -158,19 +158,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Future<void> resetPassword() async {
     try {
       await service.resetPassword(_emailController.text);
-      _showSuccessDialog(context, "Password reset email sent!");
+      _showDialog(context, "Password reset email sent!");
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> LoginPage()));
     } on FirebaseAuthException catch (e) {
-      _showErrorDialog(context, e.message.toString());
+      _showDialog(context, e.message.toString());
     }
   }
 
-  void _showSuccessDialog(BuildContext context, String message) {
+  void _showDialog(BuildContext context, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Success"),
+          title: Text("Alert"),
           content: Text(message),
           actions: [
             TextButton(
@@ -183,21 +183,5 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Error"),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 }

@@ -13,7 +13,7 @@ abstract class DatabaseService {
   Future<List<Map<String, dynamic>>> getMAQQuestionsAnswers(
       String x, List<String> _questions);
   Future<void> addDataToCreateaQuizFirestore(
-      String getQuizName, getQuizType, getQuizDescription, getQuizCategory);
+      String getQuizName, getQuizType, getQuizDescription, getQuizCategory, String imageURL);
   Future<void> addNumberOfQuestions(
       String quizID, int numQuestions, bool isTimed, int time);
   Future<String> _getQuizID();
