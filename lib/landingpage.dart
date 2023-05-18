@@ -38,7 +38,7 @@ class _SelectaPageState extends State<SelectaPage> {
   ///method to load completed quiz's from database
   Future<void> getQuizInformation(String x) async {
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Quizzes');
+    FirebaseFirestore.instance.collection('Quizzes');
     x = _selectedFilter;
     String y = 'Finished';
     QuerySnapshot questionsSnapshot;
@@ -135,7 +135,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(22),
                       border:
-                          Border.all(color: ColourPallete.gradient1, width: 2),
+                      Border.all(color: ColourPallete.gradient1, width: 2),
                       color: ColourPallete.backgroundColor,
                     ),
                     child: Row(
@@ -295,7 +295,7 @@ class _SelectaPageState extends State<SelectaPage> {
                               borderRadius: BorderRadius.circular(12),
                               side: BorderSide(
                                 color:
-                                    ColourPallete.borderColor.withOpacity(0.5),
+                                ColourPallete.borderColor.withOpacity(0.5),
                                 width: 3,
                               ),
                             ),
@@ -322,9 +322,9 @@ class _SelectaPageState extends State<SelectaPage> {
                                           horizontal: 20),
                                       child: Column(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Center(
                                             child: Text(
@@ -342,13 +342,13 @@ class _SelectaPageState extends State<SelectaPage> {
                                                 const Text(
                                                   'CATEGORY:',
                                                   style:
-                                                      TextStyle(fontSize: 18),
+                                                  TextStyle(fontSize: 18),
                                                 ),
                                                 Spacer(),
                                                 Text(
                                                   '${_QuizCategory[i]}',
                                                   style:
-                                                      TextStyle(fontSize: 18),
+                                                  TextStyle(fontSize: 18),
                                                 ),
                                               ],
                                             ),
@@ -360,13 +360,13 @@ class _SelectaPageState extends State<SelectaPage> {
                                                 Text(
                                                   'TYPE:',
                                                   style:
-                                                      TextStyle(fontSize: 18),
+                                                  TextStyle(fontSize: 18),
                                                 ),
                                                 Spacer(),
                                                 Text(
                                                   '${_QuizType[i]}',
                                                   style:
-                                                      TextStyle(fontSize: 18),
+                                                  TextStyle(fontSize: 18),
                                                 ),
                                               ],
                                             ),
@@ -378,7 +378,7 @@ class _SelectaPageState extends State<SelectaPage> {
                                                 Text(
                                                   '${_NumberofQuestions[i]} Questions',
                                                   style:
-                                                      TextStyle(fontSize: 18),
+                                                  TextStyle(fontSize: 18),
                                                 ),
                                                 Spacer(),
                                               ],
@@ -395,10 +395,10 @@ class _SelectaPageState extends State<SelectaPage> {
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           ShortQuizAnswer(
-                                                        quizID: _Quiz_ID[i],
-                                                        bTimed: _QuizTimed[i],
-                                                        iTime: _TimerTime[i],
-                                                      ),
+                                                            quizID: _Quiz_ID[i],
+                                                            bTimed: _QuizTimed[i],
+                                                            iTime: _TimerTime[i],
+                                                          ),
                                                     ),
                                                   );
                                                 }
@@ -409,25 +409,25 @@ class _SelectaPageState extends State<SelectaPage> {
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           mcqQuizAnswer(
-                                                        quizID: _Quiz_ID[i],
-                                                        bTimed: _QuizTimed[i],
-                                                        iTime: _TimerTime[i],
-                                                      ),
+                                                            quizID: _Quiz_ID[i],
+                                                            bTimed: _QuizTimed[i],
+                                                            iTime: _TimerTime[i],
+                                                          ),
                                                     ),
                                                   );
                                                 }
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 padding:
-                                                    const EdgeInsets.all(15),
+                                                const EdgeInsets.all(15),
                                                 backgroundColor: ColourPallete
                                                     .backgroundColor,
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(21),
+                                                  BorderRadius.circular(21),
                                                   side: BorderSide(
                                                     color:
-                                                        ColourPallete.gradient2,
+                                                    ColourPallete.gradient2,
                                                     width: 2,
                                                   ),
                                                 ),

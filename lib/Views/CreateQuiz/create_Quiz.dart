@@ -25,7 +25,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   ///set text controllers
   final TextEditingController quizNameController = TextEditingController();
   final TextEditingController quizDescriptionController =
-      TextEditingController();
+  TextEditingController();
 
   final TextEditingController usernameController = TextEditingController();
   String? username;
@@ -52,7 +52,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
 
       // Upload file
       final storageRef =
-          storage.FirebaseStorage.instance.ref('$abc/$def/$fileName');
+      storage.FirebaseStorage.instance.ref('$abc/$def/$fileName');
       final uploadTask = storageRef.putData(fileBytes!);
       await uploadTask.whenComplete(() {});
 
@@ -73,7 +73,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       String uID = user.uid;
       try {
         CollectionReference users =
-            FirebaseFirestore.instance.collection('Users');
+        FirebaseFirestore.instance.collection('Users');
         final snapshot = await users.doc(uID).get();
         final data = snapshot.data() as Map<String, dynamic>;
         // print (data['user_name']);
@@ -85,24 +85,24 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   }
 
   void showImageSelectedDialog() {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        //title: Text('Image'),
-        content: Text('Image Selected.'),
-        actions: <Widget>[
-          TextButton(
-            child: Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          //title: Text('Image'),
+          content: Text('Image Selected.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 
   ///add data of quiz to be made to database
@@ -139,7 +139,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
           context,
           MaterialPageRoute(builder: (context) => ShortAnswerQuestionPage()),
         );
-        } else if (getQuizType() == 'Multiple Choice') {
+      } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => mCQ_Question_Page()),
@@ -172,375 +172,375 @@ class CreateQuizPageState extends State<CreateQuizPage> {
             color: ColourPallete.backgroundColor,
             child: SingleChildScrollView(
                 child: Form(
-              key: _formKey,
-              child: Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 50),
-                      SizedBox(width: 150),
-                      Text(
-                        'Create a Quiz',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 50,
-                        ),
-                      ),
-                      const SizedBox(height: 50),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: SizedBox(
-                          width: 600,
-
-                          ///sets up text boxes
-                          ///quiz name box
-                          child: TextFormField(
-                            controller: quizNameController,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.all(27),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.borderColor,
-                                  width: 3,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.gradient2,
-                                  width: 3,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              hintText: 'Enter Quiz Name',
+                  key: _formKey,
+                  child: Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(height: 50),
+                          SizedBox(width: 150),
+                          Text(
+                            'Create a Quiz',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 50,
                             ),
-                            validator: validateName,
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: SizedBox(
-                          width: 600,
+                          const SizedBox(height: 50),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: SizedBox(
+                              width: 600,
 
-                          ///quiz description box
-                          child: TextFormField(
-                            controller: quizDescriptionController,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.all(27),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.borderColor,
-                                  width: 3,
+                              ///sets up text boxes
+                              ///quiz name box
+                              child: TextFormField(
+                                controller: quizNameController,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.all(27),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.borderColor,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.gradient2,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  hintText: 'Enter Quiz Name',
                                 ),
-                                borderRadius: BorderRadius.circular(10),
+                                validator: validateName,
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.gradient2,
-                                  width: 3,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              hintText: 'Enter Quiz Description',
                             ),
-                            validator: validateDescription,
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: SizedBox(
-                          width: 600,
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: SizedBox(
+                              width: 600,
 
-                          /// sets up dropdown box for quiz category
-                          child: DropdownButtonFormField<String>(
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.all(27),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.borderColor,
-                                  width: 3,
+                              ///quiz description box
+                              child: TextFormField(
+                                controller: quizDescriptionController,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.all(27),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.borderColor,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.gradient2,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  hintText: 'Enter Quiz Description',
                                 ),
-                                borderRadius: BorderRadius.circular(10),
+                                validator: validateDescription,
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.gradient2,
-                                  width: 3,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              hintText:
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: SizedBox(
+                              width: 600,
+
+                              /// sets up dropdown box for quiz category
+                              child: DropdownButtonFormField<String>(
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.all(27),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.borderColor,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.gradient2,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  hintText:
                                   'Select Quiz Category', // updated hint text for combo box
-                            ),
-                            value: quizCategory,
-                            items: <String>[
-                              'Movies',
-                              'Sports',
-                              'Celeb',
-                              'Music',
-                              'Books',
-                              'TV Shows',
-                              'Word Games',
-                              'General Knowledge',
-                              'Food',
-                              'Kdrama',
-                              'Anime',
-                              'Kpop'
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(fontSize: 17),
                                 ),
-                              );
-                            }).toList(), // replace with items for the combo box
-                            onChanged: (value) {
-                              setState(() {
-                                quizCategory = value;
-                              });
-                              ;
-                            },
-                            validator: (value) {
-                              if (value == null) {
-                                return "Select Quiz Category";
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: SizedBox(
-                          width: 600,
-
-                          /// sets up dropdown box for quiz type
-                          child: DropdownButtonFormField<String>(
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.all(27),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.borderColor,
-                                  width: 3,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: ColourPallete.gradient2,
-                                  width: 3,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              hintText:
-                                  'Select Quiz Type', // updated hint text for combo box
-                            ),
-
-                            ///choices
-                            value: quizType,
-                            items: <String>[
-                              'Multiple Choice',
-                              'Short-Answer',
-                              'Multiple Answer Quiz'
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: const TextStyle(fontSize: 17),
-                                ),
-                              );
-                            }).toList(), // replace with items for the combo box
-                            onChanged: (value) {
-                              // handle onChanged event for combo box
-                              setState(() {
-                                quizType = value;
-                              });
-                              ;
-                            },
-                            validator: (value) {
-                              if (value == null) {
-                                return "Select Quiz Type";
-                              }
-                              return null;
-                            }, // replace with default value for the combo box
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      Text(
-                        'Select image for quiz:',
-                        style: const TextStyle(
-                          //fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showImageSelectedDialog();
-                                      selectedImagePath =
-                                          'assets/images/InnovaTechLogo.png';
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/InnovaTechLogo.png',
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showImageSelectedDialog();
-                                      selectedImagePath =
-                                          'assets/images/logoin.jpg';
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/logoin.png',
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showImageSelectedDialog();
-                                      selectedImagePath =
-                                          'assets/images/InnovaTechLogo.png';
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/InnovaTechLogo.png',
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showImageSelectedDialog();
-                                      selectedImagePath =
-                                          'assets/images/logoin.png';
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/logoin.png',
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showImageSelectedDialog();
-                                      selectedImagePath =
-                                          'assets/images/logoin.png';
-
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/logoin.png',
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showImageSelectedDialog();
-                                      selectedImagePath =
-                                          'assets/images/InnovaTechLogo.png';
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/InnovaTechLogo.png',
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showImageSelectedDialog();
-                                      selectedImagePath =
-                                          'assets/images/logoin.png';
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/logoin.png',
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showImageSelectedDialog();
-                                      selectedImagePath =
-                                          'assets/images/InnovaTechLogo.png';
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/InnovaTechLogo.png',
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    ColourPallete.gradient1,
-                                    ColourPallete.gradient2,
-                                  ],
-                                  begin: Alignment.bottomLeft,
-                                  end: Alignment.topRight,
-                                ),
-                                borderRadius: BorderRadius.circular(7),
-                              ),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  _submit();
+                                value: quizCategory,
+                                items: <String>[
+                                  'Movies',
+                                  'Sports',
+                                  'Celeb',
+                                  'Music',
+                                  'Books',
+                                  'TV Shows',
+                                  'Word Games',
+                                  'General Knowledge',
+                                  'Food',
+                                  'Kdrama',
+                                  'Anime',
+                                  'Kpop'
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                      style: TextStyle(fontSize: 17),
+                                    ),
+                                  );
+                                }).toList(), // replace with items for the combo box
+                                onChanged: (value) {
+                                  setState(() {
+                                    quizCategory = value;
+                                  });
+                                  ;
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  fixedSize: const Size(395, 55),
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                ),
-                                child: const Text(
-                                  'Next',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 19,
-                                  ),
-                                ),
+                                validator: (value) {
+                                  if (value == null) {
+                                    return "Select Quiz Category";
+                                  }
+                                  return null;
+                                },
                               ),
                             ),
-                          ]),
-                    ]),
-              ),
-            ))));
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: SizedBox(
+                              width: 600,
+
+                              /// sets up dropdown box for quiz type
+                              child: DropdownButtonFormField<String>(
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.all(27),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.borderColor,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: ColourPallete.gradient2,
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  hintText:
+                                  'Select Quiz Type', // updated hint text for combo box
+                                ),
+
+                                ///choices
+                                value: quizType,
+                                items: <String>[
+                                  'Multiple Choice',
+                                  'Short-Answer',
+                                  'Multiple Answer Quiz'
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                      style: const TextStyle(fontSize: 17),
+                                    ),
+                                  );
+                                }).toList(), // replace with items for the combo box
+                                onChanged: (value) {
+                                  // handle onChanged event for combo box
+                                  setState(() {
+                                    quizType = value;
+                                  });
+                                  ;
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return "Select Quiz Type";
+                                  }
+                                  return null;
+                                }, // replace with default value for the combo box
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          Text(
+                            'Select image for quiz:',
+                            style: const TextStyle(
+                              //fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showImageSelectedDialog();
+                                          selectedImagePath =
+                                          'assets/images/InnovaTechLogo.png';
+                                        });
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/InnovaTechLogo.png',
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showImageSelectedDialog();
+                                          selectedImagePath =
+                                          'assets/images/logoin.jpg';
+                                        });
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/logoin.png',
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showImageSelectedDialog();
+                                          selectedImagePath =
+                                          'assets/images/6fc2a718258c73a88c371b1de8d9c1f6.jpg';
+                                        });
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/6fc2a718258c73a88c371b1de8d9c1f6.jpg',
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showImageSelectedDialog();
+                                          selectedImagePath =
+                                          'assets/images/images.jpeg';
+                                        });
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/images.jpeg',
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showImageSelectedDialog();
+                                          selectedImagePath =
+                                          'assets/images/103205-fairy-tail-background-1920x1080-samsung.jpg';
+
+                                        });
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/103205-fairy-tail-background-1920x1080-samsung.jpg',
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showImageSelectedDialog();
+                                          selectedImagePath =
+                                          'assets/images/971601.jpg';
+                                        });
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/971601.jpg',
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showImageSelectedDialog();
+                                          selectedImagePath =
+                                          'assets/images/wp6477079-minimal-star-wars-wallpapers.jpg';
+                                        });
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/wp6477079-minimal-star-wars-wallpapers.jpg',
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showImageSelectedDialog();
+                                          selectedImagePath =
+                                          'assets/images/Mc5aAdn.jpg';
+                                        });
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/Mc5aAdn.jpg',
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        ColourPallete.gradient1,
+                                        ColourPallete.gradient2,
+                                      ],
+                                      begin: Alignment.bottomLeft,
+                                      end: Alignment.topRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      _submit();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      fixedSize: const Size(395, 55),
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                    ),
+                                    child: const Text(
+                                      'Next',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 19,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                        ]),
+                  ),
+                ))));
   }
 
   ///validators for input

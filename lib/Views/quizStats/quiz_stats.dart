@@ -13,34 +13,34 @@ class QuizStatsPage extends StatefulWidget {
 
 class QuizStatsPageState extends State<QuizStatsPage> {
 
-final List<String> _QuizName = [];
-final List<int> _QuizScores = [];
-final List<String> _Username = [];
+  final List<String> _QuizName = [];
+  final List<int> _QuizScores = [];
+  final List<String> _Username = [];
 
-int? maxScore;
-int? minScore;
-double averageScore = 0.0;
+  int? maxScore;
+  int? minScore;
+  double averageScore = 0.0;
 
 //method to get the highest score for the quiz
-int? getMaxScore() {
+  int? getMaxScore() {
     maxScore = _QuizScores.reduce(max);
     return maxScore;
-}
+  }
 
 //method to get the lowest score for the quiz
-int? getMinScore() {
+  int? getMinScore() {
     minScore = _QuizScores.reduce(min);
     return minScore;
-}
+  }
 
 //method to gte the average score for the quiz
-double getAverageScore() {
+  double getAverageScore() {
     double sum = _QuizScores.reduce((a, b) => a + b).toDouble();
     averageScore = sum / _QuizScores.length;
     return averageScore;
-}
+  }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -52,9 +52,9 @@ double getAverageScore() {
         ),
         title: Text('Quiz Stats'),
       ),
-       body: Column(
+      body: Column(
         children: [
-          Card( 
+          Card(
             child: Container(
               padding: EdgeInsets.all(16.0),
               child: Column(
@@ -71,6 +71,6 @@ double getAverageScore() {
           ),
         ],
       ),
-    ); 
+    );
   }
 }
