@@ -52,12 +52,13 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
     }
   }
 
-  void convertLists(){
-    quests=[];
-    answers=[];
-    for(int i=0;i<questions.length;i++){
+  void convertLists() {
+    quests = [];
+    answers = [];
+    for (int i = 0; i < questions.length; i++) {
       quests.add(questions[i].question);
-      answers.add(questions[i].answer+'^'+questions[i].randoption1+'^'+questions[i].randoption2+'^'+questions[i].randoption3);
+      answers.add(questions[i].answer + '^' + questions[i].randoption1 + '^' +
+          questions[i].randoption2 + '^' + questions[i].randoption3);
     }
   }
 
@@ -67,52 +68,48 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
       //IF MORE QUESTIONS ARE STILL TO COME
 
 
-        //IF ON A QUESTION ALREADY ADDED TO THE LIST (BACKTRACKED)
-        if (currentQuestionIndex < questions.length) {
-          int index = currentQuestionIndex;
+      //IF ON A QUESTION ALREADY ADDED TO THE LIST (BACKTRACKED)
+      if (currentQuestionIndex < questions.length) {
+        int index = currentQuestionIndex;
 
-          if (index < questions.length) {
-            //LOADS IN QUESTION AND ANSWER FROM LIST
-            loadExisting(index);
-          }
+        if (index < questions.length) {
+          //LOADS IN QUESTION AND ANSWER FROM LIST
+          loadExisting(index);
         }
+      }
 
-        //IF WE'RE ON A QUESTION THAT HAS NOT YET BEEN ADDED TO THE LIST
-        else {
-          questions.add(Question(
-            question: questionControllers[currentQuestionIndex].text,
-            answer: correctanswerControllers[currentQuestionIndex].text,
-            randoption1: randomAnswerControllers1[currentQuestionIndex].text,
-            randoption2: randomAnswerControllers2[currentQuestionIndex].text,
-            randoption3: randomAnswerControllers3[currentQuestionIndex].text,
-          ));
+      //IF WE'RE ON A QUESTION THAT HAS NOT YET BEEN ADDED TO THE LIST
+      else {
+        questions.add(Question(
+          question: questionControllers[currentQuestionIndex].text,
+          answer: correctanswerControllers[currentQuestionIndex].text,
+          randoption1: randomAnswerControllers1[currentQuestionIndex].text,
+          randoption2: randomAnswerControllers2[currentQuestionIndex].text,
+          randoption3: randomAnswerControllers3[currentQuestionIndex].text,
+        ));
 
-          //CLEARS DETAILS IN ORGER TO ENTER NEXT QUESTION
-          questionControllers[currentQuestionIndex].clear();
-          correctanswerControllers[currentQuestionIndex].clear();
-          randomAnswerControllers1[currentQuestionIndex].clear();
-          randomAnswerControllers2[currentQuestionIndex].clear();
-          randomAnswerControllers3[currentQuestionIndex].clear();
-        }
+        //CLEARS DETAILS IN ORGER TO ENTER NEXT QUESTION
+        questionControllers[currentQuestionIndex].clear();
+        correctanswerControllers[currentQuestionIndex].clear();
+        randomAnswerControllers1[currentQuestionIndex].clear();
+        randomAnswerControllers2[currentQuestionIndex].clear();
+        randomAnswerControllers3[currentQuestionIndex].clear();
+      }
 
-        //INCREMENTS CURRENT QUESTION INDEX THEN LOADS NEXT QUESTION
-        setState(() {
-          currentQuestionIndex++;
-        });
-
-
-
+      //INCREMENTS CURRENT QUESTION INDEX THEN LOADS NEXT QUESTION
+      setState(() {
+        currentQuestionIndex++;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
-      questionControllers.add(TextEditingController());
-      correctanswerControllers.add(TextEditingController());
-      randomAnswerControllers1.add(TextEditingController());
-      randomAnswerControllers2.add(TextEditingController());
-      randomAnswerControllers3.add(TextEditingController());
+    questionControllers.add(TextEditingController());
+    correctanswerControllers.add(TextEditingController());
+    randomAnswerControllers1.add(TextEditingController());
+    randomAnswerControllers2.add(TextEditingController());
+    randomAnswerControllers3.add(TextEditingController());
 
     return Scaffold(
       appBar: AppBar(
@@ -229,6 +226,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+
                     ///previous question button only appears when not on first question
                     if (currentQuestionIndex > 0)
                       SizedBox(
@@ -264,7 +262,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              if(currentQuestionIndex+1>questions.length) {
+                              if (currentQuestionIndex + 1 > questions.length) {
                                 questions.add(Question(
                                   question: questionControllers[currentQuestionIndex]
                                       .text,
@@ -277,25 +275,35 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
                                   randoption3: randomAnswerControllers3[currentQuestionIndex]
                                       .text,
                                 ));
-                                questionControllers[currentQuestionIndex].addListener(() {
+                                questionControllers[currentQuestionIndex]
+                                    .addListener(() {
                                   questions[currentQuestionIndex].question =
-                                      questionControllers[currentQuestionIndex].text;
+                                      questionControllers[currentQuestionIndex]
+                                          .text;
                                 });
-                                correctanswerControllers[currentQuestionIndex].addListener(() {
+                                correctanswerControllers[currentQuestionIndex]
+                                    .addListener(() {
                                   questions[currentQuestionIndex].answer =
-                                      correctanswerControllers[currentQuestionIndex].text;
+                                      correctanswerControllers[currentQuestionIndex]
+                                          .text;
                                 });
-                                randomAnswerControllers1[currentQuestionIndex].addListener(() {
+                                randomAnswerControllers1[currentQuestionIndex]
+                                    .addListener(() {
                                   questions[currentQuestionIndex].randoption1 =
-                                      randomAnswerControllers1[currentQuestionIndex].text;
+                                      randomAnswerControllers1[currentQuestionIndex]
+                                          .text;
                                 });
-                                randomAnswerControllers2[currentQuestionIndex].addListener(() {
+                                randomAnswerControllers2[currentQuestionIndex]
+                                    .addListener(() {
                                   questions[currentQuestionIndex].randoption2 =
-                                      randomAnswerControllers2[currentQuestionIndex].text;
+                                      randomAnswerControllers2[currentQuestionIndex]
+                                          .text;
                                 });
-                                randomAnswerControllers3[currentQuestionIndex].addListener(() {
+                                randomAnswerControllers3[currentQuestionIndex]
+                                    .addListener(() {
                                   questions[currentQuestionIndex].randoption3 =
-                                      randomAnswerControllers3[currentQuestionIndex].text;
+                                      randomAnswerControllers3[currentQuestionIndex]
+                                          .text;
                                 });
                               }
                               convertLists();
@@ -304,7 +312,7 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         publishPage(questions: quests,
-                                          answers: answers,quizType: 2,)
+                                          answers: answers, quizType: 2,)
                                 ),
                               );
                             }
@@ -339,25 +347,6 @@ class _MCQ_Question_Page extends State<mCQ_Question_Page> {
     }
   }
 
-  Future<void> _showDialog(String message) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Message'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
 
 ///QUESTION CLASS

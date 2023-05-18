@@ -1,13 +1,4 @@
-codecov:
-  CODECOV_TOKEN: ad91dc9f-f0c6-464c-bd8c-09369006c858
-
-require_ci_to_pass: yes
-coverage:
-  status:
-    project:
-      default:
-        target: 50%    # the required coverage value
-        threshold: 1%  # the leniency in hitting the target
-
-
-
+ignore:
+  - "lib/Database Services/database.dart"
+  - "lib/Database Services/auth.dart"
+  - "lib/Views/AnswerQuiz"

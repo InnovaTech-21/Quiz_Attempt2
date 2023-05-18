@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-import 'package:quiz_website/Database%20Services/database.dart';
 import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
-import 'package:quiz_website/menu.dart';
 
 class CreateMAQ extends StatefulWidget {
   const CreateMAQ({super.key});
@@ -16,30 +14,11 @@ class _CreateMAQState extends State<CreateMAQ> {
 
   List<TextEditingController> listController = [TextEditingController()];
   final TextEditingController questionController = TextEditingController();
-  final TextEditingController NumberExpectedController =
-      TextEditingController();
+  final TextEditingController NumberExpectedController =TextEditingController();
 
-  DatabaseService service = DatabaseService();
+  //DatabaseService service = DatabaseService();
 
-  Future<void> _showDialog(String message) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Message'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   ///validation checks
   String? validateQuestion(String? value) {
@@ -83,10 +62,10 @@ class _CreateMAQState extends State<CreateMAQ> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
+                const Center(
                     child: Text(
                   'Create Your Multiple Answer Quiz',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
@@ -214,8 +193,8 @@ class _CreateMAQState extends State<CreateMAQ> {
                             decoration: BoxDecoration(
                                 color: Color.fromARGB(255, 40, 148, 248),
                                 borderRadius: BorderRadius.circular(5)),
-                            child: Text("Add More Potential Answers",
-                                style: const TextStyle(color: Colors.white)),
+                            child: const Text("Add Another Potential Answer",
+                                style: TextStyle(color: Colors.white)),
                           ),
                         ),
                       ),
@@ -231,28 +210,25 @@ class _CreateMAQState extends State<CreateMAQ> {
                               for (int i = 0; i < listController.length; i++) {
                                 answers.add(listController[i].text);
                               }
-                              service.addMAQAnswers(
-                                  answers,
-                                  questionController.text,
-                                  int.parse(NumberExpectedController.text));
+                              List<String> questions = [];
+                              questions.add(questionController.text);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => publishPage(
+                                          questions: questions,
+                                          answers: answers,
+                                          quizType: 3,
+                                        )),
+                              );
                             }
-                            service.updateQuizzesStattus();
-                            _showDialog("Quiz Created");
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MenuPage(testFlag: false,)),
-                            );
-                            //print(questionController);
-                            //print(listController);
-                            //print(listController.length);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 40, 148, 248),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5)),
                           ),
-                          child: Text('Submit',
+                          child: const Text('Done',
                               style: TextStyle(color: Colors.white)),
                         ),
                       ),

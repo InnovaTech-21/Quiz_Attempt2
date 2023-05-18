@@ -9,7 +9,6 @@ import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/createMAQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
-
 import '../../Database Services/database.dart';
 //import 'package:http/browser_client.dart' as http_browser;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
@@ -142,12 +141,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
           context,
           MaterialPageRoute(builder: (context) => ShortAnswerQuestionPage()),
         );
-      } else if (getQuizType() == 'Image-Based') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => imageBased()),
-        );
-      } else if (getQuizType() == 'Multiple Choice') {
+        } else if (getQuizType() == 'Multiple Choice') {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => mCQ_Question_Page()),
@@ -352,7 +346,6 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                             value: quizType,
                             items: <String>[
                               'Multiple Choice',
-                              'Image-Based',
                               'Short-Answer',
                               'Multiple Answer Quiz'
                             ].map<DropdownMenuItem<String>>((String value) {
