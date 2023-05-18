@@ -10,7 +10,7 @@ abstract class DatabaseService{
   Future<List<Map<String, dynamic>>> getShortQuestionsAnswers(String x,
       List<String> _questions, bool isShuffled);
   Future<void> addDataToCreateaQuizFirestore(String getQuizName, getQuizType,
-      getQuizDescription, getQuizCategory);
+      getQuizDescription, getQuizCategory, String imageURL);
   Future<void> addNumberOfQuestions(String quizID, int numQuestions,bool isTimed,int time);
   Future<String> _getQuizID();
   Future<void> addImagesToFirestore(String question, Image1url, image2url, image3url,

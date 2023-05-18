@@ -457,7 +457,7 @@ class _imageBasedState extends State<imageBased> {
                             ),
                             child: ElevatedButton(
                               onPressed: () {
-                                //addDataToFirestore(currentQuestionIndex);
+                                addDataToFirestore(currentQuestionIndex);
                                 //service.updateQuizzesStattus();
                                 //service.addNumberOfQuestions(await service.getQuizID(), widget.questions.length, isTimed, timeLimit)
                                 //updateQuizzesStattus();
