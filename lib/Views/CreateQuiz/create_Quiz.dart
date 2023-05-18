@@ -4,11 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_website/ColourPallete.dart';
-
 import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/createMAQ.dart';
-import 'package:quiz_website/Views/CreateQuiz/imageBased.dart';
 import '../../Database Services/database.dart';
 //import 'package:http/browser_client.dart' as http_browser;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
