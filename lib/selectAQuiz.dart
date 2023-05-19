@@ -70,9 +70,9 @@ class _SelectPageState extends State<SelectPage> {
           quizIds.add(abc!);
         }
       }
-      setState(() {
-        _QuizzesDone = quizIds;
-      });
+      for (int i = 0; i < quizIds.length; i++) {
+        _QuizzesDone.add(quizIds[i]);
+      }
     } catch (error) {
       print('Error retrieving quiz IDs: $error');
     }
@@ -96,6 +96,7 @@ class _SelectPageState extends State<SelectPage> {
         _NumberofQuestions.add(questionsAnswersList[i]['Number_of_questions']);
       }
     }
+    getAllUniqueQuizIds(service.userID);
   }
 
   void goToQuiz(List<String> quiz, int i) {
@@ -203,7 +204,7 @@ class _SelectPageState extends State<SelectPage> {
                       builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
                         if (snapshot.hasData) {
                           return Text(
-                            snapshot.data! + ' complete ' + _QuizzesDone.length.toString() + ' Unique Quizzes',
+                            snapshot.data! + ' completed ' + _QuizzesDone.length.toString() + ' Unique Quizzes',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 25,
@@ -279,7 +280,7 @@ class _SelectPageState extends State<SelectPage> {
                                   width: 400,
                                   child: ElevatedButton(
                                     onPressed: () async {
-                                      await getAllUniqueQuizIds(service.userID);
+
 
                                       if (_QuizPrereq[i] != 'none') {
                                         if (_QuizzesDone.isEmpty ||

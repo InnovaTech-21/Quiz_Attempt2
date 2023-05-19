@@ -20,22 +20,26 @@ class QuizStatsPageState extends State<QuizStatsPage> {
   final List<int> _QuizScores = [];
   final List<int> _QuizTotal = [];
   final List<String> _DateCompleted = [];
-
   final List<String> _Username = [];
   int? maxScore;
   int? minScore;
   double averageScore = 0.0;
-
   DatabaseService service = DatabaseService();
 
+
+  @override
+  void initState() {
+    super.initState();
+    getAllUniqueQuizIds();
+  }
+
   Future<void> getAllUniqueQuizIds() async {
-    if (_QuizID.isEmpty){
+    if (_QuizID.isEmpty) {
       final CollectionReference collectionRef =
       FirebaseFirestore.instance.collection('QuizResults');
-
+      final List<String> quizIds = [];
       try {
         final QuerySnapshot querySnapshot = await collectionRef.get();
-        final List<String> quizIds = [];
 
         for (int i = 0; i < querySnapshot.docs.length; i++) {
           DocumentSnapshot quizDoc = querySnapshot.docs[i];
@@ -48,26 +52,26 @@ class QuizStatsPageState extends State<QuizStatsPage> {
             quizIds.add(abc!);
           }
         }
-        setState(() {
-          _QuizID = quizIds;
-        });
       } catch (error) {
         print('Error retrieving quiz IDs: $error');
       }
 
-      for (int i = 0; i < _QuizID.length; i++) {
-        _QuizName.add(service.getQuizName(_QuizID[i]) as String);    }
-      print(_QuizName);
+
+
+        for (int i = 0; i < quizIds.length; i++) {
+          _QuizID.add(quizIds[i]);
+          _QuizName.add(await service.getQuizName(quizIds[i]));
+        }
+        print(_QuizName);
+
     }
   }
 
-
-
-  Future<int> getMinScore(String QuizID) async {
+  int getMinScore(String QuizID) {
     int min = _QuizScores[0];
 
     for (int i = 0; i < _QuizScores.length; i++) {
-      if(QuizID == _QuizID){
+      if (QuizID == _QuizID) {
         int temp = _QuizScores[i];
         if (temp < min) {
           min = temp;
@@ -78,12 +82,11 @@ class QuizStatsPageState extends State<QuizStatsPage> {
     return min;
   }
 
-  // Method to get the lowest score for the quiz
-  Future<int> getMaxScore(String QuizID) async {
+  int getMaxScore(String QuizID) {
     int max = _QuizScores[0];
 
     for (int i = 0; i < _QuizScores.length; i++) {
-      if(QuizID == _QuizID){
+      if (QuizID == _QuizID) {
         int temp = _QuizScores[i];
         if (temp > max) {
           max = temp;
@@ -94,21 +97,20 @@ class QuizStatsPageState extends State<QuizStatsPage> {
     return max;
   }
 
-  // Method to get the average score for the quiz
-  Future<double> getAverageScore(String QuizID) async {
+  double getAverageScore(String QuizID) {
     int sum = 0;
     int sumtotal = 0;
     int count = 0;
 
     for (int i = 0; i < _QuizScores.length; i++) {
-      if(QuizID == _QuizID){
+      if (QuizID == _QuizID) {
         sum = sum + _QuizScores[i];
         count = count + 1;
         sumtotal = sumtotal + _QuizTotal[i];
       }
     }
 
-    double avg = sum / count ;
+    double avg = sum / count;
     return avg;
   }
 
@@ -124,62 +126,45 @@ class QuizStatsPageState extends State<QuizStatsPage> {
         ),
         title: Text('Quiz Stats'),
       ),
-      body: Column(
-        children: [
-          Card(
-            child: FutureBuilder<void>(
-              future: getAllUniqueQuizIds(),
-              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  return Container(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        FutureBuilder<double>(
-                          future: getAverageScore('AEv1oxC0KYhZJPICWvDT'),
-                          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
-                            if (snapshot.hasData) {
-                              return Text('Average Score: ${snapshot.data!.toStringAsFixed(2)}');
-                            } else {
-                              return Text('Average Score: N/A');
-                            }
-                          },
+      body: SingleChildScrollView(
+        child: FutureBuilder<void>(
+          future: getAllUniqueQuizIds(),
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              return Column(
+                children: [
+                  for (int i = 0; i < _QuizName.length; i++)
+                    Card(
+                      child: Container(
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_QuizName[i]),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Average Score: ${getAverageScore(
+                                    _QuizID[i])}'),
+                                const SizedBox(height: 16),
+                                Text('Max Score: ${getMaxScore(_QuizID[i])}'),
+                                const SizedBox(height: 16),
+                                Text('Min Score: ${getMinScore(_QuizID[i])}'),
+                              ],
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        FutureBuilder<int>(
-                          future: getMaxScore('AEv1oxC0KYhZJPICWvDT'),
-                          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                            if (snapshot.hasData) {
-                              return Text('Max Score: ${snapshot.data}');
-                            } else {
-                              return Text('Max Score: N/A');
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        FutureBuilder<int>(
-                          future: getMinScore('AEv1oxC0KYhZJPICWvDT'),
-                          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                            if (snapshot.hasData) {
-                              return Text('Min Score: ${snapshot.data}');
-                            } else {
-                              return Text('Min Score: N/A');
-                            }
-                          },
-                        ),
-                      ],
+                      ),
                     ),
-                  );
-                }
-              },
-            ),
-          ),
-        ],
+                ],
+              );
+            }
+          },
+        ),
       ),
     );
   }
