@@ -69,8 +69,16 @@ class MockFirebaseAuthFunctions {
 }
 
 
+
 void main() {
-    test('Get categories', () async {
+  test('Get QuizName', () async {
+    final service = MockDataService();
+    final String? testCategories = await service.getQuizName1("97bpFHEbhuVYzi85avKcMUA92MB3");
+
+    expect(testCategories, "abc");
+  });
+
+  test('Get categories', () async {
     final service = MockDataService();
     final String? testCategories = await service.getUser();
 

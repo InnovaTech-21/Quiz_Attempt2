@@ -193,38 +193,28 @@ class MockDataService extends Mock implements DatabaseService {
 
     // _userAnswers=List.filled(questionsAnswersList.length, '');
   }
-    Future<Map<String, dynamic>> addMAQAnswers(List<String> answers, String question, int expected) async {
-    final firestore = FakeFirebaseFirestore();
-    CollectionReference users =
-        firestore.collection('Questions');
-    DocumentReference docRef = users.doc();
-    String docID = docRef.id;
-    Map<String, dynamic> userData = {
-      'Answers': answers,
-      'QuizID': await getQuizID(),
-      'Question': question,
-      'Number Expected': expected,
-      'Question_type': 'Multiple Answer Quiz',
-      'QuestionNo': 1,
-    };
-    await users.doc('63Y4rSy2GGRUBHrqTtVkgnyyG8o2').set(userData);
-    QuerySnapshot questionsSnapshot;
-    questionsSnapshot = await users.get();
-  DocumentSnapshot docSnapshot = await firestore
-        .collection('Quizzes')
-        .doc('63Y4rSy2GGRUBHrqTtVkgnyyG8o2')
-        .get();
-    Map<String, dynamic> userData1 = {
-      'Answers': docSnapshot['Answers'],
-      'QuizID': docSnapshot['QuizID'],
-      'Question': docSnapshot['Question'],
-      'Number Expected': docSnapshot['Number Expected'],
-      'Question_type': docSnapshot['Question_type'],
-      'QuestionNo': docSnapshot['QuestionNo'],
-    };
-    return userData1;
+   @override
+   Future<String?> getQuizName1(String quizId) async {
+     final firestore = FakeFirebaseFirestore();
+     late String? QuizName = "abc";
+     late String? testCategories = "";
+     await firestore
+         .collection('Quizzes')
+         .doc('97bpFHEbhuVYzi85avKcMUA92MB3')
+         .set({
+       'QuizName': "abc",
+     });
+     // Get doc from Category collection
+     DocumentSnapshot docSnapshot = await firestore
+         .collection('Quizzes')
+         .doc('97bpFHEbhuVYzi85avKcMUA92MB3')
+         .get();
 
-  }
+     // Get data from doc and return as array
+     testCategories = docSnapshot['QuizName'];
+
+     return QuizName;
+   }
 
 
  
