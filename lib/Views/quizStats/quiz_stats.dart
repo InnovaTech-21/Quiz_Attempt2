@@ -50,6 +50,7 @@ class QuizStatsPageState extends State<QuizStatsPage> {
           // _DateCompleted.add(querySnapshot.docs[i]["Date_Created"].toString());
           if (!quizIds.contains(abc)) {
             quizIds.add(abc!);
+            print(abc);
           }
         }
       } catch (error) {
@@ -58,20 +59,24 @@ class QuizStatsPageState extends State<QuizStatsPage> {
 
 
 
-        for (int i = 0; i < quizIds.length; i++) {
-          _QuizID.add(quizIds[i]);
-          _QuizName.add(await service.getQuizName(quizIds[i]));
-        }
-        print(_QuizName);
+      for (int i = 0; i < quizIds.length; i++) {
+        _QuizID.add(quizIds[i]);
+        _QuizName.add(await service.getQuizName(quizIds[i]));
+      }
+
 
     }
+    print(_QuizID);
+    print(_QuizIDDATA);
+    print(_QuizName);
+    print(_QuizTotal);
   }
 
   int getMinScore(String QuizID) {
     int min = _QuizScores[0];
 
-    for (int i = 0; i < _QuizScores.length; i++) {
-      if (QuizID == _QuizID) {
+    for (int i = 0; i < _QuizIDDATA.length; i++) {
+      if (QuizID == _QuizIDDATA[i]) {
         int temp = _QuizScores[i];
         if (temp < min) {
           min = temp;
@@ -85,8 +90,8 @@ class QuizStatsPageState extends State<QuizStatsPage> {
   int getMaxScore(String QuizID) {
     int max = _QuizScores[0];
 
-    for (int i = 0; i < _QuizScores.length; i++) {
-      if (QuizID == _QuizID) {
+    for (int i = 0; i < _QuizIDDATA.length; i++) {
+      if (QuizID == _QuizIDDATA[i]) {
         int temp = _QuizScores[i];
         if (temp > max) {
           max = temp;
@@ -102,8 +107,8 @@ class QuizStatsPageState extends State<QuizStatsPage> {
     int sumtotal = 0;
     int count = 0;
 
-    for (int i = 0; i < _QuizScores.length; i++) {
-      if (QuizID == _QuizID) {
+    for (int i = 0; i < _QuizIDDATA.length; i++) {
+      if (QuizID == _QuizIDDATA[i]) {
         sum = sum + _QuizScores[i];
         count = count + 1;
         sumtotal = sumtotal + _QuizTotal[i];
@@ -137,7 +142,7 @@ class QuizStatsPageState extends State<QuizStatsPage> {
             } else {
               return Column(
                 children: [
-                  for (int i = 0; i < _QuizName.length; i++)
+                  for (int i = 0; i < _QuizName.length; i = i+2)
                     Card(
                       child: Container(
                         padding: EdgeInsets.all(16.0),

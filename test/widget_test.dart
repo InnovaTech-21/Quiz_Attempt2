@@ -164,30 +164,30 @@ void main() {
      
      
   });
- //   test('get MAQ questions', () async {
- //    final service = MockDataService();
- //    List<String> answers = ["a","b"];
- //      Map<String, dynamic> userData = {
- //      'Answers': answers,
- //      'QuizID': '123',
- //      'Question': 'question',
- //      'Number Expected':1,
- //      'Question_type': 'Multiple Answer Quiz',
- //      'QuestionNo': 1,
- //    };
- //     Map<String, dynamic> userData1 = await service.addMAQAnswers(answers, ' question', 1);
- //
- //    expect(userData1['Answers'], answers);
- //    expect(userData1['QuizID'], '123');
- //    expect(userData1['Question'], 'question');
- // //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
- //    expect(userData1['Number Expected'], 1);
- //     expect(userData1['Question_type'], "Multiple Answer Quiz");
- //     expect(userData1['QuestionNo'], 1);
- //
- //
- //
- //  });
+    test('get MAQ questions', () async {
+     final service = MockDataService();
+     List<String> answers = ["a","b"];
+       Map<String, dynamic> userData = {
+       'Answers': answers,
+       'QuizID': '123',
+       'Question': 'question',
+       'Number Expected':1,
+       'Question_type': 'Multiple Answer Quiz',
+       'QuestionNo': 1,
+     };
+      Map<String, dynamic> userData1 = await service.addMAQAnswers(answers, ' question', 1);
+
+     expect(userData1['Answers'], answers);
+    expect(userData1['QuizID'], '123');
+     expect(userData1['Question'], 'question');
+    expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
+    expect(userData1['Number Expected'], 1);
+      expect(userData1['Question_type'], "Multiple Answer Quiz");
+    expect(userData1['QuestionNo'], 1);
+
+
+
+   });
 
 
   // testWidgets('Test welcome page loads', (WidgetTester tester) async {
