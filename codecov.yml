@@ -2,3 +2,4 @@ ignore:
   - "lib/Database Services/database.dart"
   - "lib/Database Services/auth.dart"
   - "lib/Views/AnswerQuiz"
+  - "lib/Views/quizStats"
