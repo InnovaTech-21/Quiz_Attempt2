@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../../../../menu.dart';
 import '../../Database Services/database.dart';
@@ -8,6 +10,8 @@ class publishPage extends StatefulWidget {
   final List<String> questions;
   final List<String> answers;
   final int quizType;
+  List<Map<String, String>> quiz = [];
+
 
 
   publishPage({required this.questions, required this.answers,required this.quizType});
@@ -24,19 +28,26 @@ class _publishPageState extends State<publishPage> {
 
 
   bool isTimed = false;
+  bool translate = false;
   bool hasPrerequisites = false;
   int timeLimit = 0;
   String ID="none";
   String quizID='';
+  String sLang='English';
   final TextEditingController timeLimitController = TextEditingController();
+  List<String> _languages = ['English', 'Spanish', 'French', 'German', 'Arabic'];
 
   int type=0;
+  List<String> _questions = [];
+  List<String> _ans = [];
 
   @override
   ///sets up page to load the selected quiz
   void initState() {
     super.initState();
     type=widget.quizType;
+    _questions=widget.questions;
+    _ans=widget.answers;
 
   }
 
@@ -59,6 +70,82 @@ class _publishPageState extends State<publishPage> {
       },
     );
   }
+  Future<Map<String, dynamic>> sendChatGPTRequest(String message) async {
+    final String apiUrl = 'https://api.openai.com/v1/chat/completions';
+    final apikey = 'Your Api Key';
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apikey',
+        'Accept': 'application/json', // Add this line
+      },
+      body: jsonEncode({
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+          {'role': 'system', 'content': 'You are a helpful assistant.'},
+          {'role': 'user', 'content': message},
+        ],
+        'max_tokens': 1000,
+      }),
+    );
+
+    return jsonDecode(utf8.decode(response.bodyBytes)); // Decode response using utf8.decode
+  }
+
+
+  Future<Map<String, dynamic>> translatequizquestions(String Language) async {
+    List<String> Quest = _questions;
+    List<String> Answ = _ans;
+    print(Quest);
+    print(Answ);
+
+    final response = await sendChatGPTRequest(utf8.decode(utf8.encode(
+        'i am going to give you a list of questions and their respective answers in the format[question 1, '
+            'question 2, question n] [answer 1, answer 2, answer n]i want you to translate all of them into '
+            '[$Language] and return them in the same order and layout that i gave the prompt in.these '
+            'are the list:[$Quest][$Answ]')));
+
+    print(response);
+    final choices = response['choices'];
+    if (choices != null && choices.isNotEmpty) {
+      final completion = choices[0];
+      final message = completion['message'];
+      if (message != null && message['content'] != null) {
+        final content = message['content'] as String;
+
+        // Extract translated questions
+        final questionsStartIndex = content.indexOf('[');
+        final questionsEndIndex = content.indexOf(']');
+        final translatedQuestions = content.substring(questionsStartIndex + 1, questionsEndIndex).split(', ');
+        print(translatedQuestions);
+
+        // Extract translated answers
+        final answersStartIndex = content.lastIndexOf('[');
+        final answersEndIndex = content.lastIndexOf(']');
+        final translatedAnswers = content.substring(answersStartIndex + 1, answersEndIndex).split(', ');
+        print(translatedAnswers);
+
+        // Create a map of translated questions and answers
+        Map<String, dynamic> translatedQuiz = {
+          'questions': translatedQuestions,
+          'answers': translatedAnswers,
+        };
+
+        setState(() {
+          _questions = translatedQuestions;
+          _ans = translatedAnswers;
+        });
+
+        return translatedQuiz;
+      }
+    }
+
+    // Return an empty map if translation fails
+    return {};
+  }
+
 
   Future<void> getQuizInformation(String x,DatabaseService service) async {
     List<Map<String, dynamic>> questionsAnswersList = await service.getQuizInformation(x);
@@ -74,27 +161,27 @@ class _publishPageState extends State<publishPage> {
     ///Create quizzes created successfully, now add data to Firestore
 
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
+    FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
     if (type == 1) {
       Map<String, dynamic> userData = {
-        'Question': widget.questions[index].toString(),
-        'Answers': widget.answers[index].toString(),
+        'Question': _questions[index].toString(),
+        'Answers': _ans[index].toString(),
         'QuizID': quizID,
         'Question_type': "Short Answer",
         'QuestionNo': index,
       };
       await users.doc(docRef.id).set(userData);
     } else if (type == 2) {
-      List<String> ans = widget.answers[index].split('^');
+      List<String> ans = _ans[index].split('^');
       String correctAns = ans[0];
       String rand1 = ans[1];
       String rand2 = ans[2];
       String rand3 = ans[3];
 
       Map<String, dynamic> userData = {
-        'Question': widget.questions[index].toString(),
+        'Question': _questions[index].toString(),
         'Answers': correctAns,
         'Option1': rand1,
         'Option2': rand2,
@@ -107,9 +194,9 @@ class _publishPageState extends State<publishPage> {
       await users.doc(docRef.id).set(userData);
     } else if (type == 3) {
       Map<String, dynamic> userData = {
-        'Answers': widget.answers,
+        'Answers': _ans,
         'QuizID': quizID,
-        'Question': widget.questions,
+        'Question': _questions,
         //'Number Expected': expected,
         'Question_type': 'Multiple Answer Quiz',
         'QuestionNo': 1,
@@ -139,7 +226,7 @@ class _publishPageState extends State<publishPage> {
 
 
   void addExtraDetails(String quizID, int numQuestions,bool isTimed,int time, String ID,DatabaseService service) async {
-   service.addNumberOfQuestions(quizID, numQuestions, isTimed, time,ID);
+    service.addNumberOfQuestions(quizID, numQuestions, isTimed, time,ID);
   }
 
   Future<void> _publish() async {
@@ -147,6 +234,7 @@ class _publishPageState extends State<publishPage> {
       DatabaseService service = DatabaseService();
       String x = 'All';
       await getQuizInformation(x,service);
+
 
       if(isTimed) {
         List<String> timeList = timeLimitController.text.split(":");
@@ -164,10 +252,10 @@ class _publishPageState extends State<publishPage> {
         }
       }
       addExtraDetails(
-          quizID, widget.questions.length, isTimed, timeLimit,ID,service);
+          quizID, _questions.length, isTimed, timeLimit,ID,service);
 
       /// write to database
-      for (int i = 0; i < widget.questions.length; i++) {
+      for (int i = 0; i < _questions.length; i++) {
         addDataToFirestore(i);
       }
       service.updateQuizzesStattus();
@@ -194,7 +282,7 @@ class _publishPageState extends State<publishPage> {
           children: [
             Expanded(
               child: ListView.builder(
-                itemCount: widget.questions.length,
+                itemCount: _questions.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     padding: EdgeInsets.all(16.0),
@@ -210,7 +298,7 @@ class _publishPageState extends State<publishPage> {
                         ),
                         SizedBox(height: 8.0),
                         Text(
-                          widget.questions[index],
+                          _questions[index],
                         ),
                         SizedBox(height: 16.0),
                         Text(
@@ -222,22 +310,48 @@ class _publishPageState extends State<publishPage> {
                         SizedBox(height: 8.0),
                         if (type == 1)
                           Text(
-                            widget.answers[index],
+                            _ans[index],
                           )
                         else if (type == 2)
                           Text(
-                            mcqDisplay(widget.answers)[index],
+                            mcqDisplay(_ans)[index],
                           )
                         else if (type == 3)
-                          Text(
-                            maqDisplay(widget.answers),
-                          )
+                            Text(
+                              maqDisplay(_ans),
+                            )
                       ],
                     ),
                   );
                 },
               ),
             ),
+            CheckboxListTile(
+              title: Text("Tranlate the quiz to another language"),
+              value: translate,
+              onChanged: (newValue) {
+                setState(() {
+                  translate = newValue!;
+                });
+              },
+            ),
+            if (translate)
+              DropdownButton<String>(
+                value: sLang,
+                onChanged: (String? newLang) {
+                  setState(() {
+                    sLang = newLang!;
+                  });
+                  translatequizquestions(sLang);
+                },
+                items: _languages.map((String language) {
+                  return DropdownMenuItem<String>(
+                    value: language,
+                    child: Text(language),
+                  );
+                }).toList(),
+              ),
+
             CheckboxListTile(
               title: Text("Timed quiz"),
               value: isTimed,
@@ -321,15 +435,10 @@ class _publishPageState extends State<publishPage> {
     } else if(!value.contains(':')) {
       return 'Time limit in incorrect format';
     }else {
-      List<String> timeList = value.split(":");
-      String hour = timeList[0];
-      String minute = timeList[1];
-      if(hour.isEmpty||minute.isEmpty || hour.length>2 || minute.length>2) {
-        return 'Time limit in incorrect format';
-      }
-      RegExp digitRegex = RegExp(r'^\d+$');
-      if(!digitRegex.hasMatch(hour) && !digitRegex.hasMatch(minute)){
-        return 'Time limit needs to be digits';
+      final timeRegex = r'^([0-9]?[0-9]):[0-5][0-9]$';
+      final RegExp regex = RegExp(timeRegex);
+      if(!regex.hasMatch(value)){
+        return 'Time limit must be digits';
       }
       return null;
     }
