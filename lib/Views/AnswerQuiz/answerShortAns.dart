@@ -30,7 +30,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   late ValueNotifier<int> timeRemaining=ValueNotifier<int>(0);
   late Timer timer=Timer(Duration.zero, () {});
 
-/// gets the quiz id and sets up the timer when page loads
+  /// gets the quiz id and sets up the timer when page loads
   @override
   void initState() {
     super.initState();
@@ -39,15 +39,15 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
     time=widget.iTime;
     ///sets up timer if needed
     if(isTimed) {
-    timeRemaining = ValueNotifier<int>(time);
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (timeRemaining.value == 0) {
-        timer.cancel();
-        _submitAnswer();
-      } else {
-        timeRemaining.value--;
-      }
-    });
+      timeRemaining = ValueNotifier<int>(time);
+      timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        if (timeRemaining.value == 0) {
+          timer.cancel();
+          _submitAnswer();
+        } else {
+          timeRemaining.value--;
+        }
+      });
     }
   }
 
@@ -87,7 +87,9 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
     setState(() {
       _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       try {
-         _showDialog("Your Score: ${getScore()}");
+        _showDialog("Your Score: ${getScore()}");
+        service.updateLevels(widget.quizID,1);
+        service.updateTotalScore(widget.quizID,count );
       }finally {
         service.addUpdatedScore(quizSelected, _currentIndex, _questions.length);
 
