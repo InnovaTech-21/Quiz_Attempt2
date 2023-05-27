@@ -26,12 +26,12 @@ class QuizStatsPageState extends State<QuizStatsPage> {
   double averageScore = 0.0;
   DatabaseService service = DatabaseService();
 
-
   @override
   void initState() {
     super.initState();
     getAllUniqueQuizIds();
   }
+
 
   Future<void> getAllUniqueQuizIds() async {
     if (_QuizID.isEmpty) {
@@ -57,14 +57,10 @@ class QuizStatsPageState extends State<QuizStatsPage> {
         print('Error retrieving quiz IDs: $error');
       }
 
-
-
       for (int i = 0; i < quizIds.length; i++) {
         _QuizID.add(quizIds[i]);
         _QuizName.add(await service.getQuizName(quizIds[i]));
       }
-
-
     }
     print(_QuizID);
     print(_QuizIDDATA);
@@ -140,25 +136,77 @@ class QuizStatsPageState extends State<QuizStatsPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
+              _QuizName.sort(); // Sort the quiz names alphabetically
               return Column(
                 children: [
-                  for (int i = 0; i < _QuizName.length; i = i+2)
+                  for (int i = 0; i < _QuizName.length; i++)
                     Card(
-                      child: Container(
+                      elevation: 2,
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                      child: Padding(
                         padding: EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(_QuizName[i]),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Text(
+                              _QuizName[i],
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Average Score: ${getAverageScore(
-                                    _QuizID[i])}'),
-                                const SizedBox(height: 16),
-                                Text('Max Score: ${getMaxScore(_QuizID[i])}'),
-                                const SizedBox(height: 16),
-                                Text('Min Score: ${getMinScore(_QuizID[i])}'),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Average Score:',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${getAverageScore(_QuizID[i ~/ 2])}',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Max Score:',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${getMaxScore(_QuizID[i ~/ 2])}',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Min Score:',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${getMinScore(_QuizID[i ~/ 2])}',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ],
