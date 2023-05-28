@@ -1,37 +1,35 @@
 import 'dart:async';
 
-
 import 'package:flutter/material.dart';
 
 import '../../Database Services/database.dart';
 
-class ShortQuizAnswer extends StatefulWidget {
-  ShortQuizAnswer({Key? key, required this.quizID, required this.bTimed, required this.iTime}) : super(key: key);
+class mcqQuizAnswer extends StatefulWidget {
+  mcqQuizAnswer({Key? key, required this.quizID, required this.bTimed, required this.iTime}) : super(key: key);
   String quizID;
   bool bTimed;
   int iTime;
   @override
-  ShortQuizAnswerState createState() => ShortQuizAnswerState();
+  mcqQuizAnswerState createState() => mcqQuizAnswerState();
 }
 
-class ShortQuizAnswerState extends State<ShortQuizAnswer> {
-  ///vars for doing and checking quiz
+class mcqQuizAnswerState extends State<mcqQuizAnswer> {
+  List<TextEditingController> answerControllers = [];
+  bool isSubmited = false;
+  bool isCorrect = false;
   int _currentIndex = 0;
   late String quizSelected;
-  List<TextEditingController> answerControllers = [];
-  bool isSubmited=false;
-  bool isCorrect=false;
   ///vars for timed quizes
   ///needed from database
   late bool isTimed;
   late int time;
-  DatabaseService service = DatabaseService();
 
   late ValueNotifier<int> timeRemaining=ValueNotifier<int>(0);
   late Timer timer=Timer(Duration.zero, () {});
+  DatabaseService service = DatabaseService();
 
-  /// gets the quiz id and sets up the timer when page loads
   @override
+  ///sets up page to load the selected quiz
   void initState() {
     super.initState();
     quizSelected = widget.quizID;
@@ -50,7 +48,6 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       });
     }
   }
-
   @override
   void dispose() {
     timer.cancel();
@@ -62,20 +59,24 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   ///list of questions from database
   final List<String> _questions = []; // load in the questions
 
-  ///List of correct answers
-  final List <String> _correctAns=[]; // load in the answers
+  ///List of mcq options
+  final List<String> _correctAns = [];
+  final List<String> _randoption1 = [];
+  final List<String> _randoption2 = [];
+  final List<String> _randoption3 = [];
+  List<List> optionsShuffled = [];
   ///list of user answers
   List<String> _userAnswers = [];
-  int count=0;
-  ///gets the users score at when they submit
-  String getScore(){
 
-    for(int i=0;i<_questions.length;i++){
-      if(_userAnswers[i].toLowerCase()==_correctAns[i].toLowerCase()){
+  ///gets the users score at when they submit
+  String getScore() {
+    int count = 0;
+    for (int i = 0; i < _questions.length; i++) {
+      if (_userAnswers[i] == _correctAns[i]) {
         count++;
       }
     }
-    String score='$count/${_questions.length}';
+    String score = '$count/${_questions.length}';
     return score;
   }
 
@@ -84,21 +85,20 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   ///saves the users answers to a list as they answer the questions
   void _submitAnswer() async {
 
-    setState(() {
+    setState(()  {
       _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       try {
         _showDialog("Your Score: ${getScore()}");
-        service.updateLevels(widget.quizID,1);
-        service.updateTotalScore(widget.quizID,count );
+
       }finally {
-        service.addUpdatedScore(quizSelected, _currentIndex, _questions.length);
+        service.updateLevels( service.userID ,1);
+        service.addUpdatedScore(service.userID, _currentIndex, _questions.length);
 
         isSubmited = true;
       }
     });
 
   }
-
 
   ///allows user to go back to a previous question and reanswer it
   void _goToPreviousQuestion() {
@@ -117,29 +117,52 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   ///loads in the next question and clears previous answer
   void _goToNextQuestion() {
     setState(() {
-      _userAnswers[_currentIndex] =answerControllers[_currentIndex].text;
+      //_userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       _currentIndex++;
       answerControllers[_currentIndex].text = _userAnswers[_currentIndex];
     });
   }
-
-  ///will be the quiz id from quiz selected in previous page
-
-
+  bool isShuffled=false;
   ///loads the quiz questions and answers for use throughout page
   Future<void> getQuestionsAnswers(String x) async {
-
     if (_questions.isEmpty) {
-      List<Map<String, dynamic>> questionsAnswersList = await  service.getShortQuestionsAnswers(x);
+      List<Map<String, dynamic>> questionsAnswersList = await  service.getMCQQuestionsAnswers(x);
       for (var i = 0; i < questionsAnswersList.length; i++) {
         _questions.add(questionsAnswersList[i]["Question"]);
         _correctAns.add(questionsAnswersList[i]["Answers"]);
+        _randoption1.add(questionsAnswersList[i]["Option1"]);
+        _randoption2.add(questionsAnswersList[i]["Option2"]);
+        _randoption3.add(questionsAnswersList[i]["Option3"]);
       }
-      _userAnswers=List.filled(questionsAnswersList.length, '');
+      _userAnswers = List.filled(questionsAnswersList.length, '');
+      //x=11
     }
+
+    if(isShuffled==false) {
+      optionsShuffled = shuffleOptions();
+    }
+
   }
 
 
+
+  List<List> shuffleOptions() {
+    List<List> Shuffled = [];
+
+    for (var i = 0; i < _questions.length; i++) {
+      List<String> options = [];
+      options.add(_correctAns[i]);
+      options.add(_randoption1[i]);
+      options.add(_randoption2[i]);
+      options.add(_randoption3[i]);
+
+      options.shuffle();
+      Shuffled.add(options);
+
+    }
+    isShuffled=true;
+    return Shuffled;
+  }
 
   ///sets up the timer widget
   Widget _buildTimerWidget() {
@@ -154,6 +177,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,7 +198,6 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ///question count at top of page
                 Row(
                   children:[
                     Text(
@@ -187,28 +210,65 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
                   ],
                 ),
                 SizedBox(height: 20),
+
                 ///loads in current question
                 Text(
                   _questions[_currentIndex],
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 20),
-                ///text box for user answer
-                TextFormField(
-                  controller: answerControllers[_currentIndex],
-                  enabled: !isSubmited,
-                  decoration: InputDecoration(
-                    hintText: 'Type your answer here',
-                    border: OutlineInputBorder(),
-                  ),
 
+                RadioListTile(
+                  title: Text(optionsShuffled[_currentIndex][0]),
+                  value: optionsShuffled[_currentIndex][0],
+                  groupValue: _userAnswers[_currentIndex],
+                  onChanged: (value) {
+                    setState(() {
+                      _userAnswers[_currentIndex] = value.toString();
+                    });
+                  },
                 ),
+
+                RadioListTile(
+                  title: Text(optionsShuffled[_currentIndex][1]),
+                  value: optionsShuffled[_currentIndex][1],
+                  groupValue: _userAnswers[_currentIndex],
+                  onChanged: (value) {
+                    setState(() {
+                      _userAnswers[_currentIndex] = value.toString();
+                    });
+                  },
+                ),
+
+                RadioListTile(
+                  title: Text(optionsShuffled[_currentIndex][2]),
+                  value: optionsShuffled[_currentIndex][2],
+                  groupValue: _userAnswers[_currentIndex],
+                  onChanged: (value) {
+                    setState(() {
+                      _userAnswers[_currentIndex] = value.toString();
+                    });
+                  },
+                ),
+
+                RadioListTile(
+                  title: Text(optionsShuffled[_currentIndex][3]),
+                  value: optionsShuffled[_currentIndex][3],
+                  groupValue: _userAnswers[_currentIndex],
+                  onChanged: (value) {
+                    setState(() {
+                      _userAnswers[_currentIndex] = value.toString();
+                    });
+                  },
+                ),
+
                 ///shows correct answers after quiz submitted
-                if (isSubmited )
+                if (isSubmited)
                   Text(
                     'Correct answer: ${_correctAns[_currentIndex]}',
                     style: TextStyle(
-                      color: _userAnswers[_currentIndex].toLowerCase() == _correctAns[_currentIndex].toLowerCase()
+                      color: _userAnswers[_currentIndex] ==
+                          _correctAns[_currentIndex]
                           ? Colors.green
                           : Colors.red,
                     ),
@@ -223,13 +283,21 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
                         onPressed: _goToPreviousQuestion,
                         child: Text('Previous'),
                       ),
+
                     ///button for next question. changes to submit on last question
                     ElevatedButton(
-                      onPressed: isSubmited && _currentIndex == _questions.length - 1 ? () => Navigator.of(context).pop() : _currentIndex == _questions.length - 1
+                      onPressed:
+                      isSubmited && _currentIndex == _questions.length - 1
+                          ? () => Navigator.of(context).pop()
+                          : _currentIndex == _questions.length - 1
                           ? _submitAnswer
                           : _goToNextQuestion,
                       child: Text(
-                        isSubmited && _currentIndex == _questions.length - 1 ? 'Close' :_currentIndex == _questions.length - 1 ? 'Submit' : 'Next',
+                        isSubmited && _currentIndex == _questions.length - 1
+                            ? 'Close'
+                            : _currentIndex == _questions.length - 1
+                            ? 'Submit'
+                            : 'Next',
                       ),
                     ),
                   ],
@@ -241,7 +309,6 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       ),
     );
   }
-
 
   Future<void> _showDialog(String message) async {
     await showDialog(
@@ -262,5 +329,4 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       },
     );
   }
-
 }

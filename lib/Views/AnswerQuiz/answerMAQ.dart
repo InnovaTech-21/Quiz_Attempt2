@@ -77,8 +77,8 @@ class _AnswerMAQState extends State<AnswerMAQ> {
   void _submitAnswer() {
     setState(() {
       _showDialog("Your Score: ${getScore()}");
-      service.updateLevels(widget.quizID,1);
-      service.addUpdatedScore(quizSelected, (listController.length - 1),  _potentialAnswers.length);
+      service.updateLevels(service.userID,1);
+      service.addUpdatedScore(service.userID, (listController.length - 1),  _potentialAnswers.length);
 
       isSubmited = true;
       timer.cancel();

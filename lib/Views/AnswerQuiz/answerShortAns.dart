@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'package:flutter/material.dart';
 
 import '../../Database Services/database.dart';
@@ -88,11 +87,11 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       try {
         _showDialog("Your Score: ${getScore()}");
-        service.updateLevels(widget.quizID,1);
-        service.updateTotalScore(widget.quizID,count );
-      }finally {
-        service.addUpdatedScore(quizSelected, _currentIndex, _questions.length);
 
+      }finally {
+        // service.addUpdatedScore(quizSelected, _currentIndex, _questions.length);
+        service.updateLevels(service.userID,1);
+        service.updateTotalScore(service.userID,count );
         isSubmited = true;
       }
     });
