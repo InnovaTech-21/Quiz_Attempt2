@@ -190,7 +190,7 @@ class DatabaseService {
       print('Error updating user total score: $error');
     }
   }
-  Future<void> updateLevels(String userId, int newLevel) async {
+  Future<void> updateLevels(String userId, int increaseBy) async {
     final CollectionReference collectionRef =
     FirebaseFirestore.instance.collection('Users');
 
@@ -201,8 +201,11 @@ class DatabaseService {
 
       if (querySnapshot.docs.isNotEmpty) {
         final DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        final int currentLevel = documentSnapshot['levels'] ?? 0;
+        final int newLevel = currentLevel + increaseBy;
+
         await collectionRef.doc(documentSnapshot.id).update({
-          'Level': newLevel,
+          'levels': newLevel,
         });
 
         print('User level updated successfully');
@@ -213,7 +216,6 @@ class DatabaseService {
       print('Error updating user level: $error');
     }
   }
-
 
 
   Future<Map<String, dynamic>> getUserStats(String userId) async {
