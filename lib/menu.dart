@@ -24,7 +24,7 @@ class MenuPageState extends State<MenuPage> {
     if(!flag) {
       String user =  service.userID;
       setState(() {
-        username = "Welcome $user";
+        username = "Welcome $user  :)";
       });
     }
     else{

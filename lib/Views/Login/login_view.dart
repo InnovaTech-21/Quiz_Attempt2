@@ -75,53 +75,10 @@ class LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                Spacer(),
-                Expanded(
-                  flex: 5,
-                  child: Container(
-                    width: 290,
-                    height: 45,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(color: ColourPallete.gradient1, width: 2),
-                      color: ColourPallete.backgroundColor,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.search, color: Colors.white),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: ColourPallete.backgroundColor,
-                              hintText: 'Search for a quiz/category',
-                              hintStyle: TextStyle(color: Colors.white),
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Spacer(),
-                Expanded(
-                  flex: 2,
-                  child: NavItem(
-                    key: ValueKey('home'),
-                    title: 'Home',
-                    tapEvent: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SelectaPage()),
-                      );
-                    },
-                  ),
-                ),
 
-                SizedBox(width: 10),
+
+                Spacer(),
+
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
