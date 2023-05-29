@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 //import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:mockito/mockito.dart';
 import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 import 'package:quiz_website/Views/CreateQuiz/createMAQ.dart';
+import 'package:quiz_website/Views/CreateQuiz/publishPage.dart';
 import '../../Database Services/database.dart';
 //import 'package:http/browser_client.dart' as http_browser;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
@@ -26,17 +30,173 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   final TextEditingController quizNameController = TextEditingController();
   final TextEditingController quizDescriptionController =
   TextEditingController();
+  final TextEditingController numberOfQuestionsController = TextEditingController();
+
 
   final TextEditingController usernameController = TextEditingController();
   String? username;
   String? quizType;
   String? quizCategory;
+  bool?  createQuiz = false;
+  List<Map<String, String>> quiz = [];
+  List<String> questions = [];
+  List<String> answers = [];
 
   PlatformFile? pickedFile1;
   String? _imageUrl = '';
   String selectedImagePath = '';
   //Uint8List? _imageBytes;
   //http_browser.BrowserClient _httpClient = http_browser.BrowserClient();
+
+  Future<Map<String, dynamic>> sendChatGPTRequest(String message) async {
+    final String apiUrl = 'https://api.openai.com/v1/chat/completions';
+    final apikey = 'Your Api key';
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apikey',
+      },
+      body: jsonEncode({
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+          {'role': 'system', 'content': 'You are a helpful assistant.'},
+          {'role': 'user', 'content': message},
+        ],
+        'max_tokens': 1000,
+      }),
+    );
+
+
+    return jsonDecode(response.body);
+  }
+
+  ///method for chatgpt to create quiz
+  Future<Map<String, dynamic>> generateQuizQuestions(
+      String quizName, String quizDescription, String quizType, String NumofQuestions) async {
+    int numberOfQuestions = 5;{}
+    if (quizType == "Short-Answer"){
+      final response = await sendChatGPTRequest(
+          'i want you to give me questions and answers to a quiz of a topic of my choice. '
+              'Your response must be in the form Question: [the question] newline Answer:[the answer] newline and so on. '
+              'Do not say anything else except for the questions and answers in this format. '
+              'The topic of the quiz is [$quizName] and there must be [$NumofQuestions] questions');
+
+
+      // Process the API response and extract the generated questions and answers
+      final choices = response['choices'];
+      if (choices != null && choices.isNotEmpty) {
+        final completion = choices[0];
+        final message = completion['message'];
+        if (message != null && message['content'] != null) {
+          final content = message['content'] as String;
+          final questionsAndAnswers = content.split('\n\n');
+          for (final qa in questionsAndAnswers) {
+            final parts = qa.split('\nAnswer: ');
+            if (parts.length == 2) {
+              String question = parts[0].trim().replaceAll('Question: ', '').toString();
+              questions.add(question);
+              String answer = parts[1].trim().replaceAll('Answer: ', '').toString();
+              answers.add(answer);
+              quiz.add({'question': question, 'answer': answer});
+            }
+          }
+        }
+      }
+    }
+    else if (quizType == "Multiple Choice Questions"){
+      final response = await sendChatGPTRequest('i want you to give me questions and answers to a multiple choice quiz of a topic of my '
+          'choice. your response must be in the form Question: [the question] newline Answer:[the correct answer, incorrect option, '
+          'incorrect option, incorrect option] newline and so on. Do not say anything else except for the questions and '
+          'answers in this format. The topic of the quiz is [$quizName] and there must be [$NumofQuestions] questions');
+      // Process the API response and extract the generated questions and answers
+      final choices = response['choices'];
+      if (choices != null && choices.isNotEmpty) {
+        final completion = choices[0];
+        final message = completion['message'];
+        if (message != null && message['content'] != null) {
+          final content = message['content'] as String;
+
+          final questionsAndAnswers = content.split('\n\n');
+          for (final qa in questionsAndAnswers) {
+            final parts = qa.split('\nAnswer: ');
+            if (parts.length == 2) {
+              String question = parts[0].trim().replaceAll('Question: ', '');
+              questions.add(question);
+
+              String answerString = parts[1].trim().replaceAll('Answer: ', '');
+
+              List<String> answerOptions = answerString.split(', ');
+
+              // answers.add(answerOptions[0]);
+              //answers.add(answerOptions[1]);
+              //answers.add(answerOptions[2]);
+              //answers.add(answerOptions[3]);
+              answers.add(answerOptions[0]+ '^' + answerOptions[1] + '^' + answerOptions[2] + '^' + answerOptions[3]);
+
+              quiz.add({
+                'question': question,
+                'answers': answerOptions[0],
+                'correctAnswer': answerOptions[0], // Assuming the first option is always the correct answer
+              });
+            }
+          }
+        }
+      }
+
+
+
+
+
+// Access the generated quiz as a list of maps
+
+    }
+    else {
+      final response = await sendChatGPTRequest(
+          'i want you to give me questions and answers to a multiple answer quiz of a topic of my choice. '
+              'your response must be in the form Question: [the question] newline '
+              'Answer:[the correct answer 1, correct answer 2, correct answer 3, correct answer 4, … correct answer n]. '
+              'Do not say anything else except for the questions and answers in this format. '
+              'the topic of the quiz is [$quizName] and there must be [1] questions');
+
+
+
+// Process the API response and extract the generated questions and answers
+      final choices = response['choices'];
+      if (choices != null && choices.isNotEmpty) {
+        final completion = choices[0];
+        final message = completion['message'];
+        if (message != null && message['content'] != null) {
+          final content = message['content'] as String;
+          final questionsAndAnswers = content.split('\n\n');
+          for (final qa in questionsAndAnswers) {
+            final parts = qa.split('\nAnswer: ');
+            if (parts.length == 2) {
+              String question = parts[0].trim().replaceAll('Question: ', '');
+              questions.add(question);
+
+              String answerString = parts[1].trim().replaceAll('Answer: ', '');
+              List<String> answerOptions = answerString.split(', ');
+              for (int i =0 ; i < answerOptions.length;i++){
+                answers.add(answerOptions[i]);
+              }
+
+              quiz.add({
+                'question': question,
+                'answers': answerOptions[0],
+              });
+            }
+          }
+        }
+      }
+
+
+    }
+
+    return {'quiz': quiz, 'questions': questions, 'answers': answers};
+  }
+
 
   //selecting image
   Future selectFile() async {
@@ -65,44 +225,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     }
   }
 
-  Future<String?> getUser() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = FirebaseAuth.instance.currentUser;
-    String? nameuser = '';
-    if (user != null) {
-      String uID = user.uid;
-      try {
-        CollectionReference users =
-        FirebaseFirestore.instance.collection('Users');
-        final snapshot = await users.doc(uID).get();
-        final data = snapshot.data() as Map<String, dynamic>;
-        // print (data['user_name']);
-        return data['user_name'];
-      } catch (e) {
-        return 'Error fetching user';
-      }
-    }
-  }
 
-  void showImageSelectedDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          //title: Text('Image'),
-          content: Text('Image Selected.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
 
   ///add data of quiz to be made to database
@@ -124,6 +247,10 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   }
 
   Future<void> _submit() async {
+    if(selectedImagePath==''){
+      selectedImagePath =
+      'assets/images/InnovaTechLogo.png';
+    }
     if (_formKey.currentState!.validate()) {
       ///write to database
       service.addDataToCreateaQuizFirestore(
@@ -134,23 +261,53 @@ class CreateQuizPageState extends State<CreateQuizPage> {
           selectedImagePath);
 
       ///go to welcome page
-      if (getQuizType() == 'Short-Answer') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ShortAnswerQuestionPage()),
-        );
-      } else if (getQuizType() == 'Multiple Choice') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => mCQ_Question_Page()),
-        );
-      } else if (getQuizType() == 'Multiple Answer Quiz') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => CreateMAQ()),
-        );
-      } else {
-        _showDialog("Goes to " + getQuizType()! + " page");
+      if (createQuiz == false){
+        if (getQuizType() == 'Short-Answer') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ShortAnswerQuestionPage()),
+          );
+        } else if (getQuizType() == 'Multiple Choice') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => mCQ_Question_Page()),
+          );
+        } else if (getQuizType() == 'Multiple Answer Quiz') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateMAQ()),
+          );
+        } else {
+          _showDialog("Goes to " + getQuizType()! + " page");
+        }
+      }
+      else{
+        _showDialog("Creating quiz");
+        if (getQuizType() == 'Short-Answer') {
+          Map<String, dynamic> quizData =  await generateQuizQuestions(quizNameController.text, quizDescriptionController.text,"Short-Answer",numberOfQuestionsController.text);
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => publishPage(questions: questions, answers: answers, quizType: 1)),
+          );
+        } else if (getQuizType() == 'Multiple Choice') {
+          Map<String, dynamic> quizData =  await generateQuizQuestions(quizNameController.text, quizDescriptionController.text,"Multiple Choice Questions",numberOfQuestionsController.text);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => publishPage(questions: questions, answers: answers, quizType: 2)),
+
+          );
+        } else if (getQuizType() == 'Multiple Answer Quiz') {
+          Map<String, dynamic> quizData =  await generateQuizQuestions(quizNameController.text, quizDescriptionController.text,"Multiple Answer Quiz",numberOfQuestionsController.text);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => publishPage(questions: questions, answers: answers, quizType: 3)),
+
+          );
+        } else {
+          _showDialog("Goes to " + getQuizType()! + " page");
+        }
+
       }
     }
   }
@@ -371,6 +528,60 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                               ),
                             ),
                           ),
+                          Center(
+                            child: CheckboxListTile(
+                              title: Text(
+                                'Make Chatgpt Create a Quiz',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              value: createQuiz,
+                              onChanged: (value) {
+                                setState(() {
+                                  createQuiz = value;
+                                });
+
+
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          if (createQuiz!)
+
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: SizedBox(
+                                width: 600,
+
+                                ///quiz description box
+                                child: TextFormField(
+                                  controller: numberOfQuestionsController,
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.all(27),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: ColourPallete.borderColor,
+                                        width: 3,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: ColourPallete.gradient2,
+                                        width: 3,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    hintText: 'Enter Number of Questions',
+                                  ),
+                                  validator: validateDescription,
+                                ),
+                              ),
+                            ),
+
                           const SizedBox(height: 30),
                           Text(
                             'Select image for quiz:',
@@ -389,7 +600,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/InnovaTechLogo.png';
                                         });
@@ -403,7 +614,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/logoin.jpg';
                                         });
@@ -417,7 +628,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/6fc2a718258c73a88c371b1de8d9c1f6.jpg';
                                         });
@@ -431,7 +642,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/images.jpeg';
                                         });
@@ -450,7 +661,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/103205-fairy-tail-background-1920x1080-samsung.jpg';
 
@@ -465,7 +676,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/971601.jpg';
                                         });
@@ -479,7 +690,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/wp6477079-minimal-star-wars-wallpapers.jpg';
                                         });
@@ -493,7 +704,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/Mc5aAdn.jpg';
                                         });
