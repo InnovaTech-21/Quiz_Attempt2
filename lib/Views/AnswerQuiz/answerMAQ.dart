@@ -47,7 +47,9 @@ class _AnswerMAQState extends State<AnswerMAQ> {
         if (timeRemaining.value == 0) {
           timer.cancel();
           _submitAnswer();
-        } else {
+        } else if(isSubmited){
+          timer.cancel();
+        }else {
           timeRemaining.value--;
         }
       });
@@ -77,8 +79,9 @@ class _AnswerMAQState extends State<AnswerMAQ> {
   void _submitAnswer() {
     setState(() {
       _showDialog("Your Score: ${getScore()}");
-      service.addUpdatedScore(quizSelected, (listController.length - 1),  _potentialAnswers.length);
-
+      service.updateLevels(service.userID,1);
+      service.addUpdatedScore(widget.quizID, (listController.length - 1),  _potentialAnswers.length);
+      service.updateTotalScore(service.userID, (listController.length - 1));
       isSubmited = true;
       timer.cancel();
     });

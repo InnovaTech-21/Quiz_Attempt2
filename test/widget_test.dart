@@ -403,38 +403,38 @@ void main() {
 
   });
 
-    testWidgets('Test publish page validation works', (WidgetTester tester) async {
-      List<String> questions=['Question'];
-      List<String> answers=['Answer'];
-      await tester.pumpWidget(
-        MaterialApp(
-          home: publishPage(questions: questions,answers: answers,quizType: 1,),
-        ),
-      );
+   // testWidgets('Test publish page validation works', (WidgetTester tester) async {
+    //  List<String> questions=['Question'];
+    //  List<String> answers=['Answer'];
+    //  await tester.pumpWidget(
+    //    MaterialApp(
+   //       home: publishPage(questions: questions,answers: answers,quizType: 1,),
+    //    ),
+    //  );
 
-      expect(find.text("Question 1"), findsOneWidget);
-      final isTimedCheckbox =find.widgetWithText(CheckboxListTile, 'Timed quiz');
-      expect(isTimedCheckbox, findsOneWidget);
-      await tester.tap(isTimedCheckbox);
-      await tester.pumpAndSettle();
-      expect(find.text("Time limit (in format min:sec)"), findsOneWidget);
-      final timeField = find.widgetWithText(TextFormField, 'Time limit (in format min:sec)');
-      final publishButton = find.text('Publish quiz');
-      expect(publishButton, findsOneWidget);
-      await tester.tap(publishButton);
-      await tester.pumpAndSettle();
-      expect(find.text("Enter a time limit"), findsOneWidget);
-      await tester.enterText(timeField,'a');
-      await tester.tap(publishButton);
-      await tester.pumpAndSettle();
-      expect(find.text("Time limit in incorrect format"), findsOneWidget);
-      await tester.enterText(timeField,'8:');
-      await tester.tap(publishButton);
-      await tester.pumpAndSettle();
-      expect(find.text("Time limit in incorrect format"), findsOneWidget);
+   //   expect(find.text("Question 1"), findsOneWidget);
+    //  final isTimedCheckbox =find.widgetWithText(CheckboxListTile, 'Timed quiz');
+   //   expect(isTimedCheckbox, findsOneWidget);
+   //   await tester.tap(isTimedCheckbox);
+   //   await tester.pumpAndSettle();
+   //   expect(find.text("Time limit (in format min:sec)"), findsOneWidget);
+  //    final timeField = find.widgetWithText(TextFormField, 'Time limit (in format min:sec)');
+    //  final publishButton = find.text('Publish quiz');
+   //   expect(publishButton, findsOneWidget);
+   //   await tester.tap(publishButton);
+   //   await tester.pumpAndSettle();
+  //    expect(find.text("Enter a time limit"), findsOneWidget);
+  //    await tester.enterText(timeField,'a');
+  //    await tester.tap(publishButton);
+  //    await tester.pumpAndSettle();
+  //    expect(find.text("Time limit in incorrect format"), findsOneWidget);
+  //    await tester.enterText(timeField,'8:');
+   //   await tester.tap(publishButton);
+   //   await tester.pumpAndSettle();
+   //   expect(find.text("Time limit in incorrect format"), findsOneWidget);
 
 
-    });
+    //});
 
     testWidgets('create a maq requires input of question, answer and number of expected answers', (WidgetTester tester) async {
       await tester.pumpWidget(

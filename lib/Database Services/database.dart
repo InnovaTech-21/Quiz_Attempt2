@@ -22,7 +22,7 @@ class DatabaseService {
   ///updatefinished quizzes
   Future<void> updateQuizzesStattus() async {
     DocumentReference docRef =
-        FirebaseFirestore.instance.collection('Quizzes').doc(await getQuizID());
+    FirebaseFirestore.instance.collection('Quizzes').doc(await getQuizID());
 
 // Update the document
     docRef.update({
@@ -35,7 +35,7 @@ class DatabaseService {
     ///Create quizzes created successfully, now add data to Firestore
 
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
+    FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
     if (Quiztype == 0) {
@@ -74,7 +74,7 @@ class DatabaseService {
     // get number of questions from databse
     String quizID = "";
     final CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
+    FirebaseFirestore.instance.collection('Quizzes');
 
     String? username = userID;
     QuerySnapshot questionsSnapshot = await quizzesCollection
@@ -100,7 +100,7 @@ class DatabaseService {
       String uID = user.uid;
       try {
         CollectionReference users =
-            FirebaseFirestore.instance.collection('Users');
+        FirebaseFirestore.instance.collection('Users');
         final snapshot = await users.doc(uID).get();
         final data = snapshot.data() as Map<String, dynamic>;
         // print (data['user_name']);
@@ -136,12 +136,126 @@ class DatabaseService {
 
     await users.doc(userCredential.user!.uid).set(userData);
   }
+  Future<void> addOrUpdateQuizRating(String quizId, int rating) async {
+    final CollectionReference collectionRef =
+    FirebaseFirestore.instance.collection('QuizRatings');
+
+    try {
+      final QuerySnapshot querySnapshot = await collectionRef
+          .where('QuizID', isEqualTo: quizId)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        // Create a new document if it doesn't exist
+        await collectionRef.add({
+          'QuizID': quizId,
+          'Ratings': [rating],
+        });
+      } else {
+        // Update the existing document by appending the new rating
+        final DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        final List<int> existingRatings =
+        List<int>.from(documentSnapshot['Ratings']);
+        existingRatings.add(rating);
+        await collectionRef.doc(documentSnapshot.id).update({
+          'Ratings': existingRatings,
+        });
+      }
+
+      print('Quiz rating added/updated successfully');
+    } catch (error) {
+      print('Error adding/updating quiz rating: $error');
+    }
+  }
+  Future<void> updateTotalScore(String userId, int newTotalScore) async {
+    final CollectionReference collectionRef =
+    FirebaseFirestore.instance.collection('Users');
+
+    try {
+      final QuerySnapshot querySnapshot = await collectionRef
+          .where('user_name', isEqualTo: userId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        await collectionRef.doc(documentSnapshot.id).update({
+          'total_score': newTotalScore,
+        });
+
+        print('User total score updated successfully');
+      } else {
+        print('User not found');
+      }
+    } catch (error) {
+      print('Error updating user total score: $error');
+    }
+  }
+  Future<void> updateLevels(String userId, int increaseBy) async {
+    final CollectionReference collectionRef =
+    FirebaseFirestore.instance.collection('Users');
+
+    try {
+      final QuerySnapshot querySnapshot = await collectionRef
+          .where('user_name', isEqualTo: userId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        final int currentLevel = documentSnapshot['levels'] ?? 0;
+        final int newLevel = currentLevel + increaseBy;
+
+        await collectionRef.doc(documentSnapshot.id).update({
+          'levels': newLevel,
+        });
+
+        print('User level updated successfully');
+      } else {
+        print('User not found');
+      }
+    } catch (error) {
+      print('Error updating user level: $error');
+    }
+  }
+
+
+  Future<Map<String, dynamic>> getUserStats(String userId) async {
+    final CollectionReference collectionRef =
+    FirebaseFirestore.instance.collection('Users');
+
+    try {
+      final QuerySnapshot querySnapshot = await collectionRef
+          .where('UserId', isEqualTo: userId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        final Map<String, dynamic>? userData = documentSnapshot.data() as Map<String, dynamic>?;
+
+        if (userData != null) {
+          final int totalScore = userData['total_score'];
+          final int ranking = userData['ranking'];
+
+          return {
+            'total_score': totalScore,
+            'ranking': ranking,
+          };
+        }
+      } else {
+        print('User not found');
+      }
+    } catch (error) {
+      print('Error retrieving user stats: $error');
+    }
+
+    return {}; // Return an empty map if user not found or error occurs
+  }
+
 
   ///add updated score to database
   Future<void> addUpdatedScore(
       String quizSelected, int _currentIndex, questionlength) async {
     CollectionReference users =
-        FirebaseFirestore.instance.collection('QuizResults');
+    FirebaseFirestore.instance.collection('QuizResults');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
     Map<String, dynamic> userData = {
@@ -160,7 +274,7 @@ class DatabaseService {
     List<Map<String, dynamic>> questionsAnswersList = [];
 
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
+    FirebaseFirestore.instance.collection('Questions');
 
     //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
     QuerySnapshot questionsSnapshot = await users
@@ -188,7 +302,7 @@ class DatabaseService {
     List<Map<String, dynamic>> questionsAnswersList = [];
 
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
+    FirebaseFirestore.instance.collection('Questions');
 
     //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
     QuerySnapshot questionsSnapshot = await users
@@ -214,7 +328,7 @@ class DatabaseService {
     List<Map<String, dynamic>> questionsAnswersList = [];
 
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
+    FirebaseFirestore.instance.collection('Questions');
 
     //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
     QuerySnapshot questionsSnapshot = await users
@@ -243,7 +357,7 @@ class DatabaseService {
 
     ///Create quizzes created successfully, now add data to Firestore
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Quizzes');
+    FirebaseFirestore.instance.collection('Quizzes');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
     Map<String, dynamic> userData = {
@@ -256,7 +370,7 @@ class DatabaseService {
       'Username': userID,
       "Date_Created": Timestamp.fromDate(DateTime.now()),
       "Quiz_ID": docRef.id.toString(),
-      "Quiz_URL": imageURL, 
+      "Quiz_URL": imageURL,
     };
 
     await users.doc(docRef.id).set(userData);
@@ -266,11 +380,11 @@ class DatabaseService {
   Future<void> addNumberOfQuestions(String quizID, int numQuestions,
       bool isTimed, int time, String id) async {
     CollectionReference quizzesCollection =
-        FirebaseFirestore.instance.collection('Quizzes');
+    FirebaseFirestore.instance.collection('Quizzes');
 
     // Get the quiz document with the specified ID
     QuerySnapshot quizQuery =
-        await quizzesCollection.where('Quiz_ID', isEqualTo: quizID).get();
+    await quizzesCollection.where('Quiz_ID', isEqualTo: quizID).get();
 
     if (quizQuery.docs.length == 1) {
       // Update the number of questions for the quiz
@@ -295,7 +409,7 @@ class DatabaseService {
     ///Create quizzes created successfully, now add data to Firestore
     ///
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Questions');
+    FirebaseFirestore.instance.collection('Questions');
     DocumentReference docRef = users.doc();
     String docID = docRef.id;
     Map<String, dynamic> userData = {
@@ -324,7 +438,7 @@ class DatabaseService {
 
   Future<List<Map<String, dynamic>>> getQuizInformation(String x) async {
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Quizzes');
+    FirebaseFirestore.instance.collection('Quizzes');
 
     String y = 'Finished';
     QuerySnapshot questionsSnapshot;
