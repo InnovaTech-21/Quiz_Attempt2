@@ -68,17 +68,21 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       }),
     );
 
-    // print(response.body);
+
     return jsonDecode(response.body);
   }
 
-
+  ///method for chatgpt to create quiz
   Future<Map<String, dynamic>> generateQuizQuestions(
       String quizName, String quizDescription, String quizType, String NumofQuestions) async {
     int numberOfQuestions = 5;{}
-    if (quizType == "Short-ANswer"){
+    if (quizType == "Short-Answer"){
       final response = await sendChatGPTRequest(
-          'i want you to give me questions and answers to a quiz of a topic of my choice. your response must be in the form Question: [the question] newline Answer:[the answer] newline and so on. Do not say anything else except for the questions and answers in this format. the topic of the quiz is [$quizName] and there must be [$NumofQuestions] questions');
+          'i want you to give me questions and answers to a quiz of a topic of my choice. '
+              'Your response must be in the form Question: [the question] newline Answer:[the answer] newline and so on. '
+              'Do not say anything else except for the questions and answers in this format. '
+              'The topic of the quiz is [$quizName] and there must be [$NumofQuestions] questions');
+
 
       // Process the API response and extract the generated questions and answers
       final choices = response['choices'];
@@ -102,7 +106,10 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       }
     }
     else if (quizType == "Multiple Choice Questions"){
-      final response = await sendChatGPTRequest('i want you to give me questions and answers to a multiple choice quiz of a topic of my choice. your response must be in the form Question: [the question] newline Answer:[the correct answer, incorrect option, incorrect option, incorrect option] newline and so on. Do not say anything else except for the questions and answers in this format. the topic of the quiz is [$quizName] and there must be [$NumofQuestions] questions');
+      final response = await sendChatGPTRequest('i want you to give me questions and answers to a multiple choice quiz of a topic of my '
+          'choice. your response must be in the form Question: [the question] newline Answer:[the correct answer, incorrect option, '
+          'incorrect option, incorrect option] newline and so on. Do not say anything else except for the questions and '
+          'answers in this format. The topic of the quiz is [$quizName] and there must be [$NumofQuestions] questions');
       // Process the API response and extract the generated questions and answers
       final choices = response['choices'];
       if (choices != null && choices.isNotEmpty) {
@@ -110,18 +117,18 @@ class CreateQuizPageState extends State<CreateQuizPage> {
         final message = completion['message'];
         if (message != null && message['content'] != null) {
           final content = message['content'] as String;
-          //print (content);
+
           final questionsAndAnswers = content.split('\n\n');
           for (final qa in questionsAndAnswers) {
             final parts = qa.split('\nAnswer: ');
             if (parts.length == 2) {
               String question = parts[0].trim().replaceAll('Question: ', '');
               questions.add(question);
-              print(question);
+
               String answerString = parts[1].trim().replaceAll('Answer: ', '');
-              print(answerString);
+
               List<String> answerOptions = answerString.split(', ');
-              print(answerOptions);
+
               // answers.add(answerOptions[0]);
               //answers.add(answerOptions[1]);
               //answers.add(answerOptions[2]);
@@ -137,17 +144,21 @@ class CreateQuizPageState extends State<CreateQuizPage> {
           }
         }
       }
-      print(answers);
 
-// Print the extracted questions and answers
+
+
 
 
 // Access the generated quiz as a list of maps
-//print('Quiz: $quiz');
+
     }
     else {
       final response = await sendChatGPTRequest(
-          'i want you to give me questions and answers to a multiple answer quiz of a topic of my choice. your response must be in the form Question: [the question] newline Answer:[the correct answer 1, correct answer 2, , correct answer 3, correct answer 4, … correct answer n] newline and so on. Do not say anything else except for the questions and answers in this format. the topic of the quiz is [$quizName] and there must be [1] questions');
+          'i want you to give me questions and answers to a multiple answer quiz of a topic of my choice. '
+              'your response must be in the form Question: [the question] newline '
+              'Answer:[the correct answer 1, correct answer 2, correct answer 3, correct answer 4, … correct answer n]. '
+              'Do not say anything else except for the questions and answers in this format. '
+              'the topic of the quiz is [$quizName] and there must be [1] questions');
 
 
 
@@ -180,14 +191,6 @@ class CreateQuizPageState extends State<CreateQuizPage> {
         }
       }
 
-// Print the extracted questions and answers
-      for (int i = 0; i < questions.length; i++) {
-        print('Question: ${questions[i]}');
-        print('Answers: ${answers[i]}');
-      }
-
-// Access the generated quiz as a list of maps
-      print('Quiz: $quiz');
 
     }
 
@@ -222,44 +225,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     }
   }
 
-  Future<String?> getUser() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = FirebaseAuth.instance.currentUser;
-    String? nameuser = '';
-    if (user != null) {
-      String uID = user.uid;
-      try {
-        CollectionReference users =
-        FirebaseFirestore.instance.collection('Users');
-        final snapshot = await users.doc(uID).get();
-        final data = snapshot.data() as Map<String, dynamic>;
-        // print (data['user_name']);
-        return data['user_name'];
-      } catch (e) {
-        return 'Error fetching user';
-      }
-    }
-  }
 
-  void showImageSelectedDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          //title: Text('Image'),
-          content: Text('Image Selected.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
 
   ///add data of quiz to be made to database
@@ -281,6 +247,10 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   }
 
   Future<void> _submit() async {
+    if(selectedImagePath==''){
+      selectedImagePath =
+      'assets/images/InnovaTechLogo.png';
+    }
     if (_formKey.currentState!.validate()) {
       ///write to database
       service.addDataToCreateaQuizFirestore(
@@ -312,10 +282,9 @@ class CreateQuizPageState extends State<CreateQuizPage> {
         }
       }
       else{
+        _showDialog("Creating quiz");
         if (getQuizType() == 'Short-Answer') {
-          print ("1");
-
-          Map<String, dynamic> quizData =  await generateQuizQuestions(quizNameController.text, quizDescriptionController.text,"Short-ANswer",numberOfQuestionsController.text);
+          Map<String, dynamic> quizData =  await generateQuizQuestions(quizNameController.text, quizDescriptionController.text,"Short-Answer",numberOfQuestionsController.text);
 
           Navigator.push(
             context,
@@ -631,7 +600,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/InnovaTechLogo.png';
                                         });
@@ -645,7 +614,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/logoin.jpg';
                                         });
@@ -659,7 +628,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/6fc2a718258c73a88c371b1de8d9c1f6.jpg';
                                         });
@@ -673,7 +642,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/images.jpeg';
                                         });
@@ -692,7 +661,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/103205-fairy-tail-background-1920x1080-samsung.jpg';
 
@@ -707,7 +676,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/971601.jpg';
                                         });
@@ -721,7 +690,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/wp6477079-minimal-star-wars-wallpapers.jpg';
                                         });
@@ -735,7 +704,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          showImageSelectedDialog();
+                                          _showDialog("Image selected");
                                           selectedImagePath =
                                           'assets/images/Mc5aAdn.jpg';
                                         });
