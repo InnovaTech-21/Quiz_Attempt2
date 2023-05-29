@@ -82,16 +82,17 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
 
   ///saves the users answers to a list as they answer the questions
   void _submitAnswer() async {
-
+    print(count);
     setState(() {
       _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       try {
         _showDialog("Your Score: ${getScore()}");
 
       }finally {
-        // service.addUpdatedScore(quizSelected, _currentIndex, _questions.length);
+        service.addUpdatedScore(quizSelected, count, _questions.length);
         service.updateLevels(service.userID,1);
         service.updateTotalScore(service.userID,count );
+
         isSubmited = true;
       }
     });

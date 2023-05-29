@@ -67,10 +67,10 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
   List<List> optionsShuffled = [];
   ///list of user answers
   List<String> _userAnswers = [];
-
+  int count = 0;
   ///gets the users score at when they submit
   String getScore() {
-    int count = 0;
+
     for (int i = 0; i < _questions.length; i++) {
       if (_userAnswers[i] == _correctAns[i]) {
         count++;
@@ -86,14 +86,14 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
   void _submitAnswer() async {
 
     setState(()  {
-      _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
+      answerControllers[_currentIndex].text = _userAnswers[_currentIndex];
       try {
         _showDialog("Your Score: ${getScore()}");
 
       }finally {
         service.updateLevels( service.userID ,1);
-        service.addUpdatedScore(service.userID, _currentIndex, _questions.length);
-
+        service.addUpdatedScore(widget.quizID, count, _questions.length);
+        service.updateTotalScore(service.userID,count );
         isSubmited = true;
       }
     });

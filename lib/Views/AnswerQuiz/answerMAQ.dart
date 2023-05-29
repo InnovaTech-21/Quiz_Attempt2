@@ -78,8 +78,8 @@ class _AnswerMAQState extends State<AnswerMAQ> {
     setState(() {
       _showDialog("Your Score: ${getScore()}");
       service.updateLevels(service.userID,1);
-      service.addUpdatedScore(service.userID, (listController.length - 1),  _potentialAnswers.length);
-
+      service.addUpdatedScore(widget.quizID, (listController.length - 1),  _potentialAnswers.length);
+      service.updateTotalScore(service.userID, (listController.length - 1));
       isSubmited = true;
       timer.cancel();
     });
