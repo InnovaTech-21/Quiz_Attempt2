@@ -72,7 +72,7 @@ class _publishPageState extends State<publishPage> {
   }
   Future<Map<String, dynamic>> sendChatGPTRequest(String message) async {
     final String apiUrl = 'https://api.openai.com/v1/chat/completions';
-    final apikey = 'Your Api Key';
+    final apikey = 'Your Api key';
 
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -98,16 +98,15 @@ class _publishPageState extends State<publishPage> {
   Future<Map<String, dynamic>> translatequizquestions(String Language) async {
     List<String> Quest = _questions;
     List<String> Answ = _ans;
-    print(Quest);
-    print(Answ);
+
 
     final response = await sendChatGPTRequest(utf8.decode(utf8.encode(
         'i am going to give you a list of questions and their respective answers in the format[question 1, '
             'question 2, question n] [answer 1, answer 2, answer n]i want you to translate all of them into '
             '[$Language] and return them in the same order and layout that i gave the prompt in.these '
-            'are the list:[$Quest][$Answ]')));
+            'are the list:$Quest $Answ')));
 
-    print(response);
+
     final choices = response['choices'];
     if (choices != null && choices.isNotEmpty) {
       final completion = choices[0];
@@ -119,13 +118,13 @@ class _publishPageState extends State<publishPage> {
         final questionsStartIndex = content.indexOf('[');
         final questionsEndIndex = content.indexOf(']');
         final translatedQuestions = content.substring(questionsStartIndex + 1, questionsEndIndex).split(', ');
-        print(translatedQuestions);
+
 
         // Extract translated answers
         final answersStartIndex = content.lastIndexOf('[');
         final answersEndIndex = content.lastIndexOf(']');
         final translatedAnswers = content.substring(answersStartIndex + 1, answersEndIndex).split(', ');
-        print(translatedAnswers);
+
 
         // Create a map of translated questions and answers
         Map<String, dynamic> translatedQuiz = {

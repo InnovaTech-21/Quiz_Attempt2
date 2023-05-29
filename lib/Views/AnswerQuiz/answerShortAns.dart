@@ -43,7 +43,9 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
         if (timeRemaining.value == 0) {
           timer.cancel();
           _submitAnswer();
-        } else {
+        }else if(isSubmited){
+          timer.cancel();
+        }else {
           timeRemaining.value--;
         }
       });
@@ -137,6 +139,8 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       }
       _userAnswers=List.filled(questionsAnswersList.length, '');
     }
+    print(_questions);
+    print(_correctAns);
   }
 
 
