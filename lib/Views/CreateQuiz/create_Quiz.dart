@@ -50,7 +50,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
 
   Future<Map<String, dynamic>> sendChatGPTRequest(String message) async {
     final String apiUrl = 'https://api.openai.com/v1/chat/completions';
-    final apikey = 'Your Api Key';
+    final apikey = 'Your Api key';
 
     final response = await http.post(
       Uri.parse(apiUrl),

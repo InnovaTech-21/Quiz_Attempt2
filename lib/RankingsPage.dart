@@ -12,10 +12,11 @@ class _RankingsPageState extends State<RankingsPage> {
   @override
   void initState() {
     super.initState();
-    fetchRankings();
+
+
   }
 
-  void fetchRankings() async {
+  Future<void> fetchRankings() async {
     QuerySnapshot usersSnapshot =
     await FirebaseFirestore.instance.collection('Users').get();
 
@@ -67,9 +68,9 @@ class _RankingsPageState extends State<RankingsPage> {
       });
     }
 
-    setState(() {
+
       rankings = updatedRankings;
-    });
+
   }
 
   void sortRankings(String header, bool isAscending) {
@@ -91,7 +92,15 @@ class _RankingsPageState extends State<RankingsPage> {
         title: Text('Rankings'),
       ),
       body: SingleChildScrollView(
-        child: Padding(
+        child: FutureBuilder<void>(
+    future: fetchRankings(),
+    builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {// Sort the quiz names alphabetically
+        return Padding(
           padding: EdgeInsets.all(16.0),
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
@@ -205,9 +214,12 @@ class _RankingsPageState extends State<RankingsPage> {
                   ),
                 )
                     .toList(), // Add your data rows here
-              );
-            },
-          ),
+                  );
+                },
+              ),
+            );
+           }
+          },
         ),
       ),
     );

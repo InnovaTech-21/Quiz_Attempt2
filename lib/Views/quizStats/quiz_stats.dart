@@ -1,9 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:quiz_website/ColourPallete.dart';
-import 'dart:math';
-
 import 'package:quiz_website/Database%20Services/database.dart';
 
 class QuizStatsPage extends StatefulWidget {
@@ -50,7 +46,7 @@ class QuizStatsPageState extends State<QuizStatsPage> {
           // _DateCompleted.add(querySnapshot.docs[i]["Date_Created"].toString());
           if (!quizIds.contains(abc)) {
             quizIds.add(abc!);
-            print(abc);
+
           }
         }
       } catch (error) {
@@ -62,10 +58,7 @@ class QuizStatsPageState extends State<QuizStatsPage> {
         _QuizName.add(await service.getQuizName(quizIds[i]));
       }
     }
-    print(_QuizID);
-    print(_QuizIDDATA);
-    print(_QuizName);
-    print(_QuizTotal);
+
   }
 
   int getMinScore(String QuizID) {
