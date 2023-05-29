@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +9,6 @@ import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
 import '';
 import 'Database Services/database.dart';
-import 'Views/AnswerQuiz/answerMAQ.dart';
 
 class SelectaPage extends StatefulWidget {
   const SelectaPage({Key? key}) : super(key: key);
@@ -35,14 +32,13 @@ class _SelectaPageState extends State<SelectaPage> {
   final List<String> _QuizCategory = []; // load in the questions
   final List<String> _Quiz_ID = [];
   final List<String> _Quiz_Images = [];
-  final List<String> _QuizPrereq = [];
 
-  final String _selectedFilter = 'All'; // Variable to store selected filter, set initial value to 'All'
-
+  String _selectedFilter =
+      'All'; // Variable to store selected filter, set initial value to 'All'
   ///method to load completed quiz's from database
   Future<void> getQuizInformation(String x) async {
     CollectionReference users =
-        FirebaseFirestore.instance.collection('Quizzes');
+    FirebaseFirestore.instance.collection('Quizzes');
     x = _selectedFilter;
     String y = 'Finished';
     QuerySnapshot questionsSnapshot;
@@ -75,9 +71,7 @@ class _SelectaPageState extends State<SelectaPage> {
           "Quiz_Type": quizDoc["Quiz_Type"],
           "Number_of_questions": quizDoc["Number_of_questions"].toString(),
           "Quiz_URL": quizDoc["Quiz_URL"],
-          "prerequisite_quizzes": quizDoc["prerequisite_quizzes"],         
         };
-
         if (quizDoc["QuizTimed"] != null) {
           questionAnswerMap["QuizTimed"] = quizDoc["QuizTimed"];
         } else {
@@ -101,140 +95,8 @@ class _SelectaPageState extends State<SelectaPage> {
       _QuizType.add(questionsAnswersList[i]["Quiz_Type"]);
       _NumberofQuestions.add(questionsAnswersList[i]["Number_of_questions"]);
       _Quiz_Images.add(questionsAnswersList[i]["Quiz_URL"]);
-      _QuizPrereq.add(questionsAnswersList[i]['prerequisite_quizzes']);
     }
     // _userAnswers=List.filled(questionsAnswersList.length, '');
-  }
-
-  Future<int> getRandomQuizInformation(BuildContext context) async {
-    // Calculate the random quiz index based on the available quizzes
-    int randomQuizIndex =
-        _Quiz_ID.isNotEmpty ? Random().nextInt(_Quiz_ID.length) : -1;
-
-    if (randomQuizIndex != -1) {
-      // Retrieve the quiz information based on the randomQuizIndex
-      String quizID = _Quiz_ID[randomQuizIndex];
-      bool quizTimed = _QuizTimed[randomQuizIndex];
-      int timerTime = _TimerTime[randomQuizIndex];
-      String quizName = _QuizName[randomQuizIndex];
-      String quizDesc = _QuizDesc[randomQuizIndex];
-      String quizCategory = _QuizCategory[randomQuizIndex];
-      String quizType = _QuizType[randomQuizIndex];
-      String numberOfQuestions = _NumberofQuestions[randomQuizIndex];
-      String quizImage = _Quiz_Images[randomQuizIndex];
-      String preReq = _QuizPrereq[randomQuizIndex];
-    }
-    return randomQuizIndex;
-  }
-
-  // Function to handle the random quiz button press
-  Future<void> handleRandomQuizButtonPress(BuildContext context) async {
-    //int randomQuizIndex = await getRandomQuizInformation(context);
-    //int randomQuizIndex =_Quiz_ID.isNotEmpty ? Random().nextInt(_Quiz_ID.length) : -1;
-
-    int randomQuizIndex = -1;
-
-  // Generate a random index until a quiz with _QuizPrereq[randomQuizIndex] = "none" is found
-  while (randomQuizIndex == -1 || _QuizPrereq[randomQuizIndex] != "none") {
-    randomQuizIndex = _Quiz_ID.isNotEmpty ? Random().nextInt(_Quiz_ID.length) : -1;
-  }    
-
-    // Create and display the quiz information pop-up dialog
-    if (randomQuizIndex != -1) {
-      showDialog(
-        context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: Text('${_QuizName[randomQuizIndex]}'),
-            content: Column(
-              children: [
-                Image.asset(
-                  _Quiz_Images[randomQuizIndex],
-                  width: 300,
-                  height: 300,
-                ),
-                SizedBox(height: 10),
-                Text('Category: ${_QuizCategory[randomQuizIndex]}'),
-                Text('Type: ${_QuizType[randomQuizIndex]}'),
-                Text('Number of Questions: ${_NumberofQuestions[randomQuizIndex]}'),
-              ],
-            ),
-            actions: [
-              TextButton(
-                child: Text('Start Quiz'),
-                onPressed: () {
-                  if (_QuizType[randomQuizIndex] == "Short-Answer") {
-                    Navigator.pop(dialogContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ShortQuizAnswer(
-                          quizID: _Quiz_ID[randomQuizIndex],
-                          bTimed: _QuizTimed[randomQuizIndex],
-                          iTime: _TimerTime[randomQuizIndex],
-                        ),
-                      ),
-                    );
-                  }
-                  if (_QuizType[randomQuizIndex] == "Multiple Choice") {
-                    Navigator.pop(dialogContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => mcqQuizAnswer(
-                          quizID: _Quiz_ID[randomQuizIndex],
-                          bTimed: _QuizTimed[randomQuizIndex],
-                          iTime: _TimerTime[randomQuizIndex],
-                        ),
-                      ),
-                    );
-                  }
-                  if (_QuizType[randomQuizIndex] == 'Multiple Answer Quiz') {
-                    Navigator.pop(dialogContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnswerMAQ(
-                          quizID: _Quiz_ID[randomQuizIndex],
-                          bTimed: _QuizTimed[randomQuizIndex],
-                          iTime: _TimerTime[randomQuizIndex],
-                        ),
-                      ),
-                    );
-                  }
-                   //Navigator.pop(dialogContext); 
-                },
-              ),
-              TextButton(
-                child: Text('Cancel'),
-                onPressed: () {
-                  Navigator.pop(dialogContext);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: Text('No Quizzes Available'),
-            content: Text(
-                'There are no quizzes available for the selected category.'),
-            actions: [
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.pop(dialogContext);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
   }
 
   @override
@@ -273,7 +135,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(22),
                       border:
-                          Border.all(color: ColourPallete.gradient1, width: 2),
+                      Border.all(color: ColourPallete.gradient1, width: 2),
                       color: ColourPallete.backgroundColor,
                     ),
                     child: Row(
@@ -439,7 +301,7 @@ class _SelectaPageState extends State<SelectaPage> {
                                   borderRadius: BorderRadius.circular(12),
                                   side: BorderSide(
                                     color:
-                                        ColourPallete.borderColor.withOpacity(0.5),
+                                    ColourPallete.borderColor.withOpacity(0.5),
                                     width: 3,
                                   ),
                                 ),
@@ -466,9 +328,9 @@ class _SelectaPageState extends State<SelectaPage> {
                                               horizontal: 20),
                                           child: Column(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             children: [
                                               Center(
                                                 child: Text(
@@ -501,13 +363,13 @@ class _SelectaPageState extends State<SelectaPage> {
                                                     const Text(
                                                       'CATEGORY:',
                                                       style:
-                                                          TextStyle(fontSize: 18),
+                                                      TextStyle(fontSize: 18),
                                                     ),
                                                     Spacer(),
                                                     Text(
                                                       '${_QuizCategory[i]}',
                                                       style:
-                                                          TextStyle(fontSize: 18),
+                                                      TextStyle(fontSize: 18),
                                                     ),
                                                   ],
                                                 ),
@@ -519,13 +381,13 @@ class _SelectaPageState extends State<SelectaPage> {
                                                     Text(
                                                       'TYPE:',
                                                       style:
-                                                          TextStyle(fontSize: 18),
+                                                      TextStyle(fontSize: 18),
                                                     ),
                                                     Spacer(),
                                                     Text(
                                                       '${_QuizType[i]}',
                                                       style:
-                                                          TextStyle(fontSize: 18),
+                                                      TextStyle(fontSize: 18),
                                                     ),
                                                   ],
                                                 ),
@@ -537,7 +399,7 @@ class _SelectaPageState extends State<SelectaPage> {
                                                     Text(
                                                       '${_NumberofQuestions[i]} Questions',
                                                       style:
-                                                          TextStyle(fontSize: 18),
+                                                      TextStyle(fontSize: 18),
                                                     ),
                                                     Spacer(),
                                                   ],
@@ -554,10 +416,10 @@ class _SelectaPageState extends State<SelectaPage> {
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               ShortQuizAnswer(
-                                                            quizID: _Quiz_ID[i],
-                                                            bTimed: _QuizTimed[i],
-                                                            iTime: _TimerTime[i],
-                                                          ),
+                                                                quizID: _Quiz_ID[i],
+                                                                bTimed: _QuizTimed[i],
+                                                                iTime: _TimerTime[i],
+                                                              ),
                                                         ),
                                                       );
                                                     }
@@ -568,39 +430,25 @@ class _SelectaPageState extends State<SelectaPage> {
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               mcqQuizAnswer(
-                                                            quizID: _Quiz_ID[i],
-                                                            bTimed: _QuizTimed[i],
-                                                            iTime: _TimerTime[i],
-                                                          ),
+                                                                quizID: _Quiz_ID[i],
+                                                                bTimed: _QuizTimed[i],
+                                                                iTime: _TimerTime[i],
+                                                              ),
                                                         ),
                                                       );
                                                     }
-                                                    if (_QuizType[i] ==
-                                                    'Multiple Answer Quiz') {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          AnswerMAQ(
-                                                        quizID: _Quiz_ID[i],
-                                                        bTimed: _QuizTimed[i],
-                                                        iTime: _TimerTime[i],
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
+                                                  },
                                                   style: ElevatedButton.styleFrom(
                                                     padding:
-                                                        const EdgeInsets.all(15),
+                                                    const EdgeInsets.all(15),
                                                     backgroundColor: ColourPallete
                                                         .backgroundColor,
                                                     shape: RoundedRectangleBorder(
                                                       borderRadius:
-                                                          BorderRadius.circular(21),
+                                                      BorderRadius.circular(21),
                                                       side: BorderSide(
                                                         color:
-                                                            ColourPallete.gradient2,
+                                                        ColourPallete.gradient2,
                                                         width: 2,
                                                       ),
                                                     ),
@@ -625,37 +473,6 @@ class _SelectaPageState extends State<SelectaPage> {
                               enableInfiniteScroll: true,
                               viewportFraction: 0.8,
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 70),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            ColourPallete.gradient1,
-                            ColourPallete.gradient2,
-                          ],
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
-                        ),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          handleRandomQuizButtonPress(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(200, 55),
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                        ),
-                        child: const Text(
-                          'Random Quiz',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 19,
                           ),
                         ),
                       ),

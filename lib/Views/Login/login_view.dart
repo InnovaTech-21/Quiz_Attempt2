@@ -41,11 +41,10 @@ class LoginPageState extends State<LoginPage> {
       await service.setUserID();
 
       clearInputs();
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> SelectaPage()));
       //print('All fields entered, please check corresponding details');
     }
   }
-
 
 
   @override

@@ -602,11 +602,11 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                         setState(() {
                                           _showDialog("Image selected");
                                           selectedImagePath =
-                                          'assets/images/InnovaTechLogo.png';
+                                          'assets/images/17.jpeg';
                                         });
                                       },
                                       child: Image.asset(
-                                        'assets/images/InnovaTechLogo.png',
+                                        'assets/images/17.jpeg',
                                         width: 200,
                                         height: 200,
                                       ),
@@ -616,11 +616,11 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                         setState(() {
                                           _showDialog("Image selected");
                                           selectedImagePath =
-                                          'assets/images/logoin.jpg';
+                                          'assets/images/11.jpg';
                                         });
                                       },
                                       child: Image.asset(
-                                        'assets/images/logoin.png',
+                                        'assets/images/11.png',
                                         width: 200,
                                         height: 200,
                                       ),
@@ -630,11 +630,11 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                         setState(() {
                                           _showDialog("Image selected");
                                           selectedImagePath =
-                                          'assets/images/6fc2a718258c73a88c371b1de8d9c1f6.jpg';
+                                          'assets/images/10.jpg';
                                         });
                                       },
                                       child: Image.asset(
-                                        'assets/images/6fc2a718258c73a88c371b1de8d9c1f6.jpg',
+                                        'assets/images/10.jpg',
                                         width: 200,
                                         height: 200,
                                       ),
@@ -663,12 +663,12 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                         setState(() {
                                           _showDialog("Image selected");
                                           selectedImagePath =
-                                          'assets/images/103205-fairy-tail-background-1920x1080-samsung.jpg';
+                                          'assets/images/3.jpg';
 
                                         });
                                       },
                                       child: Image.asset(
-                                        'assets/images/103205-fairy-tail-background-1920x1080-samsung.jpg',
+                                        'assets/images/3.jpg',
                                         width: 200,
                                         height: 200,
                                       ),
