@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../Database Services/database.dart';
 import 'package:quiz_website/menu.dart';
 import 'package:rating_dialog/rating_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class mcqQuizAnswer extends StatefulWidget {
   mcqQuizAnswer(
@@ -364,6 +366,7 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
             //RATING SUBMITTED BY QUIZ TAKER
             onSubmitted: (response) {
               rating = response.rating;
+              addOrUpdateQuizRating(widget.quizID, rating);
               print("rating = ${rating}");
               Navigator.push(
                 context,
@@ -384,5 +387,36 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
             ),
           );
         });
+  }
+
+  Future<void> addOrUpdateQuizRating(String quizId, double rating) async {
+    final CollectionReference collectionRef =
+        FirebaseFirestore.instance.collection('QuizRatings');
+
+    try {
+      final QuerySnapshot querySnapshot =
+          await collectionRef.where('QuizID', isEqualTo: quizId).get();
+
+      if (querySnapshot.docs.isEmpty) {
+        // Create a new document if it doesn't exist
+        await collectionRef.add({
+          'QuizID': quizId,
+          'Ratings': [rating],
+        });
+      } else {
+        // Update the existing document by appending the new rating
+        final DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        final List<double> existingRatings =
+            List<double>.from(documentSnapshot['Ratings']);
+        existingRatings.add(rating);
+        await collectionRef.doc(documentSnapshot.id).update({
+          'Ratings': existingRatings,
+        });
+      }
+
+      print('Quiz rating added/updated successfully');
+    } catch (error) {
+      print('Error adding/updating quiz rating: $error');
+    }
   }
 }
