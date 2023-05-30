@@ -5,13 +5,14 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:quiz_website/menu.dart';
+import 'package:rating_dialog/rating_dialog.dart';
 
 class AnswerMAQ extends StatefulWidget {
   AnswerMAQ(
       {Key? key,
-        required this.quizID,
-        required this.bTimed,
-        required this.iTime})
+      required this.quizID,
+      required this.bTimed,
+      required this.iTime})
       : super(key: key);
   String quizID;
   bool bTimed;
@@ -30,6 +31,8 @@ class _AnswerMAQState extends State<AnswerMAQ> {
   late bool isTimed;
   late int time;
 
+  late double rating;
+
   late ValueNotifier<int> timeRemaining = ValueNotifier<int>(0);
   late Timer timer = Timer(Duration.zero, () {});
   DatabaseService service = DatabaseService();
@@ -47,9 +50,9 @@ class _AnswerMAQState extends State<AnswerMAQ> {
         if (timeRemaining.value == 0) {
           timer.cancel();
           _submitAnswer();
-        } else if(isSubmited){
+        } else if (isSubmited) {
           timer.cancel();
-        }else {
+        } else {
           timeRemaining.value--;
         }
       });
@@ -65,9 +68,6 @@ class _AnswerMAQState extends State<AnswerMAQ> {
   final List<String> _question = [];
   final List<String> _potentialAnswers = [];
 
-  //String question = "List the coms subjects";
-  //List potentialAnswers = ["ML", "SD", "PC", "AAA"];
-  //int expectedNo = 10;
   final TextEditingController answerController = TextEditingController();
   List<TextEditingController> listController = [TextEditingController()];
 
@@ -79,8 +79,9 @@ class _AnswerMAQState extends State<AnswerMAQ> {
   void _submitAnswer() {
     setState(() {
       _showDialog("Your Score: ${getScore()}");
-      service.updateLevels(service.userID,1);
-      service.addUpdatedScore(widget.quizID, (listController.length - 1),  _potentialAnswers.length);
+      service.updateLevels(service.userID, 1);
+      service.addUpdatedScore(
+          widget.quizID, (listController.length - 1), _potentialAnswers.length);
       service.updateTotalScore(service.userID, (listController.length - 1));
       isSubmited = true;
       timer.cancel();
@@ -91,7 +92,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
   Future<void> getQuestionsAnswers(String x) async {
     if (_question.isEmpty) {
       List<Map<String, dynamic>> questionsAnswersList =
-      await service.getMAQQuestionsAnswers(x);
+          await service.getMAQQuestionsAnswers(x);
       _question.add(questionsAnswersList[0]["Question"][0]);
       for (int i = 0; i < questionsAnswersList[0]["Answers"].length; i++) {
         _potentialAnswers.add(questionsAnswersList[0]["Answers"][i]);
@@ -202,23 +203,15 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(width: 16),
                     Center(
                         child: Text(
-                          _question[0],
-                          style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        )),
-                    Center(
-                        child: Text(
-                          //"(Give ${expectedNo} possible answers)",
-                          " ",
-                          style: const TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 12,
-                              color: Color.fromARGB(255, 198, 195, 195)),
-                        )),
+                      _question[0],
+                      style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    )),
                     SizedBox(width: 16),
 
                     ///shows the timer widget if its a timed quiz
@@ -246,7 +239,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                 focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color:
-                                        Color.fromARGB(255, 40, 148, 248))),
+                                            Color.fromARGB(255, 40, 148, 248))),
                                 hintStyle: TextStyle(
                                     color: Color.fromARGB(255, 216, 206, 206)),
                               ),
@@ -260,7 +253,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                 setState(() {
                                   listController.add(TextEditingController(
                                       text:
-                                      ' ${listController.length}. ${answerController.text}'));
+                                          ' ${listController.length}. ${answerController.text}'));
                                   answerController.clear();
                                 });
                               }
@@ -275,7 +268,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                     borderRadius: BorderRadius.circular(5)),
                                 child: Text("Add Answer",
                                     style:
-                                    const TextStyle(color: Colors.white)),
+                                        const TextStyle(color: Colors.white)),
                               ),
                             ),
                           ),
@@ -299,7 +292,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                     style: TextStyle(color: Colors.white),
                                     autocorrect: true,
                                     textCapitalization:
-                                    TextCapitalization.sentences,
+                                        TextCapitalization.sentences,
                                     controller: listController[index],
                                     autofocus: false,
                                     decoration: const InputDecoration(
@@ -323,32 +316,27 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                         );
                       },
                     ),
-                    //Textbox for number of answers expected when answering quiz
 
                     const SizedBox(
                       height: 20,
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        //if ((listController.length - 1) < expectedNo) {
-                        //_showAlertDialog();
-                        //} else {
-                        _submitAnswer();
-                        //}
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 40, 148, 248),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                      ),
-                      child: Text('Submit Quiz',
-                          style: TextStyle(color: Colors.white)),
+                      onPressed: isSubmited
+                          ? showRating
+                          : !isSubmited
+                              ? _submitAnswer
+                              : null,
+                      child: Text(isSubmited
+                          ? 'Close'
+                          : !isSubmited
+                              ? 'Submit'
+                              : ''),
                     ),
                     SizedBox(height: 50),
 
                     if (isSubmited)
                       Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Flexible(
                               child: Table(
@@ -374,25 +362,6 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                             )),
                                       ])
                                   ]),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const MenuPage(
-                                        testFlag: false,
-                                      )),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                Color.fromARGB(255, 40, 148, 248),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                              ),
-                              child: Text('Close',
-                                  style: TextStyle(color: Colors.white)),
                             ),
                           ])
                   ],
@@ -423,5 +392,53 @@ class _AnswerMAQState extends State<AnswerMAQ> {
         );
       },
     );
+  }
+
+  void showRating() {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return RatingDialog(
+            //INNOVATECH LOGO
+            image: Image.asset(
+              'assets/images/RatingLogo.png',
+              //'assets/images/InnovaTechLogo.png',
+              width: 125,
+            ),
+            title: Text(
+              "Enjoyed this quiz?",
+              textAlign: TextAlign.center,
+            ),
+            message: Text(
+              "Leave your rating",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15),
+            ),
+            starColor: Color.fromARGB(255, 247, 197, 47),
+            submitButtonText: "Submit rating",
+            //RATING SUBMITTED BY QUIZ TAKER
+            onSubmitted: (response) {
+              rating = response.rating;
+              print("rating = ${rating}");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MenuPage(
+                          testFlag: false,
+                        )),
+              );
+            },
+            enableComment: false,
+            //TO NOT RATE QUIZ AND LEAVE PAGE
+            onCancelled: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MenuPage(
+                        testFlag: false,
+                      )),
+            ),
+          );
+        });
   }
 }

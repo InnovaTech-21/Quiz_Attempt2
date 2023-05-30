@@ -14,11 +14,6 @@ class _CreateMAQState extends State<CreateMAQ> {
 
   List<TextEditingController> listController = [TextEditingController()];
   final TextEditingController questionController = TextEditingController();
-  final TextEditingController NumberExpectedController =TextEditingController();
-
-  //DatabaseService service = DatabaseService();
-
-
 
   ///validation checks
   String? validateQuestion(String? value) {
@@ -32,17 +27,6 @@ class _CreateMAQState extends State<CreateMAQ> {
   String? validateAnswer(String? value) {
     if (value == null || value.isEmpty) {
       return 'Enter an answer';
-    } else {
-      return null;
-    }
-  }
-
-  String? validateExpected(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Enter the number of expected answers';
-    }
-    if (int.parse(value) > listController.length) {
-      return 'Number of expected answers must be less than or equal to number of answers entered';
     } else {
       return null;
     }
@@ -152,24 +136,6 @@ class _CreateMAQState extends State<CreateMAQ> {
                       ),
                     );
                   },
-                ),
-                //Textbox for number of answers expected when answering quiz
-                SizedBox(height: 50),
-                TextFormField(
-                  style: TextStyle(color: Colors.white),
-                  autocorrect: true,
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: NumberExpectedController,
-                  decoration: const InputDecoration(
-                    hintText: 'Number of answers expected',
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromARGB(255, 40, 148, 248))),
-                    hintStyle:
-                        TextStyle(color: Color.fromARGB(255, 216, 206, 206)),
-                  ),
-                  validator: validateExpected,
                 ),
 
                 const SizedBox(

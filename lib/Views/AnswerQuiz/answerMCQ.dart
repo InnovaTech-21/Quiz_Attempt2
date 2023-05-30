@@ -1,11 +1,16 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import '../../Database Services/database.dart';
+import 'package:quiz_website/menu.dart';
+import 'package:rating_dialog/rating_dialog.dart';
 
 class mcqQuizAnswer extends StatefulWidget {
-  mcqQuizAnswer({Key? key, required this.quizID, required this.bTimed, required this.iTime}) : super(key: key);
+  mcqQuizAnswer(
+      {Key? key,
+      required this.quizID,
+      required this.bTimed,
+      required this.iTime})
+      : super(key: key);
   String quizID;
   bool bTimed;
   int iTime;
@@ -19,45 +24,48 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
   bool isCorrect = false;
   int _currentIndex = 0;
   late String quizSelected;
+
+  late double rating;
+
   ///vars for timed quizes
   ///needed from database
   late bool isTimed;
   late int time;
 
-  late ValueNotifier<int> timeRemaining=ValueNotifier<int>(0);
-  late Timer timer=Timer(Duration.zero, () {});
+  late ValueNotifier<int> timeRemaining = ValueNotifier<int>(0);
+  late Timer timer = Timer(Duration.zero, () {});
   DatabaseService service = DatabaseService();
 
   @override
+
   ///sets up page to load the selected quiz
   void initState() {
     super.initState();
     quizSelected = widget.quizID;
-    isTimed=widget.bTimed;
-    time=widget.iTime;
+    isTimed = widget.bTimed;
+    time = widget.iTime;
+
     ///sets up timer if needed
-    if(isTimed) {
+    if (isTimed) {
       timeRemaining = ValueNotifier<int>(time);
       timer = Timer.periodic(Duration(seconds: 1), (timer) {
         if (timeRemaining.value == 0) {
           timer.cancel();
           _submitAnswer();
-        }else if(isSubmited){
+        } else if (isSubmited) {
           timer.cancel();
-        }
-        else {
+        } else {
           timeRemaining.value--;
         }
       });
     }
   }
+
   @override
   void dispose() {
     timer.cancel();
     super.dispose();
   }
-
-
 
   ///list of questions from database
   final List<String> _questions = []; // load in the questions
@@ -68,12 +76,13 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
   final List<String> _randoption2 = [];
   final List<String> _randoption3 = [];
   List<List> optionsShuffled = [];
+
   ///list of user answers
   List<String> _userAnswers = [];
   int count = 0;
+
   ///gets the users score at when they submit
   String getScore() {
-
     for (int i = 0; i < _questions.length; i++) {
       if (_userAnswers[i] == _correctAns[i]) {
         count++;
@@ -83,24 +92,19 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
     return score;
   }
 
-
-
   ///saves the users answers to a list as they answer the questions
   void _submitAnswer() async {
-
-    setState(()  {
+    setState(() {
       answerControllers[_currentIndex].text = _userAnswers[_currentIndex];
       try {
         _showDialog("Your Score: ${getScore()}");
-
-      }finally {
-        service.updateLevels( service.userID ,1);
+      } finally {
+        service.updateLevels(service.userID, 1);
         service.addUpdatedScore(widget.quizID, count, _questions.length);
-        service.updateTotalScore(service.userID,count );
+        service.updateTotalScore(service.userID, count);
         isSubmited = true;
       }
     });
-
   }
 
   ///allows user to go back to a previous question and reanswer it
@@ -125,11 +129,14 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
       answerControllers[_currentIndex].text = _userAnswers[_currentIndex];
     });
   }
-  bool isShuffled=false;
+
+  bool isShuffled = false;
+
   ///loads the quiz questions and answers for use throughout page
   Future<void> getQuestionsAnswers(String x) async {
     if (_questions.isEmpty) {
-      List<Map<String, dynamic>> questionsAnswersList = await  service.getMCQQuestionsAnswers(x);
+      List<Map<String, dynamic>> questionsAnswersList =
+          await service.getMCQQuestionsAnswers(x);
       for (var i = 0; i < questionsAnswersList.length; i++) {
         _questions.add(questionsAnswersList[i]["Question"]);
         _correctAns.add(questionsAnswersList[i]["Answers"]);
@@ -141,13 +148,10 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
       //x=11
     }
 
-    if(isShuffled==false) {
+    if (isShuffled == false) {
       optionsShuffled = shuffleOptions();
     }
-
   }
-
-
 
   List<List> shuffleOptions() {
     List<List> Shuffled = [];
@@ -161,9 +165,8 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
 
       options.shuffle();
       Shuffled.add(options);
-
     }
-    isShuffled=true;
+    isShuffled = true;
     return Shuffled;
   }
 
@@ -202,14 +205,16 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Row(
-                  children:[
+                  children: [
                     Text(
                       'Question ${_currentIndex + 1} of ${_questions.length}',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 16),
+
                     ///shows the timer widget if its a timed quiz
-                    if(isTimed) _buildTimerWidget(),
+                    if (isTimed) _buildTimerWidget(),
                   ],
                 ),
                 SizedBox(height: 20),
@@ -271,7 +276,7 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
                     'Correct answer: ${_correctAns[_currentIndex]}',
                     style: TextStyle(
                       color: _userAnswers[_currentIndex] ==
-                          _correctAns[_currentIndex]
+                              _correctAns[_currentIndex]
                           ? Colors.green
                           : Colors.red,
                     ),
@@ -290,17 +295,17 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
                     ///button for next question. changes to submit on last question
                     ElevatedButton(
                       onPressed:
-                      isSubmited && _currentIndex == _questions.length - 1
-                          ? () => Navigator.of(context).pop()
-                          : _currentIndex == _questions.length - 1
-                          ? _submitAnswer
-                          : _goToNextQuestion,
+                          isSubmited && _currentIndex == _questions.length - 1
+                              ? showRating
+                              : _currentIndex == _questions.length - 1
+                                  ? _submitAnswer
+                                  : _goToNextQuestion,
                       child: Text(
                         isSubmited && _currentIndex == _questions.length - 1
                             ? 'Close'
                             : _currentIndex == _questions.length - 1
-                            ? 'Submit'
-                            : 'Next',
+                                ? 'Submit'
+                                : 'Next',
                       ),
                     ),
                   ],
@@ -331,5 +336,53 @@ class mcqQuizAnswerState extends State<mcqQuizAnswer> {
         );
       },
     );
+  }
+
+  void showRating() {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return RatingDialog(
+            //INNOVATECH LOGO
+            image: Image.asset(
+              'assets/images/RatingLogo.png',
+              //'assets/images/InnovaTechLogo.png',
+              width: 125,
+            ),
+            title: Text(
+              "Enjoyed this quiz?",
+              textAlign: TextAlign.center,
+            ),
+            message: Text(
+              "Leave your rating",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15),
+            ),
+            starColor: Color.fromARGB(255, 247, 197, 47),
+            submitButtonText: "Submit rating",
+            //RATING SUBMITTED BY QUIZ TAKER
+            onSubmitted: (response) {
+              rating = response.rating;
+              print("rating = ${rating}");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MenuPage(
+                          testFlag: false,
+                        )),
+              );
+            },
+            enableComment: false,
+            //TO NOT RATE QUIZ AND LEAVE PAGE
+            onCancelled: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MenuPage(
+                        testFlag: false,
+                      )),
+            ),
+          );
+        });
   }
 }
