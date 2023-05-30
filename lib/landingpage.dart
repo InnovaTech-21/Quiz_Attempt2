@@ -451,13 +451,15 @@ class _SelectaPageState extends State<SelectaPage> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Expanded(
-                                        flex: 2,
-                                        child: Image.asset(
-                                          _Quiz_Images[i],
-                                          width: 350,
-                                          height: 300,
-                                        ),
-                                      ),
+                                          flex: 2,
+                                          child: Container(
+                                            child: Image.asset(
+                                              _Quiz_Images[i],
+                                              width: 200,
+                                              height: 200,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )),
                                       const SizedBox(height: 20),
                                       Expanded(
                                         flex: 3,
@@ -781,13 +783,15 @@ class _SelectaPageState extends State<SelectaPage> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Expanded(
-                                        flex: 2,
-                                        child: Image.asset(
-                                          _Quiz_Images[i],
-                                          width: 350,
-                                          height: 300,
-                                        ),
-                                      ),
+                                          flex: 2,
+                                          child: Container(
+                                            child: Image.asset(
+                                              _Quiz_Images[i],
+                                              width: 200,
+                                              height: 200,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )),
                                       const SizedBox(height: 20),
                                       Expanded(
                                         flex: 3,
