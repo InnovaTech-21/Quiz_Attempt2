@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +9,6 @@ import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
 import 'Database Services/database.dart';
 import 'package:quiz_website/selectAQuiz.dart';
-import 'Views/AnswerQuiz/answerMAQ.dart';
-import 'main.dart';
 
 class SelectaPage extends StatefulWidget {
   const SelectaPage({Key? key}) : super(key: key);
@@ -35,11 +32,9 @@ class _SelectaPageState extends State<SelectaPage> {
   final List<String> _QuizCategory = []; // load in the questions
   final List<String> _Quiz_ID = [];
   final List<String> _Quiz_Images = [];
-  final List<String> _QuizPrereq = [];
 
   String _selectedFilter =
       'All'; // Variable to store selected filter, set initial value to 'All'
-
   ///method to load completed quiz's from database
   Future<void> getQuizInformation(String x) async {
     CollectionReference users =
@@ -76,7 +71,6 @@ class _SelectaPageState extends State<SelectaPage> {
           "Quiz_Type": quizDoc["Quiz_Type"],
           "Number_of_questions": quizDoc["Number_of_questions"].toString(),
           "Quiz_URL": quizDoc["Quiz_URL"],
-          "prerequisite_quizzes": quizDoc["prerequisite_quizzes"],
         };
         if (quizDoc["QuizTimed"] != null) {
           questionAnswerMap["QuizTimed"] = quizDoc["QuizTimed"];
@@ -101,117 +95,8 @@ class _SelectaPageState extends State<SelectaPage> {
       _QuizType.add(questionsAnswersList[i]["Quiz_Type"]);
       _NumberofQuestions.add(questionsAnswersList[i]["Number_of_questions"]);
       _Quiz_Images.add(questionsAnswersList[i]["Quiz_URL"]);
-      _QuizPrereq.add(questionsAnswersList[i]['prerequisite_quizzes']);
     }
     // _userAnswers=List.filled(questionsAnswersList.length, '');
-  }
-
-  // Function to handle the random quiz button press
-  Future<void> handleRandomQuizButtonPress(BuildContext context) async {
-    int randomQuizIndex = -1;
-
-    // Generate a random index until a quiz with _QuizPrereq[randomQuizIndex] = "none" is found
-    while (randomQuizIndex == -1 || _QuizPrereq[randomQuizIndex] != "none") {
-      randomQuizIndex =
-          _Quiz_ID.isNotEmpty ? Random().nextInt(_Quiz_ID.length) : -1;
-    }
-
-    // Create and display the quiz information pop-up dialog
-    if (randomQuizIndex != -1) {
-      showDialog(
-        context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: Text('${_QuizName[randomQuizIndex]}'),
-            content: Column(
-              children: [
-                Image.asset(
-                  _Quiz_Images[randomQuizIndex],
-                  width: 300,
-                  height: 300,
-                ),
-                SizedBox(height: 10),
-                Text('Category: ${_QuizCategory[randomQuizIndex]}'),
-                Text('Type: ${_QuizType[randomQuizIndex]}'),
-                Text(
-                    'Number of Questions: ${_NumberofQuestions[randomQuizIndex]}'),
-              ],
-            ),
-            actions: [
-              TextButton(
-                child: Text('Start Quiz'),
-                onPressed: () {
-                  if (_QuizType[randomQuizIndex] == "Short-Answer") {
-                    Navigator.pop(dialogContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ShortQuizAnswer(
-                          quizID: _Quiz_ID[randomQuizIndex],
-                          bTimed: _QuizTimed[randomQuizIndex],
-                          iTime: _TimerTime[randomQuizIndex],
-                        ),
-                      ),
-                    );
-                  }
-                  if (_QuizType[randomQuizIndex] == "Multiple Choice") {
-                    Navigator.pop(dialogContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => mcqQuizAnswer(
-                          quizID: _Quiz_ID[randomQuizIndex],
-                          bTimed: _QuizTimed[randomQuizIndex],
-                          iTime: _TimerTime[randomQuizIndex],
-                        ),
-                      ),
-                    );
-                  }
-                  if (_QuizType[randomQuizIndex] == 'Multiple Answer Quiz') {
-                    Navigator.pop(dialogContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnswerMAQ(
-                          quizID: _Quiz_ID[randomQuizIndex],
-                          bTimed: _QuizTimed[randomQuizIndex],
-                          iTime: _TimerTime[randomQuizIndex],
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
-              TextButton(
-                child: Text('Cancel'),
-                onPressed: () {
-                  Navigator.pop(dialogContext);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: Text('No Quizzes Available'),
-            content: Text(
-                'There are no quizzes available for the selected category.'),
-            actions: [
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.pop(dialogContext);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
   }
 
   @override
@@ -241,7 +126,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     ),
                   ),
                 ),
-                SizedBox(width: 30),
+                Spacer(),
                 Expanded(
                   flex: 3,
                   child: NavItem(
@@ -269,12 +154,12 @@ class _SelectaPageState extends State<SelectaPage> {
                     },
                   ),
                 ),
-                SizedBox(width: 8),
+                Spacer(),
                 Expanded(
                   flex: 3,
                   child: NavItem(
-                    key: ValueKey('Answe Quiz'),
-                    title: 'Answer Quiz',
+                    key: ValueKey('Answer a Quiz'),
+                    title: 'Answer a Quiz',
                     tapEvent: () {
                       showDialog(
                         context: context,
@@ -296,12 +181,12 @@ class _SelectaPageState extends State<SelectaPage> {
                     },
                   ),
                 ),
-                SizedBox(width: 10),
+                Spacer(),
                 Expanded(
                   flex: 3,
                   child: NavItem(
-                    key: ValueKey('Create Quiz'),
-                    title: 'Create Quiz',
+                    key: ValueKey('Create a Quiz'),
+                    title: 'Create a Quiz',
                     tapEvent: () {
                       showDialog(
                         context: context,
@@ -323,7 +208,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     },
                   ),
                 ),
-                SizedBox(width: 10),
+                Spacer(),
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
@@ -411,210 +296,191 @@ class _SelectaPageState extends State<SelectaPage> {
                   padding: EdgeInsets.all(16.0),
                   children: [
                     SizedBox(height: 50),
-                    Center(
-                      child: Text(
-                        'Trending Quizzes',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    Text(
+                      'Trending Quizzes',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 50),
-                    SizedBox(
-                      height: 450,
-                      width: 300,
-                      child: Center(
-                        child: Container(
-                          // height: MediaQuery.of(context).size.height *
-                          //   0.53, // Adjust the value as needed
-                          child: CarouselSlider.builder(
-                            itemCount: _QuizName.length,
-                            itemBuilder:
-                                (BuildContext context, int i, int realIndex) {
-                              return Card(
-                                elevation: 2,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  side: BorderSide(
-                                    color: ColourPallete.borderColor
-                                        .withOpacity(0.5),
-                                    width: 3,
+                    Container(
+                      height: MediaQuery.of(context).size.height *
+                          0.5, // Adjust the value as needed
+                      child: CarouselSlider.builder(
+                        itemCount: _QuizName.length,
+                        itemBuilder:
+                            (BuildContext context, int i, int realIndex) {
+                          return Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color:
+                                    ColourPallete.borderColor.withOpacity(0.5),
+                                width: 3,
+                              ),
+                            ),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              color: ColourPallete.backgroundColor,
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Image.asset(
+                                      _Quiz_Images[i],
+                                      width: 300,
+                                      height: 300,
+                                    ),
                                   ),
-                                ),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  color: ColourPallete.backgroundColor,
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                          flex: 2,
-                                          child: Container(
-                                            child: Image.asset(
-                                              _Quiz_Images[i],
-                                              width: 200,
-                                              height: 200,
-                                              fit: BoxFit.cover,
+                                  const SizedBox(height: 20),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Center(
+                                            child: Text(
+                                              '${_QuizName[i].toUpperCase()}',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          )),
-                                      const SizedBox(height: 20),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Center(
-                                                child: Text(
-                                                  '${_QuizName[i].toUpperCase()}',
-                                                  style: TextStyle(
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                          ),
+                                          SizedBox(height: 15),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                const Text(
+                                                  'Description:',
+                                                  style:
+                                                  TextStyle(fontSize: 18),
                                                 ),
-                                              ),
-                                              SizedBox(height: 15),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    'DESCRIPTION:',
-                                                    style:
-                                                        TextStyle(fontSize: 18),
-                                                  ),
-                                                  Spacer(),
-                                                  Text(
-                                                    '${_QuizDesc[i]}',
-                                                    style:
-                                                        TextStyle(fontSize: 18),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 15),
-                                              Expanded(
-                                                child: Row(
-                                                  children: [
-                                                    const Text(
-                                                      'CATEGORY:',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                    Spacer(),
-                                                    Text(
-                                                      '${_QuizCategory[i]}',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                  ],
+                                                Spacer(),
+                                                Text(
+                                                  '${_QuizDesc[i]}',
+                                                  style:
+                                                  TextStyle(fontSize: 18),
                                                 ),
-                                              ),
-                                              SizedBox(height: 10),
-                                              Expanded(
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      'TYPE:',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                    Spacer(),
-                                                    Text(
-                                                      '${_QuizType[i]}',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                  ],
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 15),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                const Text(
+                                                  'CATEGORY:',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
                                                 ),
-                                              ),
-                                              SizedBox(height: 10),
-                                              Expanded(
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      '${_NumberofQuestions[i]} QUESTIONS',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                    Spacer(),
-                                                  ],
+                                                Spacer(),
+                                                Text(
+                                                  '${_QuizCategory[i]}',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
                                                 ),
-                                              ),
-                                              SizedBox(height: 20),
-                                              Center(
-                                                child: ElevatedButton(
-                                                  onPressed: () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AlertDialog(
-                                                          title: const Text(
-                                                              'Sorry about that :('),
-                                                          content: Text(
-                                                              "Please login to attempt a quiz"),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                              child: const Text(
-                                                                  'OK'),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'TYPE:',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                                Spacer(),
+                                                Text(
+                                                  '${_QuizType[i]}',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  '${_NumberofQuestions[i]} Questions',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                                Spacer(),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 20),
+                                          Center(
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text('Sorry about that :('),
+                                                      content:
+                                                      Text("Please login in to answer a random quiz"),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          child: const Text('OK'),
+                                                        ),
+                                                      ],
                                                     );
                                                   },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            15),
-                                                    backgroundColor:
-                                                        ColourPallete
-                                                            .backgroundColor,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              21),
-                                                      side: BorderSide(
-                                                        color: ColourPallete
-                                                            .gradient2,
-                                                        width: 2,
-                                                      ),
-                                                    ),
+                                                );
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.all(15),
+                                                backgroundColor: ColourPallete
+                                                    .backgroundColor,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(21),
+                                                  side: BorderSide(
+                                                    color:
+                                                        ColourPallete.gradient2,
+                                                    width: 2,
                                                   ),
-                                                  child: Text('Start Quiz'),
                                                 ),
                                               ),
-                                            ],
+                                              child: Text('Start Quiz'),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            options: CarouselOptions(
-                              autoPlay: true,
-                              autoPlayInterval: Duration(seconds: 5),
-                              autoPlayCurve: Curves.easeInOut,
-                              enlargeCenterPage: true,
-                              enableInfiniteScroll: true,
-                              viewportFraction: 0.8,
+                                ],
+                              ),
                             ),
-                          ),
+                          );
+                        },
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          autoPlayInterval: Duration(seconds: 5),
+                          autoPlayCurve: Curves.easeInOut,
+                          enlargeCenterPage: true,
+                          enableInfiniteScroll: true,
+                          viewportFraction: 0.8,
                         ),
                       ),
                     ),
@@ -639,6 +505,21 @@ class _SelectaPageState extends State<SelectaPage> {
                   'assets/images/InnovaTechLogo.png',
                   width: 110,
                 ),
+                SizedBox(width: 3),
+                Expanded(
+                  flex: 3,
+                  child: NavItem(
+                    key: ValueKey('Random'),
+                    title: 'Random',
+                    tapEvent: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CreateQuizPage()),
+                      );
+                    },
+                  ),
+                ),
                 SizedBox(width: 10),
                 Expanded(
                   flex: 5,
@@ -652,21 +533,10 @@ class _SelectaPageState extends State<SelectaPage> {
                 ),
                 Spacer(),
                 Expanded(
-                  flex: 3,
-                  child: NavItem(
-                    key: ValueKey('Random'),
-                    title: 'Random',
-                    tapEvent: () {
-                      handleRandomQuizButtonPress(context);
-                    },
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
                   flex: 2,
                   child: NavItem(
-                    key: ValueKey('Answer Quiz'),
-                    title: 'Answer Quiz', //this one
+                    key: ValueKey('Answer a Quiz'),
+                    title: 'Answer a Quiz',
                     tapEvent: () {
                       Navigator.push(
                         context,
@@ -675,12 +545,12 @@ class _SelectaPageState extends State<SelectaPage> {
                     },
                   ),
                 ),
-                Spacer(),
+                SizedBox(width: 3),
                 Expanded(
                   flex: 3,
                   child: NavItem(
-                    key: ValueKey('Create Quiz'),
-                    title: 'Create Quiz',
+                    key: ValueKey('Create a Quiz'),
+                    title: 'Create a Quiz',
                     tapEvent: () {
                       Navigator.push(
                         context,
@@ -688,39 +558,6 @@ class _SelectaPageState extends State<SelectaPage> {
                             builder: (context) => CreateQuizPage()),
                       );
                     },
-                  ),
-                ),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        ColourPallete.gradient1,
-                        ColourPallete.gradient2,
-                      ],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyApp()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(80, 35),
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: const Text(
-                      'Log Out',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15, //edit this
-                      ),
-                    ),
                   ),
                 ),
               ],
@@ -743,235 +580,183 @@ class _SelectaPageState extends State<SelectaPage> {
                   padding: EdgeInsets.all(16.0),
                   children: [
                     SizedBox(height: 50),
-                    Center(
-                      child: Text(
-                        'Trending Quizzes',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    Text(
+                      'Trending Quizzes',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 50),
-                    SizedBox(
-                      height: 450,
-                      width: 300,
-                      child: Center(
-                        child: Container(
-                          // height: MediaQuery.of(context).size.height *
-                          //   0.53, // Adjust the value as needed
-                          child: CarouselSlider.builder(
-                            itemCount: _QuizName.length,
-                            itemBuilder:
-                                (BuildContext context, int i, int realIndex) {
-                              return Card(
-                                elevation: 2,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  side: BorderSide(
-                                    color: ColourPallete.borderColor
-                                        .withOpacity(0.5),
-                                    width: 3,
+                    Container(
+                      height: MediaQuery.of(context).size.height *
+                          0.5, // Adjust the value as needed
+                      child: CarouselSlider.builder(
+                        itemCount: _QuizName.length,
+                        itemBuilder:
+                            (BuildContext context, int i, int realIndex) {
+                          return Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color:
+                                    ColourPallete.borderColor.withOpacity(0.5),
+                                width: 3,
+                              ),
+                            ),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              color: ColourPallete.backgroundColor,
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Image.asset(
+                                      _Quiz_Images[i],
+                                      width: 300,
+                                      height: 300,
+                                    ),
                                   ),
-                                ),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  color: ColourPallete.backgroundColor,
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                          flex: 2,
-                                          child: Container(
-                                            child: Image.asset(
-                                              _Quiz_Images[i],
-                                              width: 200,
-                                              height: 200,
-                                              fit: BoxFit.cover,
+                                  const SizedBox(height: 20),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Center(
+                                            child: Text(
+                                              '${_QuizName[i].toUpperCase()}',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          )),
-                                      const SizedBox(height: 20),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Center(
-                                                child: Text(
-                                                  '${_QuizName[i].toUpperCase()}',
-                                                  style: TextStyle(
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(height: 15),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    'DESCRIPTION:',
-                                                    style:
-                                                        TextStyle(fontSize: 18),
-                                                  ),
-                                                  Spacer(),
-                                                  Text(
-                                                    '${_QuizDesc[i]}',
-                                                    style:
-                                                        TextStyle(fontSize: 18),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 15),
-                                              Expanded(
-                                                child: Row(
-                                                  children: [
-                                                    const Text(
-                                                      'CATEGORY:',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                    Spacer(),
-                                                    Text(
-                                                      '${_QuizCategory[i]}',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(height: 10),
-                                              Expanded(
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      'TYPE:',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                    Spacer(),
-                                                    Text(
-                                                      '${_QuizType[i]}',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(height: 10),
-                                              Expanded(
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      '${_NumberofQuestions[i]} QUESTIONS',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                    Spacer(),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(height: 20),
-                                              Center(
-                                                child: ElevatedButton(
-                                                  onPressed: () {
-                                                    if (_QuizType[i] ==
-                                                        "Short-Answer") {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ShortQuizAnswer(
-                                                            quizID: _Quiz_ID[i],
-                                                            bTimed:
-                                                                _QuizTimed[i],
-                                                            iTime:
-                                                                _TimerTime[i],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
-                                                    if (_QuizType[i] ==
-                                                        "Multiple Choice") {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              mcqQuizAnswer(
-                                                            quizID: _Quiz_ID[i],
-                                                            bTimed:
-                                                                _QuizTimed[i],
-                                                            iTime:
-                                                                _TimerTime[i],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
-                                                    if (_QuizType[i] ==
-                                                        'Multiple Answer Quiz') {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              AnswerMAQ(
-                                                            quizID: _Quiz_ID[i],
-                                                            bTimed:
-                                                                _QuizTimed[i],
-                                                            iTime:
-                                                                _TimerTime[i],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
-                                                  },
+                                          ),
+                                          SizedBox(height: 15),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                const Text(
+                                                  'CATEGORY:',
                                                   style:
-                                                      ElevatedButton.styleFrom(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            15),
-                                                    backgroundColor:
-                                                        ColourPallete
-                                                            .backgroundColor,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              21),
-                                                      side: BorderSide(
-                                                        color: ColourPallete
-                                                            .gradient2,
-                                                        width: 2,
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                                Spacer(),
+                                                Text(
+                                                  '${_QuizCategory[i]}',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'TYPE:',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                                Spacer(),
+                                                Text(
+                                                  '${_QuizType[i]}',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  '${_NumberofQuestions[i]} Questions',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                                Spacer(),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 20),
+                                          Center(
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                if (_QuizType[i] ==
+                                                    "Short-Answer") {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ShortQuizAnswer(
+                                                        quizID: _Quiz_ID[i],
+                                                        bTimed: _QuizTimed[i],
+                                                        iTime: _TimerTime[i],
                                                       ),
                                                     ),
+                                                  );
+                                                }
+                                                if (_QuizType[i] ==
+                                                    "Multiple Choice") {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          mcqQuizAnswer(
+                                                        quizID: _Quiz_ID[i],
+                                                        bTimed: _QuizTimed[i],
+                                                        iTime: _TimerTime[i],
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.all(15),
+                                                backgroundColor: ColourPallete
+                                                    .backgroundColor,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(21),
+                                                  side: BorderSide(
+                                                    color:
+                                                        ColourPallete.gradient2,
+                                                    width: 2,
                                                   ),
-                                                  child: Text('Start Quiz'),
                                                 ),
                                               ),
-                                            ],
+                                              child: Text('Start Quiz'),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            options: CarouselOptions(
-                              autoPlay: true,
-                              autoPlayInterval: Duration(seconds: 5),
-                              autoPlayCurve: Curves.easeInOut,
-                              enlargeCenterPage: true,
-                              enableInfiniteScroll: true,
-                              viewportFraction: 0.8,
+                                ],
+                              ),
                             ),
-                          ),
+                          );
+                        },
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          autoPlayInterval: Duration(seconds: 5),
+                          autoPlayCurve: Curves.easeInOut,
+                          enlargeCenterPage: true,
+                          enableInfiniteScroll: true,
+                          viewportFraction: 0.8,
                         ),
                       ),
                     ),
