@@ -1,11 +1,16 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import '../../Database Services/database.dart';
+import 'package:quiz_website/menu.dart';
+import 'package:rating_dialog/rating_dialog.dart';
 
 class ShortQuizAnswer extends StatefulWidget {
-  ShortQuizAnswer({Key? key, required this.quizID, required this.bTimed, required this.iTime}) : super(key: key);
+  ShortQuizAnswer(
+      {Key? key,
+      required this.quizID,
+      required this.bTimed,
+      required this.iTime})
+      : super(key: key);
   String quizID;
   bool bTimed;
   int iTime;
@@ -18,34 +23,38 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   int _currentIndex = 0;
   late String quizSelected;
   List<TextEditingController> answerControllers = [];
-  bool isSubmited=false;
-  bool isCorrect=false;
+  bool isSubmited = false;
+  bool isCorrect = false;
+
+  late double rating;
+
   ///vars for timed quizes
   ///needed from database
   late bool isTimed;
   late int time;
   DatabaseService service = DatabaseService();
 
-  late ValueNotifier<int> timeRemaining=ValueNotifier<int>(0);
-  late Timer timer=Timer(Duration.zero, () {});
+  late ValueNotifier<int> timeRemaining = ValueNotifier<int>(0);
+  late Timer timer = Timer(Duration.zero, () {});
 
   /// gets the quiz id and sets up the timer when page loads
   @override
   void initState() {
     super.initState();
     quizSelected = widget.quizID;
-    isTimed=widget.bTimed;
-    time=widget.iTime;
+    isTimed = widget.bTimed;
+    time = widget.iTime;
+
     ///sets up timer if needed
-    if(isTimed) {
+    if (isTimed) {
       timeRemaining = ValueNotifier<int>(time);
       timer = Timer.periodic(Duration(seconds: 1), (timer) {
         if (timeRemaining.value == 0) {
           timer.cancel();
           _submitAnswer();
-        }else if(isSubmited){
+        } else if (isSubmited) {
           timer.cancel();
-        }else {
+        } else {
           timeRemaining.value--;
         }
       });
@@ -58,29 +67,25 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
     super.dispose();
   }
 
-
-
   ///list of questions from database
   final List<String> _questions = []; // load in the questions
 
   ///List of correct answers
-  final List <String> _correctAns=[]; // load in the answers
+  final List<String> _correctAns = []; // load in the answers
   ///list of user answers
   List<String> _userAnswers = [];
-  int count=0;
-  ///gets the users score at when they submit
-  String getScore(){
+  int count = 0;
 
-    for(int i=0;i<_questions.length;i++){
-      if(_userAnswers[i].toLowerCase()==_correctAns[i].toLowerCase()){
+  ///gets the users score at when they submit
+  String getScore() {
+    for (int i = 0; i < _questions.length; i++) {
+      if (_userAnswers[i].toLowerCase() == _correctAns[i].toLowerCase()) {
         count++;
       }
     }
-    String score='$count/${_questions.length}';
+    String score = '$count/${_questions.length}';
     return score;
   }
-
-
 
   ///saves the users answers to a list as they answer the questions
   void _submitAnswer() async {
@@ -89,18 +94,15 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       try {
         _showDialog("Your Score: ${getScore()}");
-
-      }finally {
+      } finally {
         service.addUpdatedScore(quizSelected, count, _questions.length);
-        service.updateLevels(service.userID,1);
-        service.updateTotalScore(service.userID,count );
+        service.updateLevels(service.userID, 1);
+        service.updateTotalScore(service.userID, count);
 
         isSubmited = true;
       }
     });
-
   }
-
 
   ///allows user to go back to a previous question and reanswer it
   void _goToPreviousQuestion() {
@@ -119,7 +121,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
   ///loads in the next question and clears previous answer
   void _goToNextQuestion() {
     setState(() {
-      _userAnswers[_currentIndex] =answerControllers[_currentIndex].text;
+      _userAnswers[_currentIndex] = answerControllers[_currentIndex].text;
       _currentIndex++;
       answerControllers[_currentIndex].text = _userAnswers[_currentIndex];
     });
@@ -127,23 +129,20 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
 
   ///will be the quiz id from quiz selected in previous page
 
-
   ///loads the quiz questions and answers for use throughout page
   Future<void> getQuestionsAnswers(String x) async {
-
     if (_questions.isEmpty) {
-      List<Map<String, dynamic>> questionsAnswersList = await  service.getShortQuestionsAnswers(x);
+      List<Map<String, dynamic>> questionsAnswersList =
+          await service.getShortQuestionsAnswers(x);
       for (var i = 0; i < questionsAnswersList.length; i++) {
         _questions.add(questionsAnswersList[i]["Question"]);
         _correctAns.add(questionsAnswersList[i]["Answers"]);
       }
-      _userAnswers=List.filled(questionsAnswersList.length, '');
+      _userAnswers = List.filled(questionsAnswersList.length, '');
     }
     print(_questions);
     print(_correctAns);
   }
-
-
 
   ///sets up the timer widget
   Widget _buildTimerWidget() {
@@ -158,6 +157,7 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,23 +180,27 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
               children: [
                 ///question count at top of page
                 Row(
-                  children:[
+                  children: [
                     Text(
                       'Question ${_currentIndex + 1} of ${_questions.length}',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 16),
+
                     ///shows the timer widget if its a timed quiz
-                    if(isTimed) _buildTimerWidget(),
+                    if (isTimed) _buildTimerWidget(),
                   ],
                 ),
                 SizedBox(height: 20),
+
                 ///loads in current question
                 Text(
                   _questions[_currentIndex],
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 20),
+
                 ///text box for user answer
                 TextFormField(
                   controller: answerControllers[_currentIndex],
@@ -205,14 +209,15 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
                     hintText: 'Type your answer here',
                     border: OutlineInputBorder(),
                   ),
-
                 ),
+
                 ///shows correct answers after quiz submitted
-                if (isSubmited )
+                if (isSubmited)
                   Text(
                     'Correct answer: ${_correctAns[_currentIndex]}',
                     style: TextStyle(
-                      color: _userAnswers[_currentIndex].toLowerCase() == _correctAns[_currentIndex].toLowerCase()
+                      color: _userAnswers[_currentIndex].toLowerCase() ==
+                              _correctAns[_currentIndex].toLowerCase()
                           ? Colors.green
                           : Colors.red,
                     ),
@@ -227,13 +232,21 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
                         onPressed: _goToPreviousQuestion,
                         child: Text('Previous'),
                       ),
+
                     ///button for next question. changes to submit on last question
                     ElevatedButton(
-                      onPressed: isSubmited && _currentIndex == _questions.length - 1 ? () => Navigator.of(context).pop() : _currentIndex == _questions.length - 1
-                          ? _submitAnswer
-                          : _goToNextQuestion,
+                      onPressed:
+                          isSubmited && _currentIndex == _questions.length - 1
+                              ? showRating
+                              : _currentIndex == _questions.length - 1
+                                  ? _submitAnswer
+                                  : _goToNextQuestion,
                       child: Text(
-                        isSubmited && _currentIndex == _questions.length - 1 ? 'Close' :_currentIndex == _questions.length - 1 ? 'Submit' : 'Next',
+                        isSubmited && _currentIndex == _questions.length - 1
+                            ? 'Close'
+                            : _currentIndex == _questions.length - 1
+                                ? 'Submit'
+                                : 'Next',
                       ),
                     ),
                   ],
@@ -245,7 +258,6 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
       ),
     );
   }
-
 
   Future<void> _showDialog(String message) async {
     await showDialog(
@@ -267,4 +279,51 @@ class ShortQuizAnswerState extends State<ShortQuizAnswer> {
     );
   }
 
+  void showRating() {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return RatingDialog(
+            //INNOVATECH LOGO
+            image: Image.asset(
+              'assets/images/RatingLogo.png',
+              //'assets/images/InnovaTechLogo.png',
+              width: 125,
+            ),
+            title: Text(
+              "Enjoyed this quiz?",
+              textAlign: TextAlign.center,
+            ),
+            message: Text(
+              "Leave your rating",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15),
+            ),
+            starColor: Color.fromARGB(255, 247, 197, 47),
+            submitButtonText: "Submit rating",
+            //RATING SUBMITTED BY QUIZ TAKER
+            onSubmitted: (response) {
+              rating = response.rating;
+              print("rating = ${rating}");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MenuPage(
+                          testFlag: false,
+                        )),
+              );
+            },
+            enableComment: false,
+            //TO NOT RATE QUIZ AND LEAVE PAGE
+            onCancelled: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MenuPage(
+                        testFlag: false,
+                      )),
+            ),
+          );
+        });
+  }
 }

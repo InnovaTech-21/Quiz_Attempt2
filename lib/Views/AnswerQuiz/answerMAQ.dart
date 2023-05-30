@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:quiz_website/menu.dart';
+import 'package:rating_dialog/rating_dialog.dart';
 
 class AnswerMAQ extends StatefulWidget {
   AnswerMAQ(
@@ -29,6 +30,8 @@ class _AnswerMAQState extends State<AnswerMAQ> {
 
   late bool isTimed;
   late int time;
+
+  late double rating;
 
   late ValueNotifier<int> timeRemaining = ValueNotifier<int>(0);
   late Timer timer = Timer(Duration.zero, () {});
@@ -318,22 +321,22 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                       height: 20,
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        _submitAnswer();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 40, 148, 248),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                      ),
-                      child: Text('Submit Quiz',
-                          style: TextStyle(color: Colors.white)),
+                      onPressed: isSubmited
+                          ? showRating
+                          : !isSubmited
+                              ? _submitAnswer
+                              : null,
+                      child: Text(isSubmited
+                          ? 'Close'
+                          : !isSubmited
+                              ? 'Submit'
+                              : ''),
                     ),
                     SizedBox(height: 50),
 
                     if (isSubmited)
                       Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Flexible(
                               child: Table(
@@ -359,25 +362,6 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                             )),
                                       ])
                                   ]),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const MenuPage(
-                                            testFlag: false,
-                                          )),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Color.fromARGB(255, 40, 148, 248),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                              ),
-                              child: Text('Close',
-                                  style: TextStyle(color: Colors.white)),
                             ),
                           ])
                   ],
@@ -408,5 +392,53 @@ class _AnswerMAQState extends State<AnswerMAQ> {
         );
       },
     );
+  }
+
+  void showRating() {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return RatingDialog(
+            //INNOVATECH LOGO
+            image: Image.asset(
+              'assets/images/RatingLogo.png',
+              //'assets/images/InnovaTechLogo.png',
+              width: 125,
+            ),
+            title: Text(
+              "Enjoyed this quiz?",
+              textAlign: TextAlign.center,
+            ),
+            message: Text(
+              "Leave your rating",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15),
+            ),
+            starColor: Color.fromARGB(255, 247, 197, 47),
+            submitButtonText: "Submit rating",
+            //RATING SUBMITTED BY QUIZ TAKER
+            onSubmitted: (response) {
+              rating = response.rating;
+              print("rating = ${rating}");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MenuPage(
+                          testFlag: false,
+                        )),
+              );
+            },
+            enableComment: false,
+            //TO NOT RATE QUIZ AND LEAVE PAGE
+            onCancelled: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MenuPage(
+                        testFlag: false,
+                      )),
+            ),
+          );
+        });
   }
 }
