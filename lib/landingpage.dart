@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,8 @@ import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
 import 'Database Services/database.dart';
 import 'package:quiz_website/selectAQuiz.dart';
-
+import 'Views/AnswerQuiz/answerMAQ.dart';
+import 'main.dart';
 
 class SelectaPage extends StatefulWidget {
   const SelectaPage({Key? key}) : super(key: key);
@@ -33,9 +35,11 @@ class _SelectaPageState extends State<SelectaPage> {
   final List<String> _QuizCategory = []; // load in the questions
   final List<String> _Quiz_ID = [];
   final List<String> _Quiz_Images = [];
+  final List<String> _QuizPrereq = [];
 
   String _selectedFilter =
       'All'; // Variable to store selected filter, set initial value to 'All'
+
   ///method to load completed quiz's from database
   Future<void> getQuizInformation(String x) async {
     CollectionReference users =
@@ -72,6 +76,7 @@ class _SelectaPageState extends State<SelectaPage> {
           "Quiz_Type": quizDoc["Quiz_Type"],
           "Number_of_questions": quizDoc["Number_of_questions"].toString(),
           "Quiz_URL": quizDoc["Quiz_URL"],
+          "prerequisite_quizzes": quizDoc["prerequisite_quizzes"],
         };
         if (quizDoc["QuizTimed"] != null) {
           questionAnswerMap["QuizTimed"] = quizDoc["QuizTimed"];
@@ -96,8 +101,117 @@ class _SelectaPageState extends State<SelectaPage> {
       _QuizType.add(questionsAnswersList[i]["Quiz_Type"]);
       _NumberofQuestions.add(questionsAnswersList[i]["Number_of_questions"]);
       _Quiz_Images.add(questionsAnswersList[i]["Quiz_URL"]);
+      _QuizPrereq.add(questionsAnswersList[i]['prerequisite_quizzes']);
     }
     // _userAnswers=List.filled(questionsAnswersList.length, '');
+  }
+
+  // Function to handle the random quiz button press
+  Future<void> handleRandomQuizButtonPress(BuildContext context) async {
+    int randomQuizIndex = -1;
+
+    // Generate a random index until a quiz with _QuizPrereq[randomQuizIndex] = "none" is found
+    while (randomQuizIndex == -1 || _QuizPrereq[randomQuizIndex] != "none") {
+      randomQuizIndex =
+          _Quiz_ID.isNotEmpty ? Random().nextInt(_Quiz_ID.length) : -1;
+    }
+
+    // Create and display the quiz information pop-up dialog
+    if (randomQuizIndex != -1) {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: Text('${_QuizName[randomQuizIndex]}'),
+            content: Column(
+              children: [
+                Image.asset(
+                  _Quiz_Images[randomQuizIndex],
+                  width: 300,
+                  height: 300,
+                ),
+                SizedBox(height: 10),
+                Text('Category: ${_QuizCategory[randomQuizIndex]}'),
+                Text('Type: ${_QuizType[randomQuizIndex]}'),
+                Text(
+                    'Number of Questions: ${_NumberofQuestions[randomQuizIndex]}'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                child: Text('Start Quiz'),
+                onPressed: () {
+                  if (_QuizType[randomQuizIndex] == "Short-Answer") {
+                    Navigator.pop(dialogContext);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShortQuizAnswer(
+                          quizID: _Quiz_ID[randomQuizIndex],
+                          bTimed: _QuizTimed[randomQuizIndex],
+                          iTime: _TimerTime[randomQuizIndex],
+                        ),
+                      ),
+                    );
+                  }
+                  if (_QuizType[randomQuizIndex] == "Multiple Choice") {
+                    Navigator.pop(dialogContext);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => mcqQuizAnswer(
+                          quizID: _Quiz_ID[randomQuizIndex],
+                          bTimed: _QuizTimed[randomQuizIndex],
+                          iTime: _TimerTime[randomQuizIndex],
+                        ),
+                      ),
+                    );
+                  }
+                  if (_QuizType[randomQuizIndex] == 'Multiple Answer Quiz') {
+                    Navigator.pop(dialogContext);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AnswerMAQ(
+                          quizID: _Quiz_ID[randomQuizIndex],
+                          bTimed: _QuizTimed[randomQuizIndex],
+                          iTime: _TimerTime[randomQuizIndex],
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: Text('No Quizzes Available'),
+            content: Text(
+                'There are no quizzes available for the selected category.'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -127,7 +241,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     ),
                   ),
                 ),
-                Spacer(),
+                SizedBox(width: 30),
                 Expanded(
                   flex: 3,
                   child: NavItem(
@@ -139,7 +253,8 @@ class _SelectaPageState extends State<SelectaPage> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: const Text('Sorry about that :('),
-                            content: Text("Please login in to answer a random quiz"),
+                            content:
+                                Text("Please login in to answer a random quiz"),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -154,12 +269,12 @@ class _SelectaPageState extends State<SelectaPage> {
                     },
                   ),
                 ),
-                Spacer(),
+                SizedBox(width: 8),
                 Expanded(
                   flex: 3,
                   child: NavItem(
-                    key: ValueKey('Answer a Quiz'),
-                    title: 'Answer a Quiz',
+                    key: ValueKey('Answe Quiz'),
+                    title: 'Answer Quiz',
                     tapEvent: () {
                       showDialog(
                         context: context,
@@ -181,12 +296,12 @@ class _SelectaPageState extends State<SelectaPage> {
                     },
                   ),
                 ),
-                Spacer(),
+                SizedBox(width: 10),
                 Expanded(
                   flex: 3,
                   child: NavItem(
-                    key: ValueKey('Create a Quiz'),
-                    title: 'Create a Quiz',
+                    key: ValueKey('Create Quiz'),
+                    title: 'Create Quiz',
                     tapEvent: () {
                       showDialog(
                         context: context,
@@ -208,7 +323,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     },
                   ),
                 ),
-                Spacer(),
+                SizedBox(width: 10),
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
@@ -368,7 +483,7 @@ class _SelectaPageState extends State<SelectaPage> {
                                               Row(
                                                 children: [
                                                   Text(
-                                                    'Description:',
+                                                    'DESCRIPTION:',
                                                     style:
                                                         TextStyle(fontSize: 18),
                                                   ),
@@ -421,7 +536,7 @@ class _SelectaPageState extends State<SelectaPage> {
                                                 child: Row(
                                                   children: [
                                                     Text(
-                                                      '${_NumberofQuestions[i]} Questions',
+                                                      '${_NumberofQuestions[i]} QUESTIONS',
                                                       style: TextStyle(
                                                           fontSize: 18),
                                                     ),
@@ -535,10 +650,21 @@ class _SelectaPageState extends State<SelectaPage> {
                 ),
                 Spacer(),
                 Expanded(
+                  flex: 3,
+                  child: NavItem(
+                    key: ValueKey('Random'),
+                    title: 'Random',
+                    tapEvent: () {
+                      handleRandomQuizButtonPress(context);
+                    },
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
                   flex: 2,
                   child: NavItem(
-                    key: ValueKey('Answer a Quiz'),
-                    title: 'HAnswer a Quiz',
+                    key: ValueKey('Answer Quiz'),
+                    title: 'Answer Quiz', //this one
                     tapEvent: () {
                       Navigator.push(
                         context,
@@ -547,12 +673,12 @@ class _SelectaPageState extends State<SelectaPage> {
                     },
                   ),
                 ),
-                SizedBox(width: 3),
+                Spacer(),
                 Expanded(
                   flex: 3,
                   child: NavItem(
-                    key: ValueKey('Create a Quiz'),
-                    title: 'Create a Quiz',
+                    key: ValueKey('Create Quiz'),
+                    title: 'Create Quiz',
                     tapEvent: () {
                       Navigator.push(
                         context,
@@ -560,6 +686,39 @@ class _SelectaPageState extends State<SelectaPage> {
                             builder: (context) => CreateQuizPage()),
                       );
                     },
+                  ),
+                ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        ColourPallete.gradient1,
+                        ColourPallete.gradient2,
+                      ],
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                    ),
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyApp()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(80, 35),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: const Text(
+                      'Log Out',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15, //edit this
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -654,7 +813,7 @@ class _SelectaPageState extends State<SelectaPage> {
                                               Row(
                                                 children: [
                                                   Text(
-                                                    'Description:',
+                                                    'DESCRIPTION:',
                                                     style:
                                                         TextStyle(fontSize: 18),
                                                   ),
@@ -707,7 +866,7 @@ class _SelectaPageState extends State<SelectaPage> {
                                                 child: Row(
                                                   children: [
                                                     Text(
-                                                      '${_NumberofQuestions[i]} Questions',
+                                                      '${_NumberofQuestions[i]} QUESTIONS',
                                                       style: TextStyle(
                                                           fontSize: 18),
                                                     ),
@@ -742,6 +901,22 @@ class _SelectaPageState extends State<SelectaPage> {
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               mcqQuizAnswer(
+                                                            quizID: _Quiz_ID[i],
+                                                            bTimed:
+                                                                _QuizTimed[i],
+                                                            iTime:
+                                                                _TimerTime[i],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                    if (_QuizType[i] ==
+                                                        'Multiple Answer Quiz') {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              AnswerMAQ(
                                                             quizID: _Quiz_ID[i],
                                                             bTimed:
                                                                 _QuizTimed[i],

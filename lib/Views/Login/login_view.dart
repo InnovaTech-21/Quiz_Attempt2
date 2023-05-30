@@ -74,45 +74,7 @@ class LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-
-
-                Spacer(),
-
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        ColourPallete.gradient2,
-                        ColourPallete.gradient1,
-                      ],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: ElevatedButton(
-
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Signup()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(95,35),
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+             ],
             ),
           ),
         ),
