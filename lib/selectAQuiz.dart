@@ -4,6 +4,7 @@ import 'package:quiz_website/ColourPallete.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMAQ.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerShortAns.dart';
 import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
+import 'package:quiz_website/landingpage.dart';
 import 'package:quiz_website/menu.dart';
 import 'Database Services/database.dart';
 
@@ -148,9 +149,7 @@ class _SelectPageState extends State<SelectPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => MenuPage(
-                  testFlag: false,
-                ),
+                builder: (context) => SelectaPage()
               ),
             );
           },

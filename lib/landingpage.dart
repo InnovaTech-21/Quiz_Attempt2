@@ -10,6 +10,9 @@ import 'package:quiz_website/Views/AnswerQuiz/answerMCQ.dart';
 import 'Database Services/database.dart';
 import 'package:quiz_website/selectAQuiz.dart';
 
+import 'RankingsPage.dart';
+import 'Views/quizStats/quiz_stats.dart';
+
 class SelectaPage extends StatefulWidget {
   const SelectaPage({Key? key}) : super(key: key);
 
@@ -296,11 +299,13 @@ class _SelectaPageState extends State<SelectaPage> {
                   padding: EdgeInsets.all(16.0),
                   children: [
                     SizedBox(height: 50),
-                    Text(
-                      'Trending Quizzes',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                    Center(
+                      child: Text(
+                        'Trending Quizzes',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     SizedBox(height: 50),
@@ -505,7 +510,20 @@ class _SelectaPageState extends State<SelectaPage> {
                   'assets/images/InnovaTechLogo.png',
                   width: 110,
                 ),
-                SizedBox(width: 3),
+                SizedBox(width: 10),
+                Expanded(
+                  flex: 5,
+                  child: Text(
+                    "InnovaTech Quiz Platform",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 25,
+                    ),
+                  ),
+                ),
+
+                Spacer(),
+
                 Expanded(
                   flex: 3,
                   child: NavItem(
@@ -516,19 +534,42 @@ class _SelectaPageState extends State<SelectaPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => CreateQuizPage()),
+
                       );
                     },
                   ),
                 ),
-                SizedBox(width: 10),
+                SizedBox(width: 3),
                 Expanded(
-                  flex: 5,
-                  child: Text(
-                    "InnovaTech Quiz Platform",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 25,
-                    ),
+                  flex: 3,
+                  child: NavItem(
+                    key: ValueKey('View Rankings'),
+                    title: 'View Rankings',
+                    tapEvent: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RankingsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(width: 3),
+                Expanded(
+                  flex: 3,
+                  child: NavItem(
+                    key: ValueKey('View Quiz Stats'),
+                    title: 'View Quiz Stats',
+                    tapEvent: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const QuizStatsPage(),
+                        ),
+                      );
+
+                    },
                   ),
                 ),
                 Spacer(),
@@ -580,11 +621,13 @@ class _SelectaPageState extends State<SelectaPage> {
                   padding: EdgeInsets.all(16.0),
                   children: [
                     SizedBox(height: 50),
-                    Text(
-                      'Trending Quizzes',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                    Center(
+                      child: Text(
+                        'Trending Quizzes',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     SizedBox(height: 50),
