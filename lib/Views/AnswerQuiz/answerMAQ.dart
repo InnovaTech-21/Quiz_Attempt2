@@ -9,9 +9,9 @@ import 'package:quiz_website/menu.dart';
 class AnswerMAQ extends StatefulWidget {
   AnswerMAQ(
       {Key? key,
-        required this.quizID,
-        required this.bTimed,
-        required this.iTime})
+      required this.quizID,
+      required this.bTimed,
+      required this.iTime})
       : super(key: key);
   String quizID;
   bool bTimed;
@@ -47,9 +47,9 @@ class _AnswerMAQState extends State<AnswerMAQ> {
         if (timeRemaining.value == 0) {
           timer.cancel();
           _submitAnswer();
-        } else if(isSubmited){
+        } else if (isSubmited) {
           timer.cancel();
-        }else {
+        } else {
           timeRemaining.value--;
         }
       });
@@ -65,9 +65,6 @@ class _AnswerMAQState extends State<AnswerMAQ> {
   final List<String> _question = [];
   final List<String> _potentialAnswers = [];
 
-  //String question = "List the coms subjects";
-  //List potentialAnswers = ["ML", "SD", "PC", "AAA"];
-  //int expectedNo = 10;
   final TextEditingController answerController = TextEditingController();
   List<TextEditingController> listController = [TextEditingController()];
 
@@ -79,8 +76,9 @@ class _AnswerMAQState extends State<AnswerMAQ> {
   void _submitAnswer() {
     setState(() {
       _showDialog("Your Score: ${getScore()}");
-      service.updateLevels(service.userID,1);
-      service.addUpdatedScore(widget.quizID, (listController.length - 1),  _potentialAnswers.length);
+      service.updateLevels(service.userID, 1);
+      service.addUpdatedScore(
+          widget.quizID, (listController.length - 1), _potentialAnswers.length);
       service.updateTotalScore(service.userID, (listController.length - 1));
       isSubmited = true;
       timer.cancel();
@@ -91,7 +89,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
   Future<void> getQuestionsAnswers(String x) async {
     if (_question.isEmpty) {
       List<Map<String, dynamic>> questionsAnswersList =
-      await service.getMAQQuestionsAnswers(x);
+          await service.getMAQQuestionsAnswers(x);
       _question.add(questionsAnswersList[0]["Question"][0]);
       for (int i = 0; i < questionsAnswersList[0]["Answers"].length; i++) {
         _potentialAnswers.add(questionsAnswersList[0]["Answers"][i]);
@@ -202,23 +200,15 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(width: 16),
                     Center(
                         child: Text(
-                          _question[0],
-                          style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        )),
-                    Center(
-                        child: Text(
-                          //"(Give ${expectedNo} possible answers)",
-                          " ",
-                          style: const TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 12,
-                              color: Color.fromARGB(255, 198, 195, 195)),
-                        )),
+                      _question[0],
+                      style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    )),
                     SizedBox(width: 16),
 
                     ///shows the timer widget if its a timed quiz
@@ -246,7 +236,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                 focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color:
-                                        Color.fromARGB(255, 40, 148, 248))),
+                                            Color.fromARGB(255, 40, 148, 248))),
                                 hintStyle: TextStyle(
                                     color: Color.fromARGB(255, 216, 206, 206)),
                               ),
@@ -260,7 +250,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                 setState(() {
                                   listController.add(TextEditingController(
                                       text:
-                                      ' ${listController.length}. ${answerController.text}'));
+                                          ' ${listController.length}. ${answerController.text}'));
                                   answerController.clear();
                                 });
                               }
@@ -275,7 +265,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                     borderRadius: BorderRadius.circular(5)),
                                 child: Text("Add Answer",
                                     style:
-                                    const TextStyle(color: Colors.white)),
+                                        const TextStyle(color: Colors.white)),
                               ),
                             ),
                           ),
@@ -299,7 +289,7 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                     style: TextStyle(color: Colors.white),
                                     autocorrect: true,
                                     textCapitalization:
-                                    TextCapitalization.sentences,
+                                        TextCapitalization.sentences,
                                     controller: listController[index],
                                     autofocus: false,
                                     decoration: const InputDecoration(
@@ -323,18 +313,13 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                         );
                       },
                     ),
-                    //Textbox for number of answers expected when answering quiz
 
                     const SizedBox(
                       height: 20,
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        //if ((listController.length - 1) < expectedNo) {
-                        //_showAlertDialog();
-                        //} else {
                         _submitAnswer();
-                        //}
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 40, 148, 248),
@@ -381,13 +366,13 @@ class _AnswerMAQState extends State<AnswerMAQ> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => const MenuPage(
-                                        testFlag: false,
-                                      )),
+                                            testFlag: false,
+                                          )),
                                 );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
-                                Color.fromARGB(255, 40, 148, 248),
+                                    Color.fromARGB(255, 40, 148, 248),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)),
                               ),
