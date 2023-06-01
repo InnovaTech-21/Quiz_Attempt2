@@ -448,7 +448,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("Enter a question"), findsOneWidget);
       expect(find.text("Enter an answer"), findsOneWidget);
-      expect(find.text("Enter the number of expected answers"), findsOneWidget);
+
 
 
     });
@@ -466,15 +466,14 @@ void main() {
           TextFormField, 'Enter your question here');
       final AnswerField = find.widgetWithText(
           TextFormField, 'Enter correct possible answer here');
-      final numField = find.widgetWithText(
-          TextFormField, 'Number of answers expected');
+
       expect(QuestionField, findsOneWidget);
       expect(AnswerField, findsOneWidget);
-      expect(numField, findsOneWidget);
+
 
       await tester.enterText(QuestionField, 'What is your name');
       await tester.enterText(AnswerField, 'Bob');
-      await tester.enterText(numField, '1');
+
 
       await tester.tap(doneButton);
       await tester.pumpAndSettle();

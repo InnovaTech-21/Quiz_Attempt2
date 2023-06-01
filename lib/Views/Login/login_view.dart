@@ -41,11 +41,10 @@ class LoginPageState extends State<LoginPage> {
       await service.setUserID();
 
       clearInputs();
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> MenuPage(testFlag: false,)));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> SelectaPage()));
       //print('All fields entered, please check corresponding details');
     }
   }
-
 
 
   @override
@@ -75,45 +74,7 @@ class LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-
-
-                Spacer(),
-
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        ColourPallete.gradient2,
-                        ColourPallete.gradient1,
-                      ],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: ElevatedButton(
-
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Signup()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(95,35),
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+             ],
             ),
           ),
         ),
@@ -257,7 +218,8 @@ class LoginPageState extends State<LoginPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-
+                                    // usernameController.text='shakeel@gmail.com';
+                                    // passwordController.text='\$Hak3l';
                                     user = await AuthService.loginUsingEmailPassword( email: usernameController.text, password: passwordController.text);
                                     validateAndSave();
                                   },

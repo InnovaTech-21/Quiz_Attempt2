@@ -28,11 +28,10 @@ class QuizStatsPageState extends State<QuizStatsPage> {
     getAllUniqueQuizIds();
   }
 
-
   Future<void> getAllUniqueQuizIds() async {
     if (_QuizID.isEmpty) {
       final CollectionReference collectionRef =
-      FirebaseFirestore.instance.collection('QuizResults');
+          FirebaseFirestore.instance.collection('QuizResults');
       final List<String> quizIds = [];
       try {
         final QuerySnapshot querySnapshot = await collectionRef.get();
@@ -46,7 +45,6 @@ class QuizStatsPageState extends State<QuizStatsPage> {
           // _DateCompleted.add(querySnapshot.docs[i]["Date_Created"].toString());
           if (!quizIds.contains(abc)) {
             quizIds.add(abc!);
-
           }
         }
       } catch (error) {
@@ -58,7 +56,6 @@ class QuizStatsPageState extends State<QuizStatsPage> {
         _QuizName.add(await service.getQuizName(quizIds[i]));
       }
     }
-
   }
 
   int getMinScore(String QuizID) {
@@ -190,6 +187,21 @@ class QuizStatsPageState extends State<QuizStatsPage> {
                                   children: [
                                     Text(
                                       'Min Score:',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${getMinScore(_QuizID[i ~/ 2])}',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Average Quiz Ranking:',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),

@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -14,9 +12,10 @@ class _RankingsPageState extends State<RankingsPage> {
   @override
   void initState() {
     super.initState();
-    fetchRankings();
+
   }
-  Futue<void> fetchRankings() async {
+
+  Future<void> fetchRankings() async {
     QuerySnapshot usersSnapshot =
     await FirebaseFirestore.instance.collection('Users').get();
 
@@ -40,64 +39,59 @@ class _RankingsPageState extends State<RankingsPage> {
       double lowestScorePercentage = 1000;
       double highestScorePercentage = 0;
       double average;
-      int sum = 0; int count = 0;
-      double avg_sum = 0;
+      int sum = 0;
+      int count = 0;
 
       for (int i = 0; i < quizResultsSnapshot.docs.length; i++) {
         DocumentSnapshot quizDoc = quizResultsSnapshot.docs[i];
         int score = quizDoc['CorrectAns'];
         int totalScoreOutOf = quizDoc['TotalAns'];
-        //String QuizID =  quizDoc['Quiz_ID'];
+        String QuizID = quizDoc['Quiz_ID'];
 
         totalScore1 = totalScoreOutOf;
         scores.add(score);
         totalScore += score;
-        count = count +1;
+        count++;
 
-        avg_sum= avg_sum +score/totalScoreOutOf;
-
-
-        if (score/totalScoreOutOf *100 > highestScorePercentage) {
+        if (score > highestScore) {
           highestScore = score;
-          highestScorePercentage =
-              (highestScore / totalScore1) * 100;
+          highestScorePercentage = (highestScore / totalScore1) * 100;
         }
 
-        if (score/totalScoreOutOf *100  < lowestScorePercentage) {
+        if (score < lowestScore) {
           lowestScore = score;
-          lowestScorePercentage =lowestScore / totalScore1 * 100;
-
+          lowestScorePercentage = (lowestScore / totalScore1) * 100;
         }
-
 
         numQuizzesCompleted++;
       }
+
       if (lowestScorePercentage == 1000) {
         lowestScorePercentage = 0;
       }
-      double averageScore =0;
-      if (count != 0){
-        averageScore = avg_sum/count *100;
+
+      if (count > 0 && totalScore1 > 0) {
+        average = (totalScore / (count * totalScore1)) * 100;
+      } else {
+        average = 0;
       }
-
-
-
 
       updatedRankings.add({
         'userId': userId,
         'level': level,
         'totalScore': totalScore,
         'highestScore': highestScorePercentage,
-        'averageScore': averageScore,
+        'averageScore': average,
         'lowestScore': lowestScorePercentage,
         'numQuizzesCompleted': numQuizzesCompleted,
       });
     }
 
-    setState(() {
+
       rankings = updatedRankings;
-    });
+
   }
+
   void sortRankings(String header, bool isAscending) {
     setState(() {
       rankings.sort((a, b) {
@@ -124,7 +118,7 @@ class _RankingsPageState extends State<RankingsPage> {
               return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
-            } else {// Sort the quiz names alphabetically
+            } else {
               return Padding(
                 padding: EdgeInsets.all(16.0),
                 child: LayoutBuilder(
@@ -134,7 +128,7 @@ class _RankingsPageState extends State<RankingsPage> {
                       columns: [
                         DataColumn(
                           label: Container(
-                            width: constraints.maxWidth * 0.1, // Adjust the width as needed
+                            width: constraints.maxWidth * 0.1,
                             child: Text(
                               'Name',
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -147,7 +141,7 @@ class _RankingsPageState extends State<RankingsPage> {
                         ),
                         DataColumn(
                           label: Container(
-                            width: constraints.maxWidth * 0.05, // Adjust the width as needed
+                            width: constraints.maxWidth * 0.05,
                             child: Text(
                               'Level',
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -160,7 +154,7 @@ class _RankingsPageState extends State<RankingsPage> {
                         ),
                         DataColumn(
                           label: Container(
-                            width: constraints.maxWidth * 0.05, // Adjust the width as needed
+                            width: constraints.maxWidth * 0.05,
                             child: Text(
                               'Total Score',
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -173,7 +167,7 @@ class _RankingsPageState extends State<RankingsPage> {
                         ),
                         DataColumn(
                           label: Container(
-                            width: constraints.maxWidth * 0.08, // Adjust the width as needed
+                            width: constraints.maxWidth * 0.08,
                             child: Text(
                               'Highest Score',
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -186,7 +180,7 @@ class _RankingsPageState extends State<RankingsPage> {
                         ),
                         DataColumn(
                           label: Container(
-                            width: constraints.maxWidth * 0.08, // Adjust the width as needed
+                            width: constraints.maxWidth * 0.08,
                             child: Text(
                               'Average Score',
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -199,7 +193,7 @@ class _RankingsPageState extends State<RankingsPage> {
                         ),
                         DataColumn(
                           label: Container(
-                            width: constraints.maxWidth * 0.08, // Adjust the width as needed
+                            width: constraints.maxWidth * 0.08,
                             child: Text(
                               'Lowest Score',
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -212,7 +206,7 @@ class _RankingsPageState extends State<RankingsPage> {
                         ),
                         DataColumn(
                           label: Container(
-                            width: constraints.maxWidth * 0.1, // Adjust the width as needed
+                            width: constraints.maxWidth * 0.1,
                             child: Text(
                               'Num Quizzes Completed',
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -233,12 +227,12 @@ class _RankingsPageState extends State<RankingsPage> {
                             DataCell(Text(ranking['totalScore'].toString())),
                             DataCell(Text(ranking['highestScore'].toStringAsFixed(2) + '%')),
                             DataCell(Text(ranking['averageScore'].toStringAsFixed(2)+ '%')),
-                            DataCell(Text(ranking['lowestScore'].toStringAsFixed(2) + '%') ),
+                            DataCell(Text(ranking['lowestScore'].toStringAsFixed(2) + '%')),
                             DataCell(Text(ranking['numQuizzesCompleted'].toString())),
                           ],
                         ),
                       )
-                          .toList(), // Add your data rows here
+                          .toList(),
                     );
                   },
                 ),
