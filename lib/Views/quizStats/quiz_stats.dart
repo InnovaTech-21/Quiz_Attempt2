@@ -25,8 +25,37 @@ class QuizStatsPageState extends State<QuizStatsPage> {
   @override
   void initState() {
     super.initState();
+    deleteInvalidQuizResults();
     getAllUniqueQuizIds();
+    
   }
+
+  Future<void> deleteInvalidQuizResults() async {
+  // Access the Firestore instance
+  final firestore = FirebaseFirestore.instance;
+
+  // Retrieve the list of QuizIDs from the Quizzes collection
+  final quizzesSnapshot = await firestore.collection('Quizzes').get();
+  final validQuizIds = quizzesSnapshot.docs.map((doc) => doc.id).toSet();
+
+  // Query the QuizResults collection
+  final querySnapshot = await firestore.collection('QuizResults').get();
+
+  // Iterate over the QuizResults documents
+  final batch = firestore.batch();
+  for (final doc in querySnapshot.docs) {
+    final quizId = doc.get('QuizID');
+
+    // Check if the QuizID exists in the Quizzes collection
+    if (!validQuizIds.contains(quizId)) {
+      // Delete the document from QuizResults
+      batch.delete(doc.reference);
+    }
+  }
+
+  // Commit the batch delete operation
+  await batch.commit();
+}
 
   Future<void> getAllUniqueQuizIds() async {
     if (_QuizID.isEmpty) {
