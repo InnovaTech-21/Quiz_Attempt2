@@ -28,7 +28,9 @@ import 'package:quiz_website/Views/CreateQuiz/CreateShortAns.dart';
 import 'package:quiz_website/Views/CreateQuiz/CreateMCQ.dart';
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
-class MockCollectionReference extends Mock implements CollectionReference<Map<String, dynamic>> {}
+
+class MockCollectionReference extends Mock
+    implements CollectionReference<Map<String, dynamic>> {}
 
 class MockFirebase extends Mock implements Firebase {}
 
@@ -37,23 +39,28 @@ class MockFirebaseUser extends Mock implements User {
   String get uid => '1234';
 }
 
-class MockQuerySnapshot extends Mock implements QuerySnapshot<Map<String, dynamic>> {
+class MockQuerySnapshot extends Mock
+    implements QuerySnapshot<Map<String, dynamic>> {
   @override
   List<QueryDocumentSnapshot<Map<String, dynamic>>> get docs => [
-    MockQueryDocumentSnapshot(),
-  ];
+        MockQueryDocumentSnapshot(),
+      ];
 }
 
-class MockQueryDocumentSnapshot extends Mock implements QueryDocumentSnapshot<Map<String, dynamic>> {
+class MockQueryDocumentSnapshot extends Mock
+    implements QueryDocumentSnapshot<Map<String, dynamic>> {
   @override
   Map<String, dynamic> data() => {
-    'email': 'test@test.com',
-    'password': 'password',
-  };
+        'email': 'test@test.com',
+        'password': 'password',
+      };
 }
 
 class MockFirebaseAuthFunctions {
-  static Future<User?> signInWithEmailAndPassword({required String email, required String password, required FirebaseAuth auth}) async {
+  static Future<User?> signInWithEmailAndPassword(
+      {required String email,
+      required String password,
+      required FirebaseAuth auth}) async {
     // Check if email and password are valid
     if (email.isNotEmpty && password.isNotEmpty) {
       // Create a mock FirebaseUser
@@ -68,12 +75,11 @@ class MockFirebaseAuthFunctions {
   }
 }
 
-
-
 void main() {
   test('Get QuizName', () async {
     final service = MockDataService();
-    final String? testCategories = await service.getQuizName1("97bpFHEbhuVYzi85avKcMUA92MB3");
+    final String? testCategories =
+        await service.getQuizName1("97bpFHEbhuVYzi85avKcMUA92MB3");
 
     expect(testCategories, "abc");
   });
@@ -84,21 +90,24 @@ void main() {
 
     expect(testCategories, "Shak");
   });
+
   test('Get Userid', () async {
     final service = MockDataService();
     final String? testCategories = await service.getUserID();
 
     expect(testCategories, "9eMkcVepH2tE66t3fICp");
   });
+
   test('Update Status', () async {
     final service = MockDataService();
     final String? testCategories = await service.updateQuizzesStattus();
 
     expect(testCategories, "Finished");
   });
-   test('add user', () async {
+
+  test('add user', () async {
     final service = MockDataService();
-     Map<String, dynamic> userData = {
+    Map<String, dynamic> userData = {
       "Quiz_ID": '9eMkcVepH2tE66t3fICp',
       "CorrectAns": 2,
       "TotalAns": 5,
@@ -106,18 +115,20 @@ void main() {
       "UserID": await service.getUser(),
     };
 
-     Map<String, dynamic> userData1 = await service.addUpdatedScore('9eMkcVepH2tE66t3fICp', 2, 5 );
+    Map<String, dynamic> userData1 =
+        await service.addUpdatedScore('9eMkcVepH2tE66t3fICp', 2, 5);
 
     expect(userData1['Quiz_ID'], "9eMkcVepH2tE66t3fICp");
     expect(userData1['CorrectAns'], 2);
     expect(userData1['TotalAns'], 5);
- //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
+    //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
     expect(userData1['UserID'], "Shak");
   });
-    test('add user data', () async {
+
+  test('add user data', () async {
     final service = MockDataService();
-     Map<String, dynamic> userData = {
-     // 'date_of_birth': DateTime.friday,
+    Map<String, dynamic> userData = {
+      // 'date_of_birth': DateTime.friday,
       'levels': 0,
       'total_score': 0,
       'user_email': '11aa@gmail.com',
@@ -125,44 +136,80 @@ void main() {
       'user_username': 'TestName',
     };
 
-     Map<String, dynamic> userData1 = await service.addSignupToFirestore
-     ('11aa@gmail.com','a,', 'TestName', 'Test', DateTime.now() );
+    Map<String, dynamic> userData1 = await service.addSignupToFirestore(
+        '11aa@gmail.com', 'a,', 'TestName', 'Test', DateTime.now());
 
     expect(userData1['levels'], 0);
     expect(userData1['total_score'], 0);
     expect(userData1['user_email'], '11aa@gmail.com');
- //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
+    //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
     expect(userData1['user_name'], "TestName");
-     expect(userData1['user_username'], "Test");
+    expect(userData1['user_username'], "Test");
   });
-    test('get all quizzes', () async {
-    final service = MockDataService();
-       Map<String, dynamic> questionAnswerMap1 = {
-          "Quiz_ID": '2EQTWRjpKEybsApneeBM',
-          "QuizName":'ABC',
-          "Quiz_Description":'123',
-          "Quiz_Category": "Anime",
-          "Quiz_Type": 'Short Answer',
-          "QuizTimed": false,
-          "TimerTime": 5,
-          "Number_of_questions": '5',
-          "Status": "Finished",
-          "Date_Created":Timestamp.fromDate(DateTime.now())
-        };
 
-     Map<String, dynamic> userData1 = await service.getQuizInformation1('Short Answer');
+  test('get all quizzes', () async {
+    final service = MockDataService();
+    Map<String, dynamic> questionAnswerMap1 = {
+      "Quiz_ID": '2EQTWRjpKEybsApneeBM',
+      "QuizName": 'ABC',
+      "Quiz_Description": '123',
+      "Quiz_Category": "Anime",
+      "Quiz_Type": 'Short Answer',
+      "QuizTimed": false,
+      "TimerTime": 5,
+      "Number_of_questions": '5',
+      "Status": "Finished",
+      "Date_Created": Timestamp.fromDate(DateTime.now())
+    };
+
+    Map<String, dynamic> userData1 =
+        await service.getQuizInformation1('Short Answer');
 
     expect(userData1['Quiz_ID'], '2EQTWRjpKEybsApneeBM');
     expect(userData1['QuizName'], 'ABC');
     expect(userData1['Quiz_Description'], '123');
- //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
+    //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
     expect(userData1['Quiz_Category'], "Anime");
-     expect(userData1['Quiz_Type'], "Short Answer");
-     expect(userData1['QuizTimed'], false);
-     expect(userData1['TimerTime'], 5);
-     expect(userData1['Number_of_questions'], '5');
+    expect(userData1['Quiz_Type'], "Short Answer");
+    expect(userData1['QuizTimed'], false);
+    expect(userData1['TimerTime'], 5);
+    expect(userData1['Number_of_questions'], '5');
+  });
 
+   test('get user stats', () async {
+    final service = MockDataService();
+    Map<String, dynamic> questionAnswerMap1 = {
+      "total_score": 20,
+      "ranking": 2,
+    };
 
+    Map<String, dynamic> userData1 =
+        await service.getUserStats('97bpFHEbhuVYzi85avKcMUA92MB3');
+
+    expect(userData1['total_score'], 20);
+    expect(userData1['ranking'], 2);
+
+  });
+
+   test('Update Ratings', () async {
+    final service = MockDataService();
+    final int testCategories = await service.addOrUpdateQuizRating("97bpFHEbhuVYzi85avKcMUA92MB3",4);
+
+    expect(testCategories, 4);
+  });
+
+  test('Update Levels', () async {
+    final service = MockDataService();
+    final int testCategories = await service.updateLevels("97bpFHEbhuVYzi85avKcMUA92MB3",2);
+
+    expect(testCategories, 4);
+  });
+
+  test('Update Total Score', () async {
+    final service = MockDataService();
+    final int testCategories = await service.updateTotalScore("97bpFHEbhuVYzi85avKcMUA92MB3",10);
+
+    expect(testCategories, 10);
   });
 
 
@@ -194,6 +241,7 @@ void main() {
     // Check that the login page is loaded
     expect(find.byType(LoginPage), findsOneWidget);
   });
+
   testWidgets('Signup button on welcome page navigates to sign up page', (WidgetTester tester) async {
     // Build the widget tree
     await tester.pumpWidget(const MyApp());
@@ -252,11 +300,12 @@ void main() {
     expect(find.byType(LoginPage), findsOneWidget);
   });
 
-
   testWidgets('Test sign out button', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: MenuPage(testFlag: true,),
+        home: MenuPage(
+          testFlag: true,
+        ),
       ),
     );
 
@@ -271,7 +320,9 @@ void main() {
   testWidgets('Goes to create a quiz page', (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: MenuPage(testFlag: true,),
+        home: MenuPage(
+          testFlag: true,
+        ),
       ),
     );
 
@@ -325,9 +376,6 @@ void main() {
     expect(find.text("Enter quiz description"), findsOneWidget);
   });
 
-
-
-
   testWidgets('create a short answer quiz requires input of both question and answer', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -352,8 +400,10 @@ void main() {
       ),
     );
     expect(find.text("Question 1"), findsOneWidget);
-    final QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
-    final AnswerField = find.widgetWithText(TextFormField, 'Enter the correct answer here');
+    final QuestionField =
+        find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField =
+        find.widgetWithText(TextFormField, 'Enter the correct answer here');
     expect(QuestionField, findsOneWidget);
     expect(AnswerField, findsOneWidget);
 
@@ -367,18 +417,19 @@ void main() {
     await tester.tap(nextButton);
     await tester.pumpAndSettle();
     expect(find.text("Question 2"), findsOneWidget);
-
   });
 
-  testWidgets('User can go back and edit previous questions in Short answer quizes', (WidgetTester tester) async {
+  testWidgets('User can go back and edit previous questions in Short answer quizzes', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: ShortAnswerQuestionPage(),
       ),
     );
     expect(find.text("Question 1"), findsOneWidget);
-    final QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
-    final AnswerField = find.widgetWithText(TextFormField, 'Enter the correct answer here');
+    final QuestionField =
+        find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField =
+        find.widgetWithText(TextFormField, 'Enter the correct answer here');
     expect(QuestionField, findsOneWidget);
     expect(AnswerField, findsOneWidget);
 
@@ -400,86 +451,77 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text("Question 1"), findsOneWidget);
     expect(find.text("What is your name"), findsOneWidget);
-
   });
 
-   // testWidgets('Test publish page validation works', (WidgetTester tester) async {
-    //  List<String> questions=['Question'];
-    //  List<String> answers=['Answer'];
-    //  await tester.pumpWidget(
-    //    MaterialApp(
-   //       home: publishPage(questions: questions,answers: answers,quizType: 1,),
-    //    ),
-    //  );
+  // testWidgets('Test publish page validation works', (WidgetTester tester) async {
+  //  List<String> questions=['Question'];
+  //  List<String> answers=['Answer'];
+  //  await tester.pumpWidget(
+  //    MaterialApp(
+  //       home: publishPage(questions: questions,answers: answers,quizType: 1,),
+  //    ),
+  //  );
 
-   //   expect(find.text("Question 1"), findsOneWidget);
-    //  final isTimedCheckbox =find.widgetWithText(CheckboxListTile, 'Timed quiz');
-   //   expect(isTimedCheckbox, findsOneWidget);
-   //   await tester.tap(isTimedCheckbox);
-   //   await tester.pumpAndSettle();
-   //   expect(find.text("Time limit (in format min:sec)"), findsOneWidget);
+  //   expect(find.text("Question 1"), findsOneWidget);
+  //  final isTimedCheckbox =find.widgetWithText(CheckboxListTile, 'Timed quiz');
+  //   expect(isTimedCheckbox, findsOneWidget);
+  //   await tester.tap(isTimedCheckbox);
+  //   await tester.pumpAndSettle();
+  //   expect(find.text("Time limit (in format min:sec)"), findsOneWidget);
   //    final timeField = find.widgetWithText(TextFormField, 'Time limit (in format min:sec)');
-    //  final publishButton = find.text('Publish quiz');
-   //   expect(publishButton, findsOneWidget);
-   //   await tester.tap(publishButton);
-   //   await tester.pumpAndSettle();
+  //  final publishButton = find.text('Publish quiz');
+  //   expect(publishButton, findsOneWidget);
+  //   await tester.tap(publishButton);
+  //   await tester.pumpAndSettle();
   //    expect(find.text("Enter a time limit"), findsOneWidget);
   //    await tester.enterText(timeField,'a');
   //    await tester.tap(publishButton);
   //    await tester.pumpAndSettle();
   //    expect(find.text("Time limit in incorrect format"), findsOneWidget);
   //    await tester.enterText(timeField,'8:');
-   //   await tester.tap(publishButton);
-   //   await tester.pumpAndSettle();
-   //   expect(find.text("Time limit in incorrect format"), findsOneWidget);
+  //   await tester.tap(publishButton);
+  //   await tester.pumpAndSettle();
+  //   expect(find.text("Time limit in incorrect format"), findsOneWidget);
 
+  //});
 
-    //});
+  testWidgets('create a maq requires input of question, answer and number of expected answers', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CreateMAQ(),
+      ),
+    );
+    final doneButton = find.text('Done');
+    expect(doneButton, findsOneWidget);
+    await tester.tap(doneButton);
+    await tester.pumpAndSettle();
+    expect(find.text("Enter a question"), findsOneWidget);
+    expect(find.text("Enter an answer"), findsOneWidget);
+  });
 
-    testWidgets('create a maq requires input of question, answer and number of expected answers', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: CreateMAQ(),
-        ),
-      );
-      final doneButton = find.text('Done');
-      expect(doneButton, findsOneWidget);
-      await tester.tap(doneButton);
-      await tester.pumpAndSettle();
-      expect(find.text("Enter a question"), findsOneWidget);
-      expect(find.text("Enter an answer"), findsOneWidget);
+  testWidgets('create a maq goes to publish page if valid', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CreateMAQ(),
+      ),
+    );
 
+    final doneButton = find.text('Done');
+    expect(doneButton, findsOneWidget);
+    final QuestionField =
+        find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField = find.widgetWithText(
+        TextFormField, 'Enter correct possible answer here');
+    expect(QuestionField, findsOneWidget);
+    expect(AnswerField, findsOneWidget);
 
+    await tester.enterText(QuestionField, 'What is your name');
+    await tester.enterText(AnswerField, 'Bob');
 
-    });
-
-    testWidgets('create a maq goes to publish page if valid', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: CreateMAQ(),
-        ),
-      );
-
-      final doneButton = find.text('Done');
-      expect(doneButton, findsOneWidget);
-      final QuestionField = find.widgetWithText(
-          TextFormField, 'Enter your question here');
-      final AnswerField = find.widgetWithText(
-          TextFormField, 'Enter correct possible answer here');
-
-      expect(QuestionField, findsOneWidget);
-      expect(AnswerField, findsOneWidget);
-
-
-      await tester.enterText(QuestionField, 'What is your name');
-      await tester.enterText(AnswerField, 'Bob');
-
-
-      await tester.tap(doneButton);
-      await tester.pumpAndSettle();
-      expect(find.byType(publishPage), findsOneWidget);
-
-    });
+    await tester.tap(doneButton);
+    await tester.pumpAndSettle();
+    expect(find.byType(publishPage), findsOneWidget);
+  });
 
   testWidgets('create a mcq requires input of both question and 4 answers', (WidgetTester tester) async {
     await tester.pumpWidget(
@@ -503,19 +545,19 @@ void main() {
     expect(find.text("Enter an answer"), findsNWidgets(4));
   });
 
-  testWidgets('Short answer quiz with 3 questions goes to publish page', (WidgetTester tester) async{
+  testWidgets('Short answer quiz with 3 questions goes to publish page', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: ShortAnswerQuestionPage(),
       ),
     );
 
-    for(int i=0; i<2;i++) {
-      expect(find.text("Question ${i+1}"), findsOneWidget);
-      final QuestionField = find.widgetWithText(
-          TextFormField, 'Enter your question here');
-      final AnswerField = find.widgetWithText(
-          TextFormField, 'Enter the correct answer here');
+    for (int i = 0; i < 2; i++) {
+      expect(find.text("Question ${i + 1}"), findsOneWidget);
+      final QuestionField =
+          find.widgetWithText(TextFormField, 'Enter your question here');
+      final AnswerField =
+          find.widgetWithText(TextFormField, 'Enter the correct answer here');
       expect(QuestionField, findsOneWidget);
       expect(AnswerField, findsOneWidget);
 
@@ -528,12 +570,11 @@ void main() {
       // Tap create quiz button and verify navigation
       await tester.tap(nextButton);
       await tester.pumpAndSettle();
-
     }
-    final QuestionField = find.widgetWithText(
-        TextFormField, 'Enter your question here');
-    final AnswerField = find.widgetWithText(
-        TextFormField, 'Enter the correct answer here');
+    final QuestionField =
+        find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField =
+        find.widgetWithText(TextFormField, 'Enter the correct answer here');
     expect(QuestionField, findsOneWidget);
     expect(AnswerField, findsOneWidget);
 
@@ -546,60 +587,28 @@ void main() {
     await tester.tap(doneButton);
     await tester.pumpAndSettle();
     expect(find.byType(publishPage), findsOneWidget);
-
-
   });
 
-  testWidgets('MCQ with 3 questions goes to publish page', (WidgetTester tester) async{
+  testWidgets('MCQ with 3 questions goes to publish page', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: mCQ_Question_Page(),
       ),
     );
 
-      expect(find.text("Question 1"), findsOneWidget);
-      var QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
-      var AnswerField1 = find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
-      var AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
-      var AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
-      var AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
-      expect(QuestionField, findsOneWidget);
-      expect(AnswerField1, findsOneWidget);
-      expect(AnswerField2, findsOneWidget);
-      expect(AnswerField3, findsOneWidget);
-      expect(AnswerField4, findsOneWidget);
-
-
-      await tester.enterText(QuestionField, 'What is your name');
-      await tester.enterText(AnswerField1, 'Bob1');
-      await tester.enterText(AnswerField2, 'Bob2');
-      await tester.enterText(AnswerField3, 'Bob3');
-      await tester.enterText(AnswerField4, 'Bob4');
-
-      await tester.dragUntilVisible(
-        find.byType(ElevatedButton),
-        find.widgetWithText(ElevatedButton, 'Next'),
-        const Offset(0, -100),
-      );
-      var nextButton = find.text('Next Question');
-      expect(nextButton, findsOneWidget);
-
-      // Tap create quiz button and verify navigation
-      await tester.tap(nextButton);
-      await tester.pumpAndSettle();
-
-    expect(find.text("Question 2"), findsOneWidget);
-     QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
-     AnswerField1 = find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
-     AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
-     AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
-     AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
+    expect(find.text("Question 1"), findsOneWidget);
+    var QuestionField =
+        find.widgetWithText(TextFormField, 'Enter your question here');
+    var AnswerField1 =
+        find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
+    var AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
+    var AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
+    var AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
     expect(QuestionField, findsOneWidget);
     expect(AnswerField1, findsOneWidget);
     expect(AnswerField2, findsOneWidget);
     expect(AnswerField3, findsOneWidget);
     expect(AnswerField4, findsOneWidget);
-
 
     await tester.enterText(QuestionField, 'What is your name');
     await tester.enterText(AnswerField1, 'Bob1');
@@ -607,25 +616,57 @@ void main() {
     await tester.enterText(AnswerField3, 'Bob3');
     await tester.enterText(AnswerField4, 'Bob4');
 
+    await tester.dragUntilVisible(
+      find.byType(ElevatedButton),
+      find.widgetWithText(ElevatedButton, 'Next'),
+      const Offset(0, -100),
+    );
+    var nextButton = find.text('Next Question');
+    expect(nextButton, findsOneWidget);
 
-     nextButton = find.text('Next Question');
+    // Tap create quiz button and verify navigation
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text("Question 2"), findsOneWidget);
+    QuestionField =
+        find.widgetWithText(TextFormField, 'Enter your question here');
+    AnswerField1 =
+        find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
+    AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
+    AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
+    AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
+    expect(QuestionField, findsOneWidget);
+    expect(AnswerField1, findsOneWidget);
+    expect(AnswerField2, findsOneWidget);
+    expect(AnswerField3, findsOneWidget);
+    expect(AnswerField4, findsOneWidget);
+
+    await tester.enterText(QuestionField, 'What is your name');
+    await tester.enterText(AnswerField1, 'Bob1');
+    await tester.enterText(AnswerField2, 'Bob2');
+    await tester.enterText(AnswerField3, 'Bob3');
+    await tester.enterText(AnswerField4, 'Bob4');
+
+    nextButton = find.text('Next Question');
     expect(nextButton, findsOneWidget);
 
     // Tap create quiz button and verify navigation
     await tester.tap(nextButton);
     await tester.pumpAndSettle();
     expect(find.text("Question 3"), findsOneWidget);
-     QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
-     AnswerField1 = find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
-     AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
-     AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
-     AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
+    QuestionField =
+        find.widgetWithText(TextFormField, 'Enter your question here');
+    AnswerField1 =
+        find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
+    AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
+    AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
+    AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
     expect(QuestionField, findsOneWidget);
     expect(AnswerField1, findsOneWidget);
     expect(AnswerField2, findsOneWidget);
     expect(AnswerField3, findsOneWidget);
     expect(AnswerField4, findsOneWidget);
-
 
     await tester.enterText(QuestionField, 'What is your name');
     await tester.enterText(AnswerField1, 'Bob1');
@@ -633,16 +674,15 @@ void main() {
     await tester.enterText(AnswerField3, 'Bob3');
     await tester.enterText(AnswerField4, 'Bob4');
 
-
-     final doneButton = find.text('Done');
+    final doneButton = find.text('Done');
     expect(doneButton, findsOneWidget);
 
     // Tap create quiz button and verify navigation
     await tester.tap(doneButton);
     await tester.pumpAndSettle();
     expect(find.byType(publishPage), findsOneWidget);
-
   });
+
   testWidgets('create a mcq goes to next question when input valid', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -650,8 +690,10 @@ void main() {
       ),
     );
     expect(find.text("Question 1"), findsOneWidget);
-    final QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
-    final AnswerField1 = find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
+    final QuestionField =
+        find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField1 =
+        find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
     final AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
     final AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
     final AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
@@ -660,7 +702,6 @@ void main() {
     expect(AnswerField2, findsOneWidget);
     expect(AnswerField3, findsOneWidget);
     expect(AnswerField4, findsOneWidget);
-
 
     await tester.enterText(QuestionField, 'What is your name');
     await tester.enterText(AnswerField1, 'Bob1');
@@ -680,7 +721,6 @@ void main() {
     await tester.tap(nextButton);
     await tester.pumpAndSettle();
     expect(find.text("Question 2"), findsOneWidget);
-
   });
 
   testWidgets('User can go back and edit previous questions in MCQ', (WidgetTester tester) async {
@@ -690,8 +730,10 @@ void main() {
       ),
     );
     expect(find.text("Question 1"), findsOneWidget);
-    final QuestionField = find.widgetWithText(TextFormField, 'Enter your question here');
-    final AnswerField1 = find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
+    final QuestionField =
+        find.widgetWithText(TextFormField, 'Enter your question here');
+    final AnswerField1 =
+        find.widgetWithText(TextFormField, 'Option 1 (correct answer)');
     final AnswerField2 = find.widgetWithText(TextFormField, 'Option 2');
     final AnswerField3 = find.widgetWithText(TextFormField, 'Option 3');
     final AnswerField4 = find.widgetWithText(TextFormField, 'Option 4');
@@ -700,7 +742,6 @@ void main() {
     expect(AnswerField2, findsOneWidget);
     expect(AnswerField3, findsOneWidget);
     expect(AnswerField4, findsOneWidget);
-
 
     await tester.enterText(QuestionField, 'What is your name');
     await tester.enterText(AnswerField1, 'Bob1');
@@ -725,7 +766,6 @@ void main() {
     expect(find.text('Option 3'), findsOneWidget);
     expect(find.text('Option 4'), findsOneWidget);
 
-
     final prevButton = find.text('Previous Question');
     expect(prevButton, findsOneWidget);
     await tester.tap(prevButton);
@@ -736,12 +776,31 @@ void main() {
     expect(find.text("Bob2"), findsOneWidget);
     expect(find.text("Bob3"), findsOneWidget);
     expect(find.text("Bob4"), findsOneWidget);
-
   });
-  group('Form Validation Tests', ()
-  {
-    late SignupState
-    instance;
+
+
+
+  group('Create Quiz Validation',() {
+    late CreateQuizPageState instance;
+
+    setUp(() {
+      instance = CreateQuizPageState();
+    });
+
+    test('Empty quiz name should return an error', () {
+      final result = instance.validateName('');
+      expect(result, 'Enter quiz name');
+    });
+
+    test('Empty quiz description should return an error', () {
+      final result = instance.validateDescription('');
+      expect(result, 'Enter quiz description');
+    });
+  });
+
+
+  group('Form Validation Tests', () {
+    late SignupState instance;
 
     setUp(() {
       instance = SignupState();
@@ -793,13 +852,12 @@ void main() {
           result, 'Must contain mix of lowercase, uppercase, digits, symbols.');
     });
 
-    testWidgets('valid email required to reset password', (WidgetTester tester) async {
+    testWidgets('valid email required to reset password',(WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: ForgotPasswordPage(),
         ),
       );
-
 
       final resetButton = find.widgetWithText(ElevatedButton, 'Reset Password');
 
@@ -807,16 +865,16 @@ void main() {
       await tester.tap(resetButton);
       await tester.pumpAndSettle();
       expect(find.text("Enter Valid Email"), findsOneWidget);
-
     });
 
-    testWidgets('select a quiz to answer button goes to select quiz page', (WidgetTester tester) async {
+    testWidgets('select a quiz to answer button goes to select quiz page',(WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: MenuPage(testFlag: true,),
+          home: MenuPage(
+            testFlag: true,
+          ),
         ),
       );
-
 
       final doQuizButton = find.widgetWithText(ElevatedButton, 'Answer a Quiz');
 
@@ -824,8 +882,8 @@ void main() {
       await tester.tap(doQuizButton);
       await tester.pumpAndSettle();
       expect(find.byType(SelectPage), findsOneWidget);
-
     });
+
     test('Strong password should return null', () {
       final result = instance.validatePassword('Abcd1234@');
       expect(result, null);
@@ -835,7 +893,6 @@ void main() {
       final result = instance.validateConfirm('');
       expect(result, null);
     });
-
 
     test('Invalid email should return an error', () {
       final result = instance.validateEmail('invalid.email.com');
@@ -847,6 +904,8 @@ void main() {
       expect(result, null);
     });
   });
+
+
 
   // testWidgets('create image quiz loads correctly', (WidgetTester tester) async {
   //   await tester.pumpWidget(
@@ -865,16 +924,4 @@ void main() {
   //
   //   expect(find.byType(FloatingActionButton), findsNWidgets(6));
   // });
-
-
 }
-
-
-
-
-
-
-
-
-
-

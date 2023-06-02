@@ -46,7 +46,7 @@ class _SelectaPageState extends State<SelectaPage> {
   ///method to load completed quiz's from database
   Future<void> getQuizInformation(String x) async {
     CollectionReference users =
-    FirebaseFirestore.instance.collection('Quizzes');
+        FirebaseFirestore.instance.collection('Quizzes');
     x = _selectedFilter;
     String y = 'Finished';
     QuerySnapshot questionsSnapshot;
@@ -116,7 +116,7 @@ class _SelectaPageState extends State<SelectaPage> {
     // Generate a random index until a quiz with _QuizPrereq[randomQuizIndex] = "none" is found
     while (randomQuizIndex == -1 || _QuizPrereq[randomQuizIndex] != "none") {
       randomQuizIndex =
-      _Quiz_ID.isNotEmpty ? Random().nextInt(_Quiz_ID.length) : -1;
+          _Quiz_ID.isNotEmpty ? Random().nextInt(_Quiz_ID.length) : -1;
     }
 
     // Create and display the quiz information pop-up dialog
@@ -216,6 +216,7 @@ class _SelectaPageState extends State<SelectaPage> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     if (service.userID == '') {
@@ -275,8 +276,8 @@ class _SelectaPageState extends State<SelectaPage> {
                 Expanded(
                   flex: 3,
                   child: NavItem(
-                    key: ValueKey('Answer a Quiz'),
-                    title: 'Answer a Quiz',
+                    key: ValueKey('Answer Quiz'),
+                    title: 'Answer Quiz',
                     tapEvent: () {
                       showDialog(
                         context: context,
@@ -302,8 +303,8 @@ class _SelectaPageState extends State<SelectaPage> {
                 Expanded(
                   flex: 3,
                   child: NavItem(
-                    key: ValueKey('Create a Quiz'),
-                    title: 'Create a Quiz',
+                    key: ValueKey('Create Quiz'),
+                    title: 'Create Quiz',
                     tapEvent: () {
                       showDialog(
                         context: context,
@@ -448,13 +449,15 @@ class _SelectaPageState extends State<SelectaPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Expanded(
-                                    flex: 2,
-                                    child: Image.asset(
-                                      _Quiz_Images[i],
-                                      width: 300,
-                                      height: 300,
-                                    ),
-                                  ),
+                                      flex: 2,
+                                      child: Container(
+                                        child: Image.asset(
+                                          _Quiz_Images[i],
+                                          width: 190,
+                                          height: 190,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )),
                                   const SizedBox(height: 20),
                                   Expanded(
                                     flex: 3,
@@ -474,24 +477,6 @@ class _SelectaPageState extends State<SelectaPage> {
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.bold,
                                               ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 15),
-                                          Expanded(
-                                            child: Row(
-                                              children: [
-                                                const Text(
-                                                  'Description:',
-                                                  style:
-                                                  TextStyle(fontSize: 18),
-                                                ),
-                                                Spacer(),
-                                                Text(
-                                                  '${_QuizDesc[i]}',
-                                                  style:
-                                                  TextStyle(fontSize: 18),
-                                                ),
-                                              ],
                                             ),
                                           ),
                                           SizedBox(height: 15),
@@ -535,7 +520,7 @@ class _SelectaPageState extends State<SelectaPage> {
                                             child: Row(
                                               children: [
                                                 Text(
-                                                  '${_NumberofQuestions[i]} Questions',
+                                                  '${_NumberofQuestions[i]} QUESTIONS',
                                                   style:
                                                       TextStyle(fontSize: 18),
                                                 ),
@@ -549,17 +534,22 @@ class _SelectaPageState extends State<SelectaPage> {
                                               onPressed: () {
                                                 showDialog(
                                                   context: context,
-                                                  builder: (BuildContext context) {
+                                                  builder:
+                                                      (BuildContext context) {
                                                     return AlertDialog(
-                                                      title: const Text('Sorry about that :('),
-                                                      content:
-                                                      Text("Please login in to answer a random quiz"),
+                                                      title: const Text(
+                                                          'Sorry about that :('),
+                                                      content: Text(
+                                                          "Please login in to answer a random quiz"),
                                                       actions: [
                                                         TextButton(
                                                           onPressed: () {
-                                                            Navigator.of(context).pop();
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
                                                           },
-                                                          child: const Text('OK'),
+                                                          child:
+                                                              const Text('OK'),
                                                         ),
                                                       ],
                                                     );
@@ -635,9 +625,7 @@ class _SelectaPageState extends State<SelectaPage> {
                     ),
                   ),
                 ),
-
                 Spacer(),
-
                 Expanded(
                   flex: 3,
                   child: NavItem(
@@ -645,7 +633,6 @@ class _SelectaPageState extends State<SelectaPage> {
                     title: 'Random',
                     tapEvent: () {
                       handleRandomQuizButtonPress(context);
-
                     },
                   ),
                 ),
@@ -678,7 +665,6 @@ class _SelectaPageState extends State<SelectaPage> {
                           builder: (context) => const QuizStatsPage(),
                         ),
                       );
-
                     },
                   ),
                 ),
@@ -686,8 +672,8 @@ class _SelectaPageState extends State<SelectaPage> {
                 Expanded(
                   flex: 2,
                   child: NavItem(
-                    key: ValueKey('Answer a Quiz'),
-                    title: 'Answer a Quiz',
+                    key: ValueKey('Answer Quiz'),
+                    title: 'Answer Quiz',
                     tapEvent: () {
                       Navigator.push(
                         context,
@@ -700,8 +686,8 @@ class _SelectaPageState extends State<SelectaPage> {
                 Expanded(
                   flex: 3,
                   child: NavItem(
-                    key: ValueKey('Create a Quiz'),
-                    title: 'Create a Quiz',
+                    key: ValueKey('Create Quiz'),
+                    title: 'Create Quiz',
                     tapEvent: () {
                       Navigator.push(
                         context,
@@ -766,13 +752,15 @@ class _SelectaPageState extends State<SelectaPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Expanded(
-                                    flex: 2,
-                                    child: Image.asset(
-                                      _Quiz_Images[i],
-                                      width: 300,
-                                      height: 300,
-                                    ),
-                                  ),
+                                      flex: 2,
+                                      child: Container(
+                                        child: Image.asset(
+                                          _Quiz_Images[i],
+                                          width: 190,
+                                          height: 190,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )),
                                   const SizedBox(height: 20),
                                   Expanded(
                                     flex: 3,
@@ -835,7 +823,7 @@ class _SelectaPageState extends State<SelectaPage> {
                                             child: Row(
                                               children: [
                                                 Text(
-                                                  '${_NumberofQuestions[i]} Questions',
+                                                  '${_NumberofQuestions[i]} QUESTIONS',
                                                   style:
                                                       TextStyle(fontSize: 18),
                                                 ),
@@ -868,6 +856,20 @@ class _SelectaPageState extends State<SelectaPage> {
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           mcqQuizAnswer(
+                                                        quizID: _Quiz_ID[i],
+                                                        bTimed: _QuizTimed[i],
+                                                        iTime: _TimerTime[i],
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                                if (_QuizType[i] ==
+                                                    'Multiple Answer Quiz') {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          AnswerMAQ(
                                                         quizID: _Quiz_ID[i],
                                                         bTimed: _QuizTimed[i],
                                                         iTime: _TimerTime[i],

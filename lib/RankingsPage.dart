@@ -20,7 +20,7 @@ class _RankingsPageState extends State<RankingsPage> {
     await FirebaseFirestore.instance.collection('Users').get();
 
     final List<Map<String, dynamic>> updatedRankings = [];
-
+    if(rankings.isEmpty){
     for (int i = 0; i < usersSnapshot.docs.length; i++) {
       DocumentSnapshot quizDoc = usersSnapshot.docs[i];
       int level = quizDoc['levels'];
@@ -48,17 +48,17 @@ class _RankingsPageState extends State<RankingsPage> {
         int totalScoreOutOf = quizDoc['TotalAns'];
         String QuizID = quizDoc['Quiz_ID'];
 
-        totalScore1 = totalScoreOutOf;
+        totalScore1 += totalScoreOutOf;
         scores.add(score);
         totalScore += score;
         count++;
 
-        if (score > highestScore) {
+        if (score/totalScoreOutOf > highestScorePercentage) {
           highestScore = score;
           highestScorePercentage = (highestScore / totalScore1) * 100;
         }
 
-        if (score < lowestScore) {
+        if (score/totalScoreOutOf < lowestScorePercentage) {
           lowestScore = score;
           lowestScorePercentage = (lowestScore / totalScore1) * 100;
         }
@@ -71,7 +71,7 @@ class _RankingsPageState extends State<RankingsPage> {
       }
 
       if (count > 0 && totalScore1 > 0) {
-        average = (totalScore / (count * totalScore1)) * 100;
+        average = (totalScore / ( totalScore1)) * 100;
       } else {
         average = 0;
       }
@@ -89,7 +89,8 @@ class _RankingsPageState extends State<RankingsPage> {
 
 
       rankings = updatedRankings;
-
+    
+  }
   }
 
   void sortRankings(String header, bool isAscending) {
@@ -102,6 +103,7 @@ class _RankingsPageState extends State<RankingsPage> {
         }
       });
     });
+   rankings = rankings.reversed.toList();
   }
 
   @override
