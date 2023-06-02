@@ -104,7 +104,8 @@ class CreateQuizPageState extends State<CreateQuizPage> {
       final response = await sendChatGPTRequest(
           'i want you to give me questions and answers to a multiple choice quiz of a topic of my '
           'choice. your response must be in the form Question: [the question] newline Answer:[the correct answer, incorrect option, '
-          'incorrect option, incorrect option] newline and so on. Do not say anything else except for the questions and '
+          'incorrect option, incorrect option](the correct option must always appear first in the list and the other three option must be incorrect) '
+              'newline and so on. Do not say anything else except for the questions and '
           'answers in this format. The topic of the quiz is [$quizName] and there must be [$NumofQuestions] questions');
       // Process the API response and extract the generated questions and answers
       final choices = response['choices'];
@@ -209,9 +210,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
   }
 
   Future<void> _submit() async {
-    if (selectedImagePath == '') {
-      selectedImagePath = 'assets/images/InnovaTechLogo.png';
-    }
+
     if (_formKey.currentState!.validate()) {
       ///write to database
       service.addDataToCreateaQuizFirestore(
@@ -284,6 +283,7 @@ class CreateQuizPageState extends State<CreateQuizPage> {
           _showDialog("Goes to " + getQuizType()! + " page");
         }
       }
+
     }
   }
 
@@ -717,8 +717,10 @@ class CreateQuizPageState extends State<CreateQuizPage> {
                                 borderRadius: BorderRadius.circular(7),
                               ),
                               child: ElevatedButton(
-                                onPressed: () {
-                                  _submit();
+                                onPressed: ()  {
+                                   _submit();
+                                  // questions.clear();
+                                  // answers.clear();
                                 },
                                 style: ElevatedButton.styleFrom(
                                   fixedSize: const Size(395, 55),
