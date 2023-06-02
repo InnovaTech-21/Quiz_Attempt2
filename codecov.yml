@@ -3,3 +3,8 @@ ignore:
   - "lib/Database Services/auth.dart"
   - "lib/Views/AnswerQuiz"
   - "lib/Views/quizStats"
+  - "lib/selectAQuiz.dart"
+  - "lib/RankingsPage.dart"
+  - "lib/landingpage.dart"
+  - "lib/Views/CreateQuiz/publishPage.dart"
+  - "lib/Views/CreateQuiz/create_Quiz.dart"

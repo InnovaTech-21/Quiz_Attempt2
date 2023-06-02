@@ -301,6 +301,310 @@ class MockDataService extends Mock implements DatabaseService {
 
     return updatedScore;
   }
+  @override
+  Future<void> addImagesToFirestore(String question, Image1url, image2url,
+      image3url, image4url, image5url, image6url, int index) async {
+    ///Create quizzes created successfully, now add data to Firestore
+    ///
+    final firestore = FakeFirebaseFirestore();
 
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3').collection('Questions')
+        .add({
+      'Question': question,
+      'Answers': Image1url,
+      'Option1': image2url,
+      'Option2': image3url,
+      'Option3': image4url,
+      'Option4': image5url,
+      'Option5': image6url,
+      'QuestionNo': index,
+      //"URL": imageUrl,
+    });
+  }
+  @override
+  Future<void> addNumberOfQuestions(String quizID, int numQuestions,
+      bool isTimed, int time, String id) async {
+    final firestore = FakeFirebaseFirestore();
+
+    await firestore
+        .collection('Quizzes')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3').collection("Quizzes")
+        .add({
+      'Number_of_questions': numQuestions,
+      'QuizTimed': isTimed,
+      'TimerTime': time,
+      'prerequisite_quizzes': id
+    });
+    print('Successfully updated the number of questions for QuizID $quizID');
+  }
+  @override
+  Future<void> addDataToCreateaQuizFirestore1(String getQuizName,String  getQuizType,String getQuizDescription,String getQuizCategory, String imageURL) async {
+    final firestore = FakeFirebaseFirestore();
+    ///Create quizzes created successfully, now add data to Firestore
+    await firestore
+        .collection('Quizzes')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3').collection('Quizzes')
+        .add( {
+      'Status': 'Pending',
+      'QuizName': getQuizName,
+      'Quiz_Type': getQuizType,
+      'Quiz_Description': getQuizDescription,
+      'Quiz_Category': getQuizCategory,
+      'Number_of_questions': 0,
+      'Username': '1',
+      "Date_Created": Timestamp.fromDate(DateTime.now()),
+      "Quiz_ID": "abc",
+      "Quiz_URL": imageURL,
+    });
+  }
+  Future<List<Map<String, dynamic>>> getMAQQuestionsAnswers(String x) async {
+    List<Map<String, dynamic>> questionsAnswersList = [];
+    final firestore = FakeFirebaseFirestore();
+
+    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3')
+        .set( {
+      "Question":'What is x',
+      "Answers": 'b ^ b',
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w')
+        .set( {
+      "Question":'What is x',
+      "Answers": 'b2 ^ b2',
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w2')
+        .set( {
+      "Question":'What is x',
+      "Answers": 'b3  ^ b3',
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w21')
+        .set( {
+      "Question":'What is x',
+      "Answers": 'b3  ^ b2',
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w24')
+        .set( {
+      "Question":'What is x',
+      "Answers": 'b2  ^ b3',
+    });
+    DocumentSnapshot docSnapshot4 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w21')
+        .get();
+    DocumentSnapshot docSnapshot5 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w24')
+        .get();
+    DocumentSnapshot docSnapshot = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3')
+        .get();
+    DocumentSnapshot docSnapshot2 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w')
+        .get();
+    DocumentSnapshot docSnapshot3 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w2')
+        .get();
+    questionsAnswersList.add({
+      'Question': docSnapshot['Question'],
+      'Answers': docSnapshot['Answers'],
+    });
+    questionsAnswersList.add({
+      'Question': docSnapshot2['Question'],
+      'Answers': docSnapshot2['Answers'],
+    });
+    questionsAnswersList.add({
+      'Question': docSnapshot3['Question'],
+      'Answers': docSnapshot3['Answers'],
+    });
+    questionsAnswersList.add({
+      'Question': docSnapshot4['Question'],
+      'Answers': docSnapshot4['Answers'],
+    });
+    questionsAnswersList.add({
+      'Question': docSnapshot5['Question'],
+      'Answers': docSnapshot5['Answers'],
+    });
+
+    return questionsAnswersList;
+  }
+  Future<List<Map<String, dynamic>>> getShortQuestionsAnswers(String x) async {
+    List<Map<String, dynamic>> questionsAnswersList = [];
+
+    //List<Map<String, dynamic>> questionsAnswersList = [];
+    final firestore = FakeFirebaseFirestore();
+
+    //QuerySnapshot recentQuizzesSnapshot = await users.where("QuizID", isEqualTo: x).get();
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3222a')
+        .set( {
+      "Question":'What is b',
+      "Answers": 'd',
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3222a')
+        .set( {
+      "Question":'What is a',
+      "Answers": 'd',
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3')
+        .set( {
+      "Question":'What is x',
+      "Answers": 'd',
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w')
+        .set( {
+      "Question":'What is y',
+      "Answers": 'd2',
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w2')
+        .set( {
+      "Question":'What is z',
+      "Answers": 'd3',
+    });
+    DocumentSnapshot docSnapshot4 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3222a')
+        .get();
+    DocumentSnapshot docSnapshot5 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3222a')
+        .get();
+    DocumentSnapshot docSnapshot = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3')
+        .get();
+    DocumentSnapshot docSnapshot2 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w')
+        .get();
+    DocumentSnapshot docSnapshot3 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w2')
+        .get();
+    questionsAnswersList.add({
+      'Question': docSnapshot['Question'],
+      'Answers': docSnapshot['Answers'],
+    });
+    questionsAnswersList.add({
+      'Question': docSnapshot2['Question'],
+      'Answers': docSnapshot2['Answers'],
+    });
+    questionsAnswersList.add({
+      'Question': docSnapshot3['Question'],
+      'Answers': docSnapshot3['Answers'],
+    });
+    questionsAnswersList.add({
+      'Question': docSnapshot4['Question'],
+      'Answers': docSnapshot4['Answers'],
+    });
+    questionsAnswersList.add({
+      'Question': docSnapshot5['Question'],
+      'Answers': docSnapshot5['Answers'],
+    });
+    return questionsAnswersList;
+
+  }
+  Future<List<Map<String, dynamic>>> getMCQQuestionsAnswers(String x) async {
+    List<Map<String, dynamic>> questionsAnswersList = [];
+    // List<Map<String, dynamic>> questionsAnswersList = [];
+
+    //List<Map<String, dynamic>> questionsAnswersList = [];
+    final firestore = FakeFirebaseFirestore();
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w')
+        .set( {
+      "Question":"Who is Batman",
+      "Answers": "Batman",
+      "Option1": 'Batman',
+      "Option2": "Batman",
+      "Option3": 'Batman',
+    });
+    DocumentSnapshot docSnapshot = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w')
+        .get();
+    questionsAnswersList.add({
+      'Question': docSnapshot['Question'],
+      'Answers': docSnapshot['Answers'],
+      'Option1': docSnapshot['Option1'],
+      'Option2': docSnapshot['Option2'],
+      'Option3': docSnapshot['Option3'],
+
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w2')
+        .set( {
+      "Question":"Who is Superman",
+      "Answers": "Superman",
+      "Option1": 'Superman',
+      "Option2": "Superman",
+      "Option3": 'Superman',
+    });
+    DocumentSnapshot docSnapshot2 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3w2')
+        .get();
+    questionsAnswersList.add({
+      'Question': docSnapshot2['Question'],
+      'Answers': docSnapshot2['Answers'],
+      'Option1': docSnapshot2['Option1'],
+      'Option2': docSnapshot2['Option2'],
+      'Option3': docSnapshot2['Option3'],
+
+    });
+    await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3wsa')
+        .set( {
+      "Question":"Who is Joker",
+      "Answers": "Joker",
+      "Option1": 'Joker',
+      "Option2": "Joker",
+      "Option3": 'Joker',
+    });
+    DocumentSnapshot docSnapshot3 = await firestore
+        .collection('Questions')
+        .doc('97bpFHEbhuVYzi85avKcMUA92MB3wsa')
+        .get();
+    questionsAnswersList.add({
+      'Question': docSnapshot3['Question'],
+      'Answers': docSnapshot3['Answers'],
+      'Option1': docSnapshot3['Option1'],
+      'Option2': docSnapshot3['Option2'],
+      'Option3': docSnapshot3['Option3'],
+
+    });
+    return questionsAnswersList;
+  }
 
 }
+
+
+
+
+

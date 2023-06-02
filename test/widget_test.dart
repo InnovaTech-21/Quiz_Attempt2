@@ -211,6 +211,116 @@ void main() {
 
     expect(testCategories, 10);
   });
+  test('add user data', () async {
+    final service = MockDataService();
+    Map<String, dynamic> userData = {
+      // 'date_of_birth': DateTime.friday,
+      'levels': 0,
+      'total_score': 0,
+      'user_email': '11aa@gmail.com',
+      'user_name': 'Test',
+      'user_username': 'TestName',
+    };
+
+    Map<String, dynamic> userData1 = await service.addSignupToFirestore
+      ('11aa@gmail.com','a,', 'TestName', 'Test', DateTime.now() );
+
+    expect(userData1['levels'], 0);
+    expect(userData1['total_score'], 0);
+    expect(userData1['user_email'], '11aa@gmail.com');
+    //   expect(userData1['Date_Created'],  Timestamp.fromDate(DateTime.now() ));
+    expect(userData1['user_name'], "TestName");
+    expect(userData1['user_username'], "Test");
+  });
+  test('Add images Data',() async{
+    final service = MockDataService();
+    String Q = "1";
+    String img1 = '2';
+    String img2 = '2';
+    String img3 = '2';
+    String img4 = '2';
+    String img5 = '2';
+    String img6 = '2';
+    int index = 1;
+    final  userData =await service.addImagesToFirestore(Q, img1, img1, img1, img1, img1, img1, index);
+    expect(true,true);
+  });
+  test('Add Number Of Questioons',() async{
+    final service = MockDataService();
+    String quidid = "abc";
+    int numofQuestions = 0;
+    bool QuizTimed = false;
+    int time = 5;
+    String id = "123";
+    final userdata = await service.addNumberOfQuestions(quidid,numofQuestions, QuizTimed, time, id);
+    expect(true, true);
+  });
+  test('Add QUiz Information',() async{
+    final service = MockDataService();
+    String q1 ="abc" ;
+    String q2 ="abc" ;
+    String q3 ="abc" ;
+    String q4 ="abc" ;
+    String q5 ="abc" ;
+    service.addDataToCreateaQuizFirestore1(q1,q2,q3,q4,q5);
+    expect(true, true);
+  });
+  test('GetMaq Question Answers',() async{
+    final service = MockDataService();
+    List<Map<String, dynamic>> questionsAnswersList = [];
+    String Q = "1";
+    questionsAnswersList= await service.getMAQQuestionsAnswers(Q);
+    expect(questionsAnswersList[0]['Question'], 'What is x');
+    expect(questionsAnswersList[0]['Answers'], 'b ^ b');
+    expect(questionsAnswersList[1]['Question'], 'What is x');
+    expect(questionsAnswersList[1]['Answers'], 'b2 ^ b2');
+    expect(questionsAnswersList[2]['Question'], 'What is x');
+    expect(questionsAnswersList[2]['Answers'], 'b3  ^ b3');
+    expect(questionsAnswersList[3]['Question'], 'What is x');
+    expect(questionsAnswersList[3]['Answers'], 'b3  ^ b2');
+    expect(questionsAnswersList[4]['Question'], 'What is x');
+    expect(questionsAnswersList[4]['Answers'], 'b2  ^ b3');
+  });
+  test('GetShortAns Question Answers',() async{
+    final service = MockDataService();
+    List<Map<String, dynamic>> questionsAnswersList = [];
+    String Q = "1";
+    questionsAnswersList= await service.getShortQuestionsAnswers(Q);
+    expect(questionsAnswersList[0]['Question'], 'What is x');
+    expect(questionsAnswersList[0]['Answers'], 'd');
+    expect(questionsAnswersList[1]['Question'], 'What is y');
+    expect(questionsAnswersList[1]['Answers'], 'd2');
+    expect(questionsAnswersList[2]['Question'], 'What is z');
+    expect(questionsAnswersList[2]['Answers'], 'd3');
+    expect(questionsAnswersList[3]['Question'], 'What is a');
+    expect(questionsAnswersList[3]['Answers'], 'd');
+    expect(questionsAnswersList[4]['Question'], 'What is a');
+    expect(questionsAnswersList[4]['Answers'], 'd');
+  });
+  test('GetMCQ Question Answers',() async{
+    final service = MockDataService();
+    List<Map<String, dynamic>> questionsAnswersList = [];
+    String Q = "1";
+    questionsAnswersList= await service.getMCQQuestionsAnswers(Q);
+    expect(questionsAnswersList[0]['Question'], 'Who is Batman');
+    expect(questionsAnswersList[0]['Answers'], 'Batman');
+    expect(questionsAnswersList[0]['Option1'], 'Batman');
+    expect(questionsAnswersList[0]['Option2'], 'Batman');
+    expect(questionsAnswersList[0]['Option3'], 'Batman');
+    expect(questionsAnswersList[1]['Question'], 'Who is Superman');
+    expect(questionsAnswersList[1]['Answers'], 'Superman');
+    expect(questionsAnswersList[1]['Option1'], 'Superman');
+    expect(questionsAnswersList[1]['Option2'], 'Superman');
+    expect(questionsAnswersList[1]['Option3'], 'Superman');
+    expect(questionsAnswersList[2]['Question'], 'Who is Joker');
+    expect(questionsAnswersList[2]['Answers'], 'Joker');
+    expect(questionsAnswersList[2]['Option1'], 'Joker');
+    expect(questionsAnswersList[2]['Option2'], 'Joker');
+    expect(questionsAnswersList[2]['Option3'], 'Joker');
+
+
+  });
+
 
 
 

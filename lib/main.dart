@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
       title: 'InnovaTech Quiz Platform',
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: ColourPallete.backgroundColor,
