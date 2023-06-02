@@ -190,33 +190,6 @@ class CreateQuizPageState extends State<CreateQuizPage> {
     return {'quiz': quiz, 'questions': questions, 'answers': answers};
   }
 
-  //selecting image
-  Future selectFile() async {
-    final result = await FilePicker.platform
-        .pickFiles(type: FileType.image, allowMultiple: false);
-    String? abc = await service.getUser();
-    String? def = quizNameController.text;
-
-    if (result != null && result.files.isNotEmpty) {
-      final pickedFile = result.files.first;
-      final fileName = pickedFile.name;
-      final fileBytes = pickedFile.bytes; // Use bytes property instead of path
-
-      // Upload file
-      final storageRef =
-          storage.FirebaseStorage.instance.ref('$abc/$def/$fileName');
-      final uploadTask = storageRef.putData(fileBytes!);
-      await uploadTask.whenComplete(() {});
-
-      // Retrieve download URL
-      final downloadURL = await storageRef.getDownloadURL();
-
-      setState(() {
-        _imageUrl = downloadURL; // Assign the download URL to _imageUrl
-      });
-    }
-  }
-
   ///add data of quiz to be made to database
   void addDataToFirestore(String getQuizName, getQuizType, getQuizDescription,
       getQuizCategory) async {
