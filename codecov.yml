@@ -7,6 +7,5 @@ ignore:
   - "lib/RankingsPage.dart"
   - "lib/landingpage.dart"
   - "lib/Views/CreateQuiz/publishPage.dart"
-  - "lib/Views/CreateQuiz/create_Quiz.dart"
 codecov:
   token: 84a999c3-7463-4aec-b048-4d506e575f99
