@@ -34,7 +34,15 @@ class _RankingsPageState extends State<RankingsPage> {
       int totalScore = 0;
       int highestScore = 0; // Initialize with the minimum possible value
       int lowestScore = 1000; // Initialize with the maximum possible value
+      int highestScore = 0; // Initialize with the minimum possible value
+      int lowestScore = 1000; // Initialize with the maximum possible value
       int numQuizzesCompleted = 0;
+      int totalScore1 = 0;
+      double lowestScorePercentage = 1000;
+      double highestScorePercentage = 0;
+      double average;
+      int sum = 0;
+      int count = 0;
       int totalScore1 = 0;
       double lowestScorePercentage = 1000;
       double highestScorePercentage = 0;
@@ -52,14 +60,17 @@ class _RankingsPageState extends State<RankingsPage> {
         scores.add(score);
         totalScore += score;
         count++;
+        count++;
 
         if (score/totalScoreOutOf > highestScorePercentage) {
           highestScore = score;
+          highestScorePercentage = (highestScore / totalScore1) * 100;
           highestScorePercentage = (highestScore / totalScore1) * 100;
         }
 
         if (score/totalScoreOutOf < lowestScorePercentage) {
           lowestScore = score;
+          lowestScorePercentage = (lowestScore / totalScore1) * 100;
           lowestScorePercentage = (lowestScore / totalScore1) * 100;
         }
 
@@ -80,6 +91,9 @@ class _RankingsPageState extends State<RankingsPage> {
         'userId': userId,
         'level': level,
         'totalScore': totalScore,
+        'highestScore': highestScorePercentage,
+        'averageScore': average,
+        'lowestScore': lowestScorePercentage,
         'highestScore': highestScorePercentage,
         'averageScore': average,
         'lowestScore': lowestScorePercentage,
@@ -117,7 +131,132 @@ class _RankingsPageState extends State<RankingsPage> {
           future: fetchRankings(),
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
+          future: fetchRankings(),
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              return Padding(
+                padding: EdgeInsets.all(16.0),
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return DataTable(
+                      headingRowHeight: 60,
+                      columns: [
+                        DataColumn(
+                          label: Container(
+                            width: constraints.maxWidth * 0.1,
+                            child: Text(
+                              'Name',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            sortRankings('userId', ascending);
+                          },
+                        ),
+                        DataColumn(
+                          label: Container(
+                            width: constraints.maxWidth * 0.05,
+                            child: Text(
+                              'Level',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            sortRankings('level', ascending);
+                          },
+                        ),
+                        DataColumn(
+                          label: Container(
+                            width: constraints.maxWidth * 0.05,
+                            child: Text(
+                              'Total Score',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            sortRankings('totalScore', ascending);
+                          },
+                        ),
+                        DataColumn(
+                          label: Container(
+                            width: constraints.maxWidth * 0.08,
+                            child: Text(
+                              'Highest Score',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            sortRankings('highestScore', ascending);
+                          },
+                        ),
+                        DataColumn(
+                          label: Container(
+                            width: constraints.maxWidth * 0.08,
+                            child: Text(
+                              'Average Score',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            sortRankings('averageScore', ascending);
+                          },
+                        ),
+                        DataColumn(
+                          label: Container(
+                            width: constraints.maxWidth * 0.08,
+                            child: Text(
+                              'Lowest Score',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            sortRankings('lowestScore', ascending);
+                          },
+                        ),
+                        DataColumn(
+                          label: Container(
+                            width: constraints.maxWidth * 0.1,
+                            child: Text(
+                              'Num Quizzes Completed',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            sortRankings('numQuizzesCompleted', ascending);
+                          },
+                        ),
+                      ],
+                      rows: rankings
+                          .map(
+                            (ranking) => DataRow(
+                          cells: [
+                            DataCell(Text(ranking['userId'])),
+                            DataCell(Text(ranking['level'].toString())),
+                            DataCell(Text(ranking['totalScore'].toString())),
+                            DataCell(Text(ranking['highestScore'].toStringAsFixed(2) + '%')),
+                            DataCell(Text(ranking['averageScore'].toStringAsFixed(2)+ '%')),
+                            DataCell(Text(ranking['lowestScore'].toStringAsFixed(2) + '%')),
+                            DataCell(Text(ranking['numQuizzesCompleted'].toString())),
+                          ],
+                        ),
+                      )
+                          .toList(),
+                    );
+                  },
+                ),
+              );
+            }
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
